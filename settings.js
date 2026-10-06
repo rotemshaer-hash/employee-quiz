@@ -1,7 +1,7 @@
-// חיבור למסד הנתונים של המבחן (Firebase). ממלאים פעם אחת בהקמה.
+// חיבור לפרויקט Firebase: employee-quiz-81499
 const SETTINGS = {
-  demo: true,   // true = מצב בדיקה (שומר בדפדפן, לא שולח מייל). בגרסה האמיתית: false
-  apiKey: 'API_KEY',
-  databaseURL: 'https://PROJECT-default-rtdb.firebaseio.com',
-  storageBucket: 'PROJECT.firebasestorage.app',
+  demo: false,   // true = מצב בדיקה (שומר בדפדפן, לא שולח מייל)
+  apiKey: 'AIzaSyC8LImUbMynjKvs2Nr2DCbqlgKxtSqJ_as',
+  databaseURL: 'https://employee-quiz-81499-default-rtdb.firebaseio.com',
+  storageBucket: 'employee-quiz-81499.firebasestorage.app',
 };

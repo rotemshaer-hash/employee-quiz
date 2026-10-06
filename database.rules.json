@@ -1,0 +1,12 @@
+{
+  "rules": {
+    "quizzes": {
+      ".read": true,
+      ".write": "auth != null",
+      "$quizId": {
+        ".validate": "newData.hasChildren(['title', 'questions'])"
+      }
+    },
+    "$other": { ".read": false, ".write": false }
+  }
+}

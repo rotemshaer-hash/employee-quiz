@@ -7,6 +7,8 @@
 | `index.html` | הדף של העובד. הקישור לכל מבחן: `index.html?t=<מזהה>` |
 | `admin.html` | מסך הניהול: יצירה, עריכה, שכפול ומחיקה של מבחנים, וקישור לוואטסאפ |
 | `settings.js` | חיבור ל־Firebase, ו־`demo` (מצב בדיקה) |
+| `database.rules.json` | כללי מסד הנתונים — מודבקים בלשונית Rules של Realtime Database |
+| `storage.rules` | כללי האחסון — מודבקים בלשונית Rules של Storage |
 | `demo.js` | מצב בדיקה: שומר בדפדפן ומציג את המייל במסך הניהול במקום לשלוח |
 
 - **מבחנים:** נשמרים ב־Firebase Realtime Database תחת `quizzes/<מזהה>`.
