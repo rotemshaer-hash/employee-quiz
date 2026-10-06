@@ -27,6 +27,8 @@
   header{background:var(--grad);color:#fff;padding:26px 20px 46px;position:relative}
   header::after{content:"";position:absolute;inset-inline:0;bottom:-1px;height:26px;background:var(--bg);
                 border-radius:26px 26px 0 0}
+  header .logo{display:block;width:150px;max-width:55%;border-radius:12px;margin-bottom:14px;
+               box-shadow:0 6px 18px -8px rgba(0,0,0,.55)}
   header h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.01em}
   header p{margin:4px 0 0;opacity:.85;font-size:15px}
 
@@ -79,6 +81,7 @@
 </head>
 <body>
 <header>
+  <img class="logo" src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי">
   <h1 id="title">מבחן עובדים</h1>
   <p>הדרכה וידע — מילוי אישי</p>
 </header>
@@ -126,8 +129,8 @@
   </section>
 </main>
 
-<script src="settings.js?v=8"></script>
-<script src="demo.js?v=8"></script>
+<script src="settings.js?v=9"></script>
+<script src="demo.js?v=9"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };

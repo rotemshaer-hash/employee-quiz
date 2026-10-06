@@ -26,6 +26,8 @@
 
   header{background:var(--grad);color:#fff;padding:24px 20px 44px;position:relative}
   header::after{content:"";position:absolute;inset-inline:0;bottom:-1px;height:26px;background:var(--bg);border-radius:26px 26px 0 0}
+  header .logo{display:block;width:140px;max-width:52%;border-radius:12px;margin-bottom:12px;
+               box-shadow:0 6px 18px -8px rgba(0,0,0,.55)}
   header h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.01em}
   header .ver{font-size:12px;font-weight:500;opacity:.75;margin-inline-start:8px}
 
@@ -80,7 +82,10 @@
 </style>
 </head>
 <body>
-<header><h1>ניהול המבחן<span class="ver">גרסה 8</span></h1></header>
+<header>
+  <img class="logo" src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי">
+  <h1>ניהול המבחן<span class="ver">גרסה 9</span></h1>
+</header>
 <main>
 
   <!-- כניסה -->
@@ -139,8 +144,8 @@
   <button id="save">שמירה</button>
 </div><div id="status"></div></div>
 
-<script src="settings.js?v=8"></script>
-<script src="demo.js?v=8"></script>
+<script src="settings.js?v=9"></script>
+<script src="demo.js?v=9"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
