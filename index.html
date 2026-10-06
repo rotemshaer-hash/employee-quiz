@@ -4,35 +4,85 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>מבחן עובדים</title>
+<meta name="theme-color" content="#0b5f59">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#f4f6f8;--card:#fff;--text:#1d2731;--muted:#6b7785;--accent:#0e7a72;--bad:#c0392b;--line:#dde3e8}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
-  main{max-width:640px;margin:0 auto;padding:16px}
-  h1{font-size:24px;margin:8px 0 16px}
-  h2{font-size:20px;margin:0 0 8px}
-  .card{background:var(--card);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  :root{
+    --bg:#eef2f4; --card:#fff; --text:#0f1b21; --muted:#67757e; --line:#e2e8ec;
+    --accent:#0b5f59; --accent2:#14a398; --bad:#c0392b;
+    --grad:linear-gradient(135deg,#0b5f59 0%,#14a398 100%);
+    --shadow:0 10px 30px -18px rgba(13,40,48,.55);
+    --radius:18px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#0d1416; --card:#151f22; --text:#e7eef0; --muted:#93a3aa; --line:#243036; --shadow:0 10px 30px -18px #000}
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font:17px/1.65 Heebo,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+
+  /* כותרת עליונה */
+  header{background:var(--grad);color:#fff;padding:26px 20px 46px;position:relative}
+  header::after{content:"";position:absolute;inset-inline:0;bottom:-1px;height:26px;background:var(--bg);
+                border-radius:26px 26px 0 0}
+  header h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.01em}
+  header p{margin:4px 0 0;opacity:.85;font-size:15px}
+
+  main{max-width:620px;margin:-22px auto 0;padding:0 16px 40px;position:relative;z-index:1}
+  h2{font-size:20px;font-weight:700;margin:0 0 6px;letter-spacing:-.01em}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+        padding:20px;margin-bottom:16px;box-shadow:var(--shadow);animation:rise .35s ease both}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}}
   .muted{color:var(--muted);font-size:15px}
-  input[type=text],textarea{width:100%;font:inherit;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:inherit}
+
+  input[type=text],textarea{width:100%;font:inherit;padding:14px;border:1.5px solid var(--line);
+        border-radius:13px;background:transparent;color:inherit;transition:border-color .15s,box-shadow .15s}
+  input[type=text]:focus,textarea:focus{outline:0;border-color:var(--accent2);
+        box-shadow:0 0 0 4px color-mix(in srgb,var(--accent2) 18%,transparent)}
   textarea{min-height:110px;resize:vertical}
-  button{width:100%;font:inherit;font-weight:600;padding:14px;border:0;border-radius:12px;background:var(--accent);color:#fff;cursor:pointer;margin-top:12px}
-  button:disabled{opacity:.45;cursor:default}
-  .video{position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000}
-  .video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0}
-  .progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:14px}
-  .progress div{height:100%;background:var(--accent);transition:width .3s}
-  label.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-top:8px;cursor:pointer}
-  label.opt input{margin-top:6px;transform:scale(1.2)}
-  .q{margin-bottom:22px}
-  .q.missing{outline:2px solid var(--bad);outline-offset:6px;border-radius:6px}
-  .err{color:var(--bad);font-weight:600;margin-top:10px}
+
+  button{width:100%;font:inherit;font-weight:700;padding:15px;border:0;border-radius:14px;
+         background:var(--grad);color:#fff;cursor:pointer;margin-top:14px;
+         box-shadow:0 8px 20px -12px var(--accent);transition:transform .12s,filter .15s,opacity .15s}
+  button:active:not(:disabled){transform:scale(.985)}
+  button:disabled{background:var(--line);color:var(--muted);box-shadow:none;cursor:default}
+
+  /* סרטון */
+  .video{position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;background:#000}
+  .video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+  .steps{display:flex;gap:6px;margin-bottom:12px}
+  .steps i{flex:1;height:6px;border-radius:99px;background:var(--line)}
+  .steps i.on{background:var(--grad)}
+  .progress{display:none}
+  .count{display:inline-block;font-size:13px;font-weight:700;color:var(--accent2);
+         background:color-mix(in srgb,var(--accent2) 12%,transparent);padding:3px 10px;border-radius:99px}
+
+  /* תשובות */
+  label.opt{display:flex;gap:12px;align-items:center;padding:14px;border:1.5px solid var(--line);
+            border-radius:14px;margin-top:10px;cursor:pointer;transition:border-color .15s,background .15s}
+  label.opt:has(input:checked){border-color:var(--accent2);background:color-mix(in srgb,var(--accent2) 8%,transparent)}
+  label.opt input{accent-color:var(--accent2);width:20px;height:20px;margin:0;flex:none}
+
+  .q{margin-bottom:26px}
+  .q.missing{outline:2px solid var(--bad);outline-offset:8px;border-radius:8px}
+  .err{color:var(--bad);font-weight:700;margin-top:10px}
+
+  /* סיום */
+  .done{text-align:center;padding:34px 20px}
+  .tick{width:74px;height:74px;margin:0 auto 14px;border-radius:50%;background:var(--grad);
+        display:grid;place-items:center;color:#fff;font-size:36px;animation:pop .45s cubic-bezier(.2,1.4,.5,1) both}
+  @keyframes pop{from{transform:scale(.4);opacity:0}}
   .hidden{display:none}
 </style>
 </head>
 <body>
+<header>
+  <h1 id="title">מבחן עובדים</h1>
+  <p>הדרכה וידע — מילוי אישי</p>
+</header>
 <main>
-  <h1 id="title"></h1>
-
   <!-- 1. שם -->
   <section id="s-name" class="card">
     <h2>ברוך הבא</h2>
@@ -43,9 +93,10 @@
 
   <!-- 2. סרטונים -->
   <section id="s-videos" class="card hidden">
+    <div class="steps" id="steps"></div>
     <div class="progress"><div id="vprog"></div></div>
-    <p class="muted" id="vcount"></p>
-    <h2 id="vtitle"></h2>
+    <span class="count" id="vcount"></span>
+    <h2 id="vtitle" style="margin:10px 0 12px"></h2>
     <div class="video" id="vbox"></div>
     <button id="vnext"></button>
   </section>
@@ -53,6 +104,7 @@
   <!-- 3. אישור צפייה -->
   <section id="s-confirm" class="card hidden">
     <h2>סיימת את הסרטונים</h2>
+    <p class="muted">עוד שלב אחד ואפשר להתחיל במבחן.</p>
     <label class="opt"><input type="checkbox" id="watched"> <span>אני מאשר/ת שצפיתי בכל הסרטונים</span></label>
     <button id="confirm" disabled>אישור שצפיתי — למבחן</button>
   </section>
@@ -67,14 +119,15 @@
   </section>
 
   <!-- 5. סיום -->
-  <section id="s-done" class="card hidden">
-    <h2>תודה! המבחן נשלח ✅</h2>
+  <section id="s-done" class="card done hidden">
+    <div class="tick">✓</div>
+    <h2>תודה! המבחן נשלח</h2>
     <p class="muted">אפשר לסגור את הדף.</p>
   </section>
 </main>
 
-<script src="settings.js?v=6"></script>
-<script src="demo.js?v=6"></script>
+<script src="settings.js?v=7"></script>
+<script src="demo.js?v=7"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
@@ -119,6 +172,7 @@ async function playVideo(i) {
   const label = last ? 'סיימתי לצפות' : 'לסרטון הבא';
   $('vcount').textContent = 'סרטון ' + (i + 1) + ' מתוך ' + total;
   $('vprog').style.width = ((i + 1) / total * 100) + '%';
+  $('steps').innerHTML = CONFIG.videos.map((_, j) => '<i class="' + (j <= i ? 'on' : '') + '"></i>').join('');
   $('vtitle').textContent = v.title;
   clearInterval(vTimer);
   const e = embedUrl(v.url);
