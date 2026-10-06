@@ -73,8 +73,8 @@
   </section>
 </main>
 
-<script src="settings.js?v=5"></script>
-<script src="demo.js?v=5"></script>
+<script src="settings.js?v=6"></script>
+<script src="demo.js?v=6"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
@@ -198,13 +198,12 @@ $('send').onclick = async () => {
 
   const name = $('name').value.trim();
   const pct = choices ? Math.round(right / choices * 100) : 0;
-  const passed = pct >= CONFIG.passScore;
   const data = {
-    _subject: CONFIG.title + ': ' + name + ' — ' + pct + '% ' + (passed ? '(עבר)' : '(לא עבר)'),
+    _subject: CONFIG.title + ': ' + name + (choices ? ' — ' + pct + '%' : ''),
     _template: 'box',
     _captcha: 'false',
     'שם': name,
-    'ציון אמריקאיות': right + '/' + choices + ' (' + pct + '%) — ' + (passed ? 'עבר ✅' : 'לא עבר ❌'),
+    'ציון אמריקאיות': right + '/' + choices + ' (' + pct + '%)',
     'אישור צפייה': 'אישר שצפה ב-' + CONFIG.videos.length + ' סרטונים',
     'זמן הגשה': new Date().toLocaleString('he-IL'),
   };

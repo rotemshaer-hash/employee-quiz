@@ -44,7 +44,7 @@
 </head>
 <body>
 <main>
-  <h1>ניהול המבחן <span class="muted" style="font-size:13px;font-weight:400">גרסה 5</span></h1>
+  <h1>ניהול המבחן <span class="muted" style="font-size:13px;font-weight:400">גרסה 6</span></h1>
 
   <!-- כניסה -->
   <section id="s-login" class="card">
@@ -69,7 +69,6 @@
       <h2>הגדרות</h2>
       <label class="f">כותרת המבחן</label><input id="title">
       <label class="f">לאיזה מייל לשלוח את התוצאות</label><input id="resultsEmail" type="email">
-      <label class="f">ציון עובר (%)</label><input id="passScore" type="number" min="0" max="100">
     </section>
 
     <section class="card">
@@ -103,8 +102,8 @@
   <button id="save">שמירה</button>
 </div><div id="status"></div></div>
 
-<script src="settings.js?v=5"></script>
-<script src="demo.js?v=5"></script>
+<script src="settings.js?v=6"></script>
+<script src="demo.js?v=6"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -189,13 +188,11 @@ function openQuiz(id, data) {
   quiz = JSON.parse(JSON.stringify(data || {}));
   quiz.title = quiz.title || 'מבחן חדש';
   quiz.resultsEmail = quiz.resultsEmail || lastEmail();
-  quiz.passScore = quiz.passScore == null ? 80 : quiz.passScore;
   quiz.videos = (quiz.videos || []).map(v => Object.assign({ kind: 'drive', _key: newId() }, v));
   quiz.questions = (quiz.questions || []).map(q => q.type === 'choice' ? Object.assign({ options: ['', ''] }, q) : q);
   pendingDeletes = [];
   $('title').value = quiz.title;
   $('resultsEmail').value = quiz.resultsEmail;
-  $('passScore').value = quiz.passScore;
   dirty = !data;
   render();
   screen('editor');
@@ -280,7 +277,7 @@ document.addEventListener('input', e => {
   if (d.kind && d.f) quiz[d.kind][+d.i][d.f] = t.type === 'number' ? (t.value === '' ? 0 : +t.value) : t.value;
   else if (d.opt != null) quiz.questions[+d.opt].options[+d.j] = t.value;
   else if (d.correct != null) quiz.questions[+d.correct].correct = +t.value;
-  else if (['title', 'resultsEmail', 'passScore'].includes(t.id)) quiz[t.id] = t.id === 'passScore' ? +t.value : t.value;
+  else if (['title', 'resultsEmail'].includes(t.id)) quiz[t.id] = t.value;
   else return;
   dirty = true; status('יש שינויים שלא נשמרו');
 });
