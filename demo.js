@@ -9,6 +9,27 @@
   const json = (body, status) => new Response(JSON.stringify(body), { status: status || 200, headers: { 'Content-Type': 'application/json' } });
   const realFetch = window.fetch.bind(window);
 
+  // סרטונים במצב בדיקה נשמרים ב-IndexedDB של הדפדפן
+  const idb = () => new Promise((ok, bad) => {
+    const r = indexedDB.open('quiz-demo-videos', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('v');
+    r.onsuccess = () => ok(r.result); r.onerror = () => bad(r.error);
+  });
+  const idbDo = async (mode, fn) => {
+    const db = await idb();
+    return new Promise((ok, bad) => {
+      const tx = db.transaction('v', mode), req = fn(tx.objectStore('v'));
+      tx.oncomplete = () => ok(req && req.result); tx.onerror = () => bad(tx.error);
+    });
+  };
+  const uploads = {};   // path -> [chunks]
+  const pathOf = url => decodeURIComponent(new URL(url).pathname.split('/o/')[1] || '');
+  window.resolveVideoSrc = async url => {
+    if (!url.includes('firebasestorage') || !url.includes('token=demo')) return url;
+    const blob = await idbDo('readonly', st => st.get(pathOf(url)));
+    return blob ? URL.createObjectURL(blob) : url;
+  };
+
   window.fetch = async function (url, opts) {
     url = String(url); opts = opts || {};
     const method = (opts.method || 'GET').toUpperCase();
@@ -17,6 +38,27 @@
     if (url.includes('formsubmit.co')) {
       mem.mails.unshift(Object.assign({ _at: Date.now() }, JSON.parse(opts.body)));
       write(); return json({ success: 'true' });
+    }
+    if (url.includes('firebasestorage.googleapis.com')) {
+      const h = opts.headers || {}, cmd = h['X-Goog-Upload-Command'] || '';
+      if (cmd === 'start') {
+        const path = new URL(url).searchParams.get('name');
+        uploads[path] = [];
+        return new Response('{}', { headers: { 'X-Goog-Upload-URL': 'https://firebasestorage.googleapis.com/demo-upload?path=' + encodeURIComponent(path) } });
+      }
+      if (url.includes('/demo-upload')) {
+        const path = new URL(url).searchParams.get('path'), parts = uploads[path];
+        const received = () => parts.reduce((n, b) => n + b.size, 0);
+        if (cmd === 'query') return new Response('', { headers: { 'X-Goog-Upload-Size-Received': String(received()) } });
+        parts.push(opts.body);
+        if (cmd.includes('finalize')) {
+          await idbDo('readwrite', st => st.put(new Blob(parts, { type: 'video/mp4' }), path));
+          delete uploads[path];
+          return json({ name: path, downloadTokens: 'demo' });
+        }
+        return new Response('');
+      }
+      if (method === 'DELETE') { await idbDo('readwrite', st => st.delete(pathOf(url))); return new Response(''); }
     }
     if (url.startsWith(SETTINGS.databaseURL)) {
       const id = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean)[1];

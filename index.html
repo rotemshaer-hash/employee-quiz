@@ -112,26 +112,46 @@ function embedUrl(url) {
   return { kind: 'video', src: url };
 }
 let vIndex = 0, vTimer = null;
-function playVideo(i) {
+const resolveSrc = window.resolveVideoSrc || (async u => u);   // במצב בדיקה demo.js מחליף את זה
+async function playVideo(i) {
   vIndex = i;
   const v = CONFIG.videos[i], total = CONFIG.videos.length, last = i === total - 1;
+  const label = last ? 'סיימתי לצפות' : 'לסרטון הבא';
   $('vcount').textContent = 'סרטון ' + (i + 1) + ' מתוך ' + total;
   $('vprog').style.width = ((i + 1) / total * 100) + '%';
   $('vtitle').textContent = v.title;
-  const e = embedUrl(v.url);
-  $('vbox').innerHTML = e.kind === 'iframe'
-    ? '<iframe src="' + esc(e.src) + '" allow="autoplay; fullscreen" allowfullscreen></iframe>'
-    : '<video src="' + esc(e.src) + '" controls playsinline></video>';
-  const label = last ? 'סיימתי לצפות' : 'לסרטון הבא';
-  let left = v.minSeconds || 0;
   clearInterval(vTimer);
-  const tick = () => {
-    $('vnext').disabled = left > 0;
-    $('vnext').textContent = left > 0 ? label + ' (' + left + ')' : label;
-    left--;
-    if (left < -1) clearInterval(vTimer);
-  };
-  tick(); vTimer = setInterval(tick, 1000);
+  const e = embedUrl(v.url);
+
+  if (e.kind === 'iframe') {
+    // Drive: אי אפשר לדעת מתי הסרטון נגמר, אז הכפתור נפתח אחרי זמן ההמתנה שהמנהל קבע
+    $('vbox').innerHTML = '<iframe src="' + esc(e.src) + '" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+    let left = v.minSeconds || 0;
+    const tick = () => {
+      $('vnext').disabled = left > 0;
+      $('vnext').textContent = left > 0 ? label + ' (' + left + ')' : label;
+      left--;
+      if (left < -1) clearInterval(vTimer);
+    };
+    tick(); vTimer = setInterval(tick, 1000);
+    return;
+  }
+
+  // סרטון שהועלה מהגלריה: הכפתור נפתח רק כשהסרטון נגמר, ואי אפשר לדלג קדימה
+  $('vnext').disabled = true;
+  $('vnext').textContent = 'צפה בסרטון עד הסוף כדי להמשיך';
+  $('vbox').innerHTML = '<video controls playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture></video>';
+  const video = $('vbox').querySelector('video');
+  let maxT = 0;
+  video.addEventListener('timeupdate', () => { if (!video.seeking && video.currentTime > maxT) maxT = video.currentTime; });
+  video.addEventListener('seeking', () => { if (video.currentTime > maxT + 1) video.currentTime = maxT; });
+  video.addEventListener('ratechange', () => { if (video.playbackRate > 1) video.playbackRate = 1; });
+  video.addEventListener('ended', () => {
+    if (vIndex !== i) return;
+    $('vnext').disabled = false; $('vnext').textContent = label;
+  });
+  video.addEventListener('error', () => { $('vnext').textContent = 'הסרטון לא נטען — בדוק אינטרנט ורענן'; });
+  video.src = await resolveSrc(e.src);
 }
 $('vnext').onclick = () => {
   if (vIndex < CONFIG.videos.length - 1) playVideo(vIndex + 1);
