@@ -22,15 +22,28 @@
       tx.oncomplete = () => ok(req && req.result); tx.onerror = () => bad(tx.error);
     });
   };
-  const uploads = {};   // path -> [chunks]
+  // כל חתיכה נקראת לזיכרון ונשמרת כ-ArrayBuffer נפרד (path#n). בטלפון, שמירת Blob שמצביע לקובץ מהגלריה
+  // נתקעת ב-IndexedDB, ולכן לא שומרים Blob בכלל.
+  const uploads = {};   // path -> מספר החתיכות שנשמרו
+  const received = {};  // path -> בתים שהתקבלו
   const pathOf = url => decodeURIComponent(new URL(url).pathname.split('/o/')[1] || '');
   window.resolveVideoSrc = async url => {
     if (!url.includes('firebasestorage') || !url.includes('token=demo')) return url;
-    const blob = await idbDo('readonly', st => st.get(pathOf(url)));
-    return blob ? URL.createObjectURL(blob) : url;
+    const path = pathOf(url);
+    const n = await idbDo('readonly', st => st.get(path));
+    if (typeof n !== 'number') return url;
+    const parts = [];
+    for (let i = 0; i < n; i++) parts.push(await idbDo('readonly', st => st.get(path + '#' + i)));
+    return URL.createObjectURL(new Blob(parts, { type: 'video/mp4' }));
   };
 
-  window.fetch = async function (url, opts) {
+  window.fetch = function (url, opts) {
+    // כמו fetch אמיתי: בקשה שבוטלה (הגבלת הזמן של ההעלאה) נכשלת במקום להיתקע
+    const signal = opts && opts.signal, work = fakeFetch(url, opts);
+    if (!signal) return work;
+    return Promise.race([work, new Promise((_, bad) => signal.addEventListener('abort', () => bad(new Error('timeout'))))]);
+  };
+  async function fakeFetch(url, opts) {
     url = String(url); opts = opts || {};
     const method = (opts.method || 'GET').toUpperCase();
     read();
@@ -43,22 +56,29 @@
       const h = opts.headers || {}, cmd = h['X-Goog-Upload-Command'] || '';
       if (cmd === 'start') {
         const path = new URL(url).searchParams.get('name');
-        uploads[path] = [];
+        uploads[path] = 0; received[path] = 0;
         return new Response('{}', { headers: { 'X-Goog-Upload-URL': 'https://firebasestorage.googleapis.com/demo-upload?path=' + encodeURIComponent(path) } });
       }
       if (url.includes('/demo-upload')) {
-        const path = new URL(url).searchParams.get('path'), parts = uploads[path];
-        const received = () => parts.reduce((n, b) => n + b.size, 0);
-        if (cmd === 'query') return new Response('', { headers: { 'X-Goog-Upload-Size-Received': String(received()) } });
-        parts.push(opts.body);
+        const path = new URL(url).searchParams.get('path');
+        if (cmd === 'query') return new Response('', { headers: { 'X-Goog-Upload-Size-Received': String(received[path]) } });
+        const buf = await opts.body.arrayBuffer();
+        if (buf.byteLength) {
+          const i = uploads[path]++;
+          await idbDo('readwrite', st => st.put(buf, path + '#' + i));
+          received[path] += buf.byteLength;
+        }
         if (cmd.includes('finalize')) {
-          await idbDo('readwrite', st => st.put(new Blob(parts, { type: 'video/mp4' }), path));
-          delete uploads[path];
+          await idbDo('readwrite', st => st.put(uploads[path], path));
           return json({ name: path, downloadTokens: 'demo' });
         }
         return new Response('');
       }
-      if (method === 'DELETE') { await idbDo('readwrite', st => st.delete(pathOf(url))); return new Response(''); }
+      if (method === 'DELETE') {
+        const path = pathOf(url), n = await idbDo('readonly', st => st.get(path)) || 0;
+        await idbDo('readwrite', st => { for (let i = 0; i < n; i++) st.delete(path + '#' + i); return st.delete(path); });
+        return new Response('');
+      }
     }
     if (url.startsWith(SETTINGS.databaseURL)) {
       const id = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean)[1];
@@ -68,7 +88,7 @@
       return json(Object.keys(mem.quizzes).length ? mem.quizzes : null);
     }
     return realFetch(url, opts);
-  };
+  }
 
   // באנר + "תיבת דואר" במסך הניהול
   addEventListener('DOMContentLoaded', () => {
