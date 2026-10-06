@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>מבחן עובדים</title>
-<meta name="theme-color" content="#0b5f59">
+<meta name="theme-color" content="#0b63c4">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#eef2f4; --card:#fff; --text:#0f1b21; --muted:#67757e; --line:#e2e8ec;
-    --accent:#0b5f59; --accent2:#14a398; --bad:#c0392b;
-    --grad:linear-gradient(135deg,#0b5f59 0%,#14a398 100%);
-    --shadow:0 10px 30px -18px rgba(13,40,48,.55);
+    --accent:#0b63c4; --accent2:#41b8f0; --bad:#c0392b;
+    --grad:linear-gradient(135deg,#0b63c4 0%,#41b8f0 100%);
+    --shadow:0 10px 30px -18px rgba(10,30,50,.5);
     --radius:18px;
   }
   @media (prefers-color-scheme:dark){
@@ -126,8 +126,8 @@
   </section>
 </main>
 
-<script src="settings.js?v=7"></script>
-<script src="demo.js?v=7"></script>
+<script src="settings.js?v=8"></script>
+<script src="demo.js?v=8"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
@@ -194,8 +194,9 @@ async function playVideo(i) {
   // סרטון שהועלה מהגלריה: הכפתור נפתח רק כשהסרטון נגמר, ואי אפשר לדלג קדימה
   $('vnext').disabled = true;
   $('vnext').textContent = 'צפה בסרטון עד הסוף כדי להמשיך';
-  $('vbox').innerHTML = '<video controls playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture></video>';
+  $('vbox').innerHTML = '<video controls playsinline preload="metadata" controlslist="nodownload noplaybackrate noremoteplayback" disablepictureinpicture disableremoteplayback></video>';
   const video = $('vbox').querySelector('video');
+  video.addEventListener('contextmenu', e => e.preventDefault());   // חוסם "שמור וידאו" בלחיצה ארוכה
   let maxT = 0;
   video.addEventListener('timeupdate', () => { if (!video.seeking && video.currentTime > maxT) maxT = video.currentTime; });
   video.addEventListener('seeking', () => { if (video.currentTime > maxT + 1) video.currentTime = maxT; });

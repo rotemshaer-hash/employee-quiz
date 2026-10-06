@@ -5,20 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>ניהול המבחן</title>
-<meta name="theme-color" content="#0b5f59">
+<meta name="theme-color" content="#0b63c4">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#eef2f4; --card:#fff; --text:#0f1b21; --muted:#67757e; --line:#e2e8ec; --soft:#edf5f4;
-    --accent:#0b5f59; --accent2:#14a398; --bad:#c0392b;
-    --grad:linear-gradient(135deg,#0b5f59 0%,#14a398 100%);
-    --shadow:0 10px 30px -18px rgba(13,40,48,.55);
+    --bg:#eef2f4; --card:#fff; --text:#0f1b21; --muted:#67757e; --line:#e2e8ec; --soft:#eaf4fc;
+    --accent:#0b63c4; --accent2:#41b8f0; --bad:#c0392b;
+    --grad:linear-gradient(135deg,#0b63c4 0%,#41b8f0 100%);
+    --shadow:0 10px 30px -18px rgba(10,30,50,.5);
     --radius:18px;
   }
   @media (prefers-color-scheme:dark){
-    :root{--bg:#0d1416;--card:#151f22;--text:#e7eef0;--muted:#93a3aa;--line:#243036;--soft:#16302e;--shadow:0 10px 30px -18px #000}
+    :root{--bg:#0d1416;--card:#151f22;--text:#e7eef0;--muted:#93a3aa;--line:#243036;--soft:#13293d;--shadow:0 10px 30px -18px #000}
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0;background:var(--bg);color:var(--text);
@@ -80,7 +80,7 @@
 </style>
 </head>
 <body>
-<header><h1>ניהול המבחן<span class="ver">גרסה 7</span></h1></header>
+<header><h1>ניהול המבחן<span class="ver">גרסה 8</span></h1></header>
 <main>
 
   <!-- כניסה -->
@@ -139,8 +139,8 @@
   <button id="save">שמירה</button>
 </div><div id="status"></div></div>
 
-<script src="settings.js?v=7"></script>
-<script src="demo.js?v=7"></script>
+<script src="settings.js?v=8"></script>
+<script src="demo.js?v=8"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
