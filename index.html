@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מבחן עובדים</title>
+<style>
+  :root{--bg:#f4f6f8;--card:#fff;--text:#1d2731;--muted:#6b7785;--accent:#0e7a72;--bad:#c0392b;--line:#dde3e8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+  main{max-width:640px;margin:0 auto;padding:16px}
+  h1{font-size:24px;margin:8px 0 16px}
+  h2{font-size:20px;margin:0 0 8px}
+  .card{background:var(--card);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .muted{color:var(--muted);font-size:15px}
+  input[type=text],textarea{width:100%;font:inherit;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:inherit}
+  textarea{min-height:110px;resize:vertical}
+  button{width:100%;font:inherit;font-weight:600;padding:14px;border:0;border-radius:12px;background:var(--accent);color:#fff;cursor:pointer;margin-top:12px}
+  button:disabled{opacity:.45;cursor:default}
+  .video{position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000}
+  .video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:14px}
+  .progress div{height:100%;background:var(--accent);transition:width .3s}
+  label.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-top:8px;cursor:pointer}
+  label.opt input{margin-top:6px;transform:scale(1.2)}
+  .q{margin-bottom:22px}
+  .q.missing{outline:2px solid var(--bad);outline-offset:6px;border-radius:6px}
+  .err{color:var(--bad);font-weight:600;margin-top:10px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<main>
+  <h1 id="title"></h1>
+
+  <!-- 1. שם -->
+  <section id="s-name" class="card">
+    <h2>ברוך הבא</h2>
+    <p class="muted">תצפה בכל הסרטונים, תאשר שצפית, ואחר כך תענה על המבחן.</p>
+    <input id="name" type="text" placeholder="שם מלא" autocomplete="name">
+    <button id="start" disabled>התחלה</button>
+  </section>
+
+  <!-- 2. סרטונים -->
+  <section id="s-videos" class="card hidden">
+    <div class="progress"><div id="vprog"></div></div>
+    <p class="muted" id="vcount"></p>
+    <h2 id="vtitle"></h2>
+    <div class="video" id="vbox"></div>
+    <button id="vnext"></button>
+  </section>
+
+  <!-- 3. אישור צפייה -->
+  <section id="s-confirm" class="card hidden">
+    <h2>סיימת את הסרטונים</h2>
+    <label class="opt"><input type="checkbox" id="watched"> <span>אני מאשר/ת שצפיתי בכל הסרטונים</span></label>
+    <button id="confirm" disabled>אישור שצפיתי — למבחן</button>
+  </section>
+
+  <!-- 4. מבחן -->
+  <section id="s-quiz" class="card hidden">
+    <h2>מבחן</h2>
+    <p class="muted">חובה לענות על כל השאלות.</p>
+    <form id="quiz"></form>
+    <div id="qerr" class="err"></div>
+    <button id="send">שליחת המבחן</button>
+  </section>
+
+  <!-- 5. סיום -->
+  <section id="s-done" class="card hidden">
+    <h2>תודה! המבחן נשלח ✅</h2>
+    <p class="muted">אפשר לסגור את הדף.</p>
+  </section>
+</main>
+
+<script src="settings.js"></script>
+<script src="demo.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+// ---------- טעינת המבחן (מה שהמנהל שמר) ----------
+let CONFIG = null;
+(async () => {
+  try {
+    const quizId = new URLSearchParams(location.search).get('t');
+    if (!/^[\w-]+$/.test(quizId || '')) throw 0;
+    const res = await fetch(SETTINGS.databaseURL + '/quizzes/' + quizId + '.json', { cache: 'no-store' });
+    CONFIG = await res.json();
+    if (!res.ok || !CONFIG || !(CONFIG.questions || []).length) throw 0;
+    CONFIG.videos = CONFIG.videos || [];
+    document.title = CONFIG.title;
+    $('title').textContent = CONFIG.title;
+    $('name').dispatchEvent(new Event('input'));
+  } catch (e) {
+    $('s-name').innerHTML = '<h2>המבחן עדיין לא מוכן</h2><p class="muted">נסה שוב מאוחר יותר.</p>';
+  }
+})();
+
+// ---------- שם ----------
+$('name').addEventListener('input', () => { $('start').disabled = !CONFIG || $('name').value.trim().length < 2; });
+$('start').onclick = () => {
+  if (CONFIG.videos.length) { show('s-videos'); playVideo(0); }
+  else { buildQuiz(); show('s-quiz'); }
+};
+
+// ---------- סרטונים ----------
+function embedUrl(url) {
+  const drive = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]+)/);
+  if (drive) return { kind: 'iframe', src: 'https://drive.google.com/file/d/' + drive[1] + '/preview' };
+  return { kind: 'video', src: url };
+}
+let vIndex = 0, vTimer = null;
+function playVideo(i) {
+  vIndex = i;
+  const v = CONFIG.videos[i], total = CONFIG.videos.length, last = i === total - 1;
+  $('vcount').textContent = 'סרטון ' + (i + 1) + ' מתוך ' + total;
+  $('vprog').style.width = ((i + 1) / total * 100) + '%';
+  $('vtitle').textContent = v.title;
+  const e = embedUrl(v.url);
+  $('vbox').innerHTML = e.kind === 'iframe'
+    ? '<iframe src="' + esc(e.src) + '" allow="autoplay; fullscreen" allowfullscreen></iframe>'
+    : '<video src="' + esc(e.src) + '" controls playsinline></video>';
+  const label = last ? 'סיימתי לצפות' : 'לסרטון הבא';
+  let left = v.minSeconds || 0;
+  clearInterval(vTimer);
+  const tick = () => {
+    $('vnext').disabled = left > 0;
+    $('vnext').textContent = left > 0 ? label + ' (' + left + ')' : label;
+    left--;
+    if (left < -1) clearInterval(vTimer);
+  };
+  tick(); vTimer = setInterval(tick, 1000);
+}
+$('vnext').onclick = () => {
+  if (vIndex < CONFIG.videos.length - 1) playVideo(vIndex + 1);
+  else { $('vbox').innerHTML = ''; show('s-confirm'); }
+};
+
+// ---------- אישור ----------
+$('watched').onchange = () => { $('confirm').disabled = !$('watched').checked; };
+$('confirm').onclick = () => { buildQuiz(); show('s-quiz'); };
+
+// ---------- מבחן ----------
+function buildQuiz() {
+  $('quiz').innerHTML = CONFIG.questions.map((q, i) => {
+    const head = '<p><b>' + (i + 1) + '. ' + esc(q.text) + '</b></p>';
+    const body = q.type === 'choice'
+      ? q.options.map((o, j) => '<label class="opt"><input type="radio" name="q' + i + '" value="' + j + '"> <span>' + esc(o) + '</span></label>').join('')
+      : '<textarea name="q' + i + '" placeholder="התשובה שלך"></textarea>';
+    return '<div class="q" id="qq' + i + '">' + head + body + '</div>';
+  }).join('');
+}
+
+function collect() {
+  const f = $('quiz'), out = [];
+  let missing = null, right = 0, choices = 0;
+  CONFIG.questions.forEach((q, i) => {
+    $('qq' + i).classList.remove('missing');
+    let answer, ok = null;
+    if (q.type === 'choice') {
+      const sel = f.querySelector('input[name="q' + i + '"]:checked');
+      if (sel) { answer = q.options[+sel.value]; ok = +sel.value === q.correct - 1; choices++; if (ok) right++; }
+    } else {
+      answer = f.elements['q' + i].value.trim();
+    }
+    if (!answer) { $('qq' + i).classList.add('missing'); missing = missing || $('qq' + i); }
+    out.push({ q, answer, ok });
+  });
+  return { out, missing, right, choices };
+}
+
+$('send').onclick = async () => {
+  const { out, missing, right, choices } = collect();
+  $('qerr').textContent = '';
+  if (missing) { $('qerr').textContent = 'יש שאלות שלא נענו (מסומנות באדום).'; missing.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+
+  const name = $('name').value.trim();
+  const pct = choices ? Math.round(right / choices * 100) : 0;
+  const passed = pct >= CONFIG.passScore;
+  const data = {
+    _subject: CONFIG.title + ': ' + name + ' — ' + pct + '% ' + (passed ? '(עבר)' : '(לא עבר)'),
+    _template: 'box',
+    _captcha: 'false',
+    'שם': name,
+    'ציון אמריקאיות': right + '/' + choices + ' (' + pct + '%) — ' + (passed ? 'עבר ✅' : 'לא עבר ❌'),
+    'אישור צפייה': 'אישר שצפה ב-' + CONFIG.videos.length + ' סרטונים',
+    'זמן הגשה': new Date().toLocaleString('he-IL'),
+  };
+  out.forEach((r, i) => {
+    data[(i + 1) + '. ' + r.q.text] = r.answer + (r.ok === true ? '  ✅' : r.ok === false ? '  ❌' : '  (פתוחה — לבדיקה)');
+  });
+
+  $('send').disabled = true; $('send').textContent = 'שולח...';
+  try {
+    const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(CONFIG.resultsEmail), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(data),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || String(json.success) !== 'true') throw new Error(json.message || res.status);
+    show('s-done');
+  } catch (err) {
+    $('qerr').textContent = 'השליחה נכשלה. בדוק שיש אינטרנט ולחץ שוב. התשובות שלך נשמרו במסך.';
+    $('send').disabled = false; $('send').textContent = 'שליחת המבחן';
+  }
+};
+</script>
+</body>
+</html>

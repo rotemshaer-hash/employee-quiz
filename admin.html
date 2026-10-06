@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ניהול המבחן</title>
+<style>
+  :root{--bg:#f4f6f8;--card:#fff;--text:#1d2731;--muted:#6b7785;--accent:#0e7a72;--bad:#c0392b;--line:#dde3e8;--soft:#eef4f3}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+  main{max-width:640px;margin:0 auto;padding:16px 16px 110px}
+  h1{font-size:24px;margin:8px 0 16px}
+  h2{font-size:20px;margin:0 0 10px}
+  .card{background:var(--card);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .muted{color:var(--muted);font-size:15px}
+  label.f{display:block;font-size:15px;color:var(--muted);margin:10px 0 4px}
+  input,textarea,select{width:100%;font:inherit;padding:11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:inherit}
+  textarea{min-height:70px;resize:vertical}
+  button{font:inherit;font-weight:600;padding:12px 14px;border:0;border-radius:12px;background:var(--accent);color:#fff;cursor:pointer}
+  button.full{width:100%;margin-top:12px}
+  button.ghost{background:var(--soft);color:var(--accent)}
+  button.mini{padding:6px 10px;font-size:15px;background:var(--soft);color:var(--text)}
+  button.del{background:#fbeceb;color:var(--bad)}
+  button:disabled{opacity:.45}
+  .item{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px;background:#fcfdfd}
+  .item-head{display:flex;gap:6px;align-items:center;justify-content:space-between;margin-bottom:4px}
+  .item-head b{flex:1}
+  .opt{display:flex;gap:8px;align-items:center;margin-top:8px}
+  .opt input[type=radio]{width:auto;transform:scale(1.3)}
+  .opt input[type=text]{flex:1}
+  .bar{position:fixed;bottom:0;inset-inline:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px}
+  .bar div{max-width:640px;margin:0 auto;display:flex;gap:10px;align-items:center}
+  .bar button{flex:1}
+  #status{font-size:15px;min-height:1.4em;text-align:center;margin-top:6px}
+  .ok{color:var(--accent)} .err{color:var(--bad)}
+  details{background:var(--soft);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:15px}
+  summary{font-weight:600;cursor:pointer}
+  .row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<main>
+  <h1>ניהול המבחן</h1>
+
+  <!-- כניסה -->
+  <section id="s-login" class="card">
+    <h2>כניסת מנהל</h2>
+    <label class="f">אימייל</label><input id="email" type="email" autocomplete="username">
+    <label class="f">סיסמה</label><input id="pass" type="password" autocomplete="current-password">
+    <button class="full" id="login">כניסה</button>
+    <p id="loginErr" class="err"></p>
+  </section>
+
+  <!-- רשימת מבחנים -->
+  <section id="s-list" class="card hidden">
+    <h2>המבחנים שלי</h2>
+    <div id="list"></div>
+    <button class="full" id="newQuiz">+ מבחן חדש</button>
+  </section>
+
+  <!-- עורך -->
+  <div id="editor" class="hidden">
+    <button class="ghost" id="back" style="margin-bottom:12px">→ לכל המבחנים</button>
+    <section class="card">
+      <h2>הגדרות</h2>
+      <label class="f">כותרת המבחן</label><input id="title">
+      <label class="f">לאיזה מייל לשלוח את התוצאות</label><input id="resultsEmail" type="email">
+      <label class="f">ציון עובר (%)</label><input id="passScore" type="number" min="0" max="100">
+    </section>
+
+    <section class="card">
+      <h2>סרטונים</h2>
+      <details>
+        <summary>איך מעלים סרטון מהגלריה?</summary>
+        <ol>
+          <li>בגלריה: בחר את הסרטון ← <b>שיתוף</b> ← <b>Drive</b> ← בחר את התיקייה <b>מבחן עובדים</b> ← שמירה.</li>
+          <li>ב־Drive, כשההעלאה מסתיימת: ⋮ ליד הסרטון ← <b>העתקת קישור</b>.</li>
+          <li>כאן: <b>+ הוספת סרטון</b> ← הדבק את הקישור ← <b>שמירה</b>.</li>
+        </ol>
+        התיקייה משותפת פעם אחת ל"כל מי שיש לו את הקישור", וכל סרטון שנכנס אליה פתוח לעובדים אוטומטית.
+      </details>
+      <div id="videos"></div>
+      <button class="full ghost" id="addVideo">+ הוספת סרטון</button>
+    </section>
+
+    <section class="card">
+      <h2>שאלות</h2>
+      <div id="questions"></div>
+      <button class="full ghost" id="addChoice">+ שאלה אמריקאית</button>
+      <button class="full ghost" id="addOpen">+ שאלה פתוחה</button>
+    </section>
+  </div>
+</main>
+
+<div class="bar hidden" id="bar"><div>
+  <button class="ghost" id="preview">תצוגה מקדימה</button>
+  <button id="save">שמירה</button>
+</div><div id="status"></div></div>
+
+<script src="settings.js"></script>
+<script src="demo.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DEFAULT_SECONDS = 180;
+let token = null, quizzes = {}, quizId = null, quiz = null, dirty = false;
+const DB = path => SETTINGS.databaseURL + '/quizzes' + path + '.json';
+const quizLink = id => new URL('index.html?t=' + id, location.href).href;
+const newId = () => Math.random().toString(36).slice(2, 8);
+
+function status(msg, cls) { $('status').textContent = msg; $('status').className = cls || ''; }
+
+// ---------- כניסה ----------
+async function login(email, password) {
+  const res = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + SETTINGS.apiKey, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, returnSecureToken: true }),
+  });
+  const j = await res.json();
+  if (!res.ok) throw new Error(j.error && j.error.message);
+  return j.idToken;
+}
+$('login').onclick = async () => {
+  $('loginErr').textContent = '';
+  $('login').disabled = true;
+  try {
+    token = await login($('email').value.trim(), $('pass').value);
+    sessionStorageSet('cred', JSON.stringify({ e: $('email').value.trim(), p: $('pass').value }));
+    await load();
+  } catch (e) {
+    $('loginErr').textContent = 'אימייל או סיסמה לא נכונים.';
+  }
+  $('login').disabled = false;
+};
+function sessionStorageSet(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+function sessionStorageGet(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+
+// ---------- רשימת המבחנים ----------
+async function authed(method, path, body) {
+  const go = () => fetch(DB(path) + '?auth=' + encodeURIComponent(token), {
+    method, headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  let res = await go();
+  if (res.status === 401) {               // הכניסה פגה (אחרי שעה) — נכנסים מחדש בשקט
+    const c = JSON.parse(sessionStorageGet('cred') || 'null');
+    if (!c) throw new Error('auth');
+    token = await login(c.e, c.p);
+    res = await go();
+  }
+  if (!res.ok) throw new Error(res.status);
+  return res;
+}
+async function load() {
+  const res = await fetch(DB(''), { cache: 'no-store' });
+  quizzes = (await res.json()) || {};
+  showList();
+}
+function screen(id) {
+  ['s-login', 's-list', 'editor'].forEach(x => $(x).classList.toggle('hidden', x !== id));
+  $('bar').classList.toggle('hidden', id !== 'editor');
+  status(''); scrollTo(0, 0);
+}
+function showList() {
+  const ids = Object.keys(quizzes).sort((a, b) => (quizzes[b].updated || 0) - (quizzes[a].updated || 0));
+  $('list').innerHTML = ids.length ? ids.map(id => {
+    const q = quizzes[id];
+    return '<div class="item"><b>' + esc(q.title) + '</b><div class="muted">' +
+      (q.videos || []).length + ' סרטונים · ' + (q.questions || []).length + ' שאלות</div><div class="row">' +
+      '<button class="mini" data-list="edit" data-id="' + id + '">עריכה</button>' +
+      '<button class="mini" data-list="wa" data-id="' + id + '">שליחה בוואטסאפ</button>' +
+      '<button class="mini" data-list="copy" data-id="' + id + '">העתקת קישור</button>' +
+      '<button class="mini" data-list="dup" data-id="' + id + '">שכפול</button>' +
+      '<button class="mini del" data-list="del" data-id="' + id + '">מחיקה</button></div></div>';
+  }).join('') : '<p class="muted">עוד אין מבחנים. לחץ "+ מבחן חדש".</p>';
+  screen('s-list');
+}
+function openQuiz(id, data) {
+  quizId = id;
+  quiz = JSON.parse(JSON.stringify(data || {}));
+  quiz.title = quiz.title || 'מבחן חדש';
+  quiz.resultsEmail = quiz.resultsEmail || lastEmail();
+  quiz.passScore = quiz.passScore == null ? 80 : quiz.passScore;
+  quiz.videos = quiz.videos || [];
+  quiz.questions = (quiz.questions || []).map(q => q.type === 'choice' ? Object.assign({ options: ['', ''] }, q) : q);
+  $('title').value = quiz.title;
+  $('resultsEmail').value = quiz.resultsEmail;
+  $('passScore').value = quiz.passScore;
+  dirty = !data;
+  render();
+  screen('editor');
+}
+function lastEmail() {
+  const any = Object.values(quizzes).find(q => q.resultsEmail);
+  return any ? any.resultsEmail : '';
+}
+$('list').addEventListener('click', async e => {
+  const d = e.target.dataset, id = d.id;
+  if (!d.list) return;
+  if (d.list === 'edit') openQuiz(id, quizzes[id]);
+  else if (d.list === 'wa') open('https://wa.me/?text=' + encodeURIComponent(quizzes[id].title + '\n' + quizLink(id)), '_blank');
+  else if (d.list === 'copy') {
+    try { await navigator.clipboard.writeText(quizLink(id)); e.target.textContent = 'הועתק ✅'; }
+    catch (err) { prompt('העתק את הקישור:', quizLink(id)); }
+  }
+  else if (d.list === 'dup') {
+    const copy = JSON.parse(JSON.stringify(quizzes[id]));
+    copy.title += ' (עותק)';
+    openQuiz(newId(), copy); dirty = true; status('עותק חדש — שמור כדי ליצור אותו');
+  }
+  else if (d.list === 'del') {
+    if (!confirm('למחוק את "' + quizzes[id].title + '"? הקישור שלו יפסיק לעבוד.')) return;
+    try { await authed('DELETE', '/' + id); delete quizzes[id]; showList(); }
+    catch (err) { alert('המחיקה נכשלה. נסה שוב.'); }
+  }
+});
+$('newQuiz').onclick = () => openQuiz(newId(), null);
+$('back').onclick = () => {
+  if (dirty && !confirm('יש שינויים שלא נשמרו. לצאת בלי לשמור?')) return;
+  dirty = false; showList();
+};
+
+// ---------- ציור הרשימות ----------
+function moveBtns(kind, i, n) {
+  return '<button class="mini" data-act="up" data-kind="' + kind + '" data-i="' + i + '"' + (i === 0 ? ' disabled' : '') + '>▲</button>' +
+         '<button class="mini" data-act="down" data-kind="' + kind + '" data-i="' + i + '"' + (i === n - 1 ? ' disabled' : '') + '>▼</button>' +
+         '<button class="mini del" data-act="del" data-kind="' + kind + '" data-i="' + i + '">מחיקה</button>';
+}
+function render() {
+  const V = quiz.videos, Q = quiz.questions;
+  $('videos').innerHTML = V.length ? V.map((v, i) =>
+    '<div class="item"><div class="item-head"><b>סרטון ' + (i + 1) + '</b>' + moveBtns('videos', i, V.length) + '</div>' +
+    '<label class="f">שם הסרטון</label><input data-kind="videos" data-i="' + i + '" data-f="title" value="' + esc(v.title) + '">' +
+    '<label class="f">קישור מ־Drive</label><input data-kind="videos" data-i="' + i + '" data-f="url" dir="ltr" placeholder="https://drive.google.com/file/d/..." value="' + esc(v.url) + '">' +
+    '<label class="f">כמה שניות לחכות לפני "הבא" (3 דקות = 180)</label><input type="number" min="0" data-kind="videos" data-i="' + i + '" data-f="minSeconds" value="' + esc(v.minSeconds) + '">' +
+    '</div>').join('') : '<p class="muted">אין סרטונים עדיין.</p>';
+
+  $('questions').innerHTML = Q.length ? Q.map((q, i) => {
+    let h = '<div class="item"><div class="item-head"><b>שאלה ' + (i + 1) + ' · ' + (q.type === 'choice' ? 'אמריקאית' : 'פתוחה') + '</b>' + moveBtns('questions', i, Q.length) + '</div>' +
+      '<textarea data-kind="questions" data-i="' + i + '" data-f="text" placeholder="נוסח השאלה">' + esc(q.text) + '</textarea>';
+    if (q.type === 'choice') {
+      h += '<p class="muted" style="margin:8px 0 0">סמן את התשובה הנכונה בעיגול:</p>';
+      h += q.options.map((o, j) =>
+        '<div class="opt"><input type="radio" name="c' + i + '" data-correct="' + i + '" value="' + (j + 1) + '"' + (q.correct === j + 1 ? ' checked' : '') + '>' +
+        '<input type="text" data-opt="' + i + '" data-j="' + j + '" placeholder="תשובה ' + (j + 1) + '" value="' + esc(o) + '">' +
+        (q.options.length > 2 ? '<button class="mini del" data-act="delopt" data-i="' + i + '" data-j="' + j + '">✕</button>' : '') + '</div>').join('');
+      h += '<button class="mini" style="margin-top:8px" data-act="addopt" data-i="' + i + '">+ תשובה</button>';
+    }
+    return h + '</div>';
+  }).join('') : '<p class="muted">אין שאלות עדיין.</p>';
+}
+
+// ---------- עריכה ----------
+document.addEventListener('input', e => {
+  const t = e.target, d = t.dataset;
+  if (d.kind && d.f) quiz[d.kind][+d.i][d.f] = t.type === 'number' ? (t.value === '' ? 0 : +t.value) : t.value;
+  else if (d.opt != null) quiz.questions[+d.opt].options[+d.j] = t.value;
+  else if (d.correct != null) quiz.questions[+d.correct].correct = +t.value;
+  else if (['title', 'resultsEmail', 'passScore'].includes(t.id)) quiz[t.id] = t.id === 'passScore' ? +t.value : t.value;
+  else return;
+  dirty = true; status('יש שינויים שלא נשמרו');
+});
+document.addEventListener('click', e => {
+  const d = e.target.dataset;
+  if (!d.act) return;
+  e.preventDefault();
+  const list = d.kind ? quiz[d.kind] : null, i = +d.i;
+  if (d.act === 'up') [list[i - 1], list[i]] = [list[i], list[i - 1]];
+  else if (d.act === 'down') [list[i + 1], list[i]] = [list[i], list[i + 1]];
+  else if (d.act === 'del') { if (!confirm('למחוק?')) return; list.splice(i, 1); }
+  else if (d.act === 'addopt') quiz.questions[i].options.push('');
+  else if (d.act === 'delopt') {
+    const q = quiz.questions[i], j = +d.j;
+    q.options.splice(j, 1);
+    if (q.correct === j + 1) q.correct = 0; else if (q.correct > j + 1) q.correct--;
+  }
+  dirty = true; status('יש שינויים שלא נשמרו'); render();
+});
+$('addVideo').onclick = () => { quiz.videos.push({ title: '', url: '', minSeconds: DEFAULT_SECONDS }); dirty = true; render(); };
+$('addChoice').onclick = () => { quiz.questions.push({ type: 'choice', text: '', options: ['', '', '', ''], correct: 0 }); dirty = true; render(); };
+$('addOpen').onclick = () => { quiz.questions.push({ type: 'open', text: '' }); dirty = true; render(); };
+
+// ---------- בדיקה ושמירה ----------
+function validate() {
+  if (!/^\S+@\S+\.\S+$/.test(quiz.resultsEmail)) return 'צריך מייל תקין לתוצאות.';
+  for (let i = 0; i < quiz.videos.length; i++) {
+    const v = quiz.videos[i];
+    if (!v.title.trim()) return 'לסרטון ' + (i + 1) + ' חסר שם.';
+    if (!/drive\.google\.com\/(file\/d\/|open\?id=)[\w-]+/.test(v.url)) return 'הקישור של סרטון ' + (i + 1) + ' הוא לא קישור Drive תקין.';
+  }
+  if (!quiz.questions.length) return 'צריך לפחות שאלה אחת.';
+  for (let i = 0; i < quiz.questions.length; i++) {
+    const q = quiz.questions[i];
+    if (!q.text.trim()) return 'לשאלה ' + (i + 1) + ' חסר נוסח.';
+    if (q.type === 'choice') {
+      if (q.options.some(o => !o.trim())) return 'בשאלה ' + (i + 1) + ' יש תשובה ריקה.';
+      if (!(q.correct >= 1 && q.correct <= q.options.length)) return 'בשאלה ' + (i + 1) + ' לא סומנה תשובה נכונה.';
+    }
+  }
+  return null;
+}
+$('save').onclick = async () => {
+  const problem = validate();
+  if (problem) { status(problem, 'err'); return; }
+  $('save').disabled = true; status('שומר...');
+  try {
+    quiz.updated = Date.now();
+    await authed('PUT', '/' + quizId, quiz);
+    quizzes[quizId] = JSON.parse(JSON.stringify(quiz));
+    dirty = false; status('נשמר ✅ העובדים יראו את הגרסה החדשה מיד.', 'ok');
+  } catch (e) {
+    status('השמירה נכשלה. בדוק אינטרנט ונסה שוב.', 'err');
+  }
+  $('save').disabled = false;
+};
+$('preview').onclick = () => {
+  if (dirty) { status('קודם שמור, ואז תצוגה מקדימה.', 'err'); return; }
+  open(quizLink(quizId), '_blank');
+};
+addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+
+// כניסה אוטומטית אם כבר נכנסת בלשונית הזאת
+(async () => {
+  const c = JSON.parse(sessionStorageGet('cred') || 'null');
+  if (!c) return;
+  try { token = await login(c.e, c.p); await load(); } catch (e) {}
+})();
+</script>
+</body>
+</html>
