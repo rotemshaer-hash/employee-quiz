@@ -103,13 +103,13 @@
   <button id="save">שמירה</button>
 </div><div id="status"></div></div>
 
-<script src="settings.js"></script>
-<script src="demo.js"></script>
+<script src="settings.js?v=3"></script>
+<script src="demo.js?v=3"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const DEFAULT_SECONDS = 180;            // זמן המתנה ברירת מחדל לסרטון מ־Drive (שם אי אפשר לדעת מתי הסרטון נגמר)
-const CHUNK = 8 * 1024 * 1024;          // גודל חתיכת העלאה (חייב להיות כפולה של 256KB)
+const CHUNK = 2 * 1024 * 1024;          // גודל חתיכת העלאה (חייב להיות כפולה של 256KB). קטן = התקדמות נראית גם ברשת סלולרית איטית
 const STORAGE = 'https://firebasestorage.googleapis.com/v0/b/' + SETTINGS.storageBucket + '/o';
 const files = new Map();                // _key -> File, לסרטונים שבהעלאה (לצורך "נסה שוב")
 let pendingDeletes = [];                // קבצים שהוסרו מהמבחן ויימחקו בשמירה, אם אף מבחן אחר לא משתמש בהם
@@ -250,7 +250,7 @@ function render() {
       h += v.uploading
         ? '<div class="prog"><div id="p-' + v._key + '" style="width:' + (v.progress || 0) + '%"></div></div><div class="muted" id="t-' + v._key + '">מעלה... ' + (v.progress || 0) + '%</div>'
         : v.error
-          ? '<p class="err">ההעלאה נכשלה.</p><button class="mini" data-act="retry" data-i="' + i + '">נסה שוב</button>'
+          ? '<p class="err">ההעלאה נכשלה. <span class="muted">(' + esc(v.errMsg) + ')</span></p><button class="mini" data-act="retry" data-i="' + i + '">נסה שוב</button>'
           : '<p class="muted" style="margin:8px 0 0">✅ הועלה' + (v.size ? ' (' + Math.round(v.size / 1048576) + 'MB)' : '') + ' · העובד חייב לצפות עד הסוף כדי להמשיך</p>';
     } else {
       h += '<label class="f">קישור מ־Drive</label><input data-kind="videos" data-i="' + i + '" data-f="url" dir="ltr" placeholder="https://drive.google.com/file/d/..." value="' + esc(v.url) + '">' +
@@ -328,7 +328,11 @@ function showProgress(v) {
   if (txt) txt.textContent = 'מעלה... ' + v.progress + '%';
 }
 async function storageFetch(url, opts) {
-  const go = () => fetch(url, Object.assign({}, opts, { headers: Object.assign({ Authorization: 'Firebase ' + token }, opts.headers) }));
+  const go = () => {
+    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 90000);   // בקשה תקועה נחשבת כשלון ומנסים שוב
+    return fetch(url, Object.assign({}, opts, { signal: ctl.signal, headers: Object.assign({ Authorization: 'Firebase ' + token }, opts.headers) }))
+      .finally(() => clearTimeout(timer));
+  };
   let res = await go();
   if (res.status === 401) { await relogin(); res = await go(); }
   return res;
@@ -375,7 +379,7 @@ async function uploadVideo(v) {
     v.uploading = false; files.delete(v._key);
     if (v.cancelled) deleteFile(v.path);
   } catch (e) {
-    v.uploading = false; v.error = true;
+    v.uploading = false; v.error = true; v.errMsg = e.message || String(e);
   }
   render();
   if (!quiz.videos.some(x => x.uploading)) status(quiz.videos.some(x => x.error) ? 'חלק מההעלאות נכשלו' : 'ההעלאה הסתיימה — לחץ שמירה', quiz.videos.some(x => x.error) ? 'err' : 'ok');
