@@ -78,13 +78,15 @@
   details ol{padding-inline-start:20px;margin:10px 0}
 
   .row{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+  .sent{display:none;font-size:13px;font-weight:700;color:var(--accent2)}
+  [data-sent="1"] .sent{display:inline}
   .hidden{display:none}
 </style>
 </head>
 <body>
 <header>
   <img class="logo" src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי">
-  <h1>ניהול המבחן<span class="ver">גרסה 12</span></h1>
+  <h1>ניהול המבחן<span class="ver">גרסה 13</span></h1>
 </header>
 <main>
 
@@ -144,8 +146,8 @@
   <button id="save">שמירה</button>
 </div><div id="status"></div></div>
 
-<script src="settings.js?v=12"></script>
-<script src="demo.js?v=12"></script>
+<script src="settings.js?v=13"></script>
+<script src="demo.js?v=13"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -273,6 +275,8 @@ $('list').addEventListener('click', async e => {
   }
   else if (d.list === 'copylink' || d.list === 'walink') {
     const url = inviteLink(id, d.key);
+    authedUrl('PATCH', INV('/' + id + '/' + encodeURIComponent(d.key)), { sent: Date.now() })
+      .then(() => { const row = $('row-' + d.key); if (row) row.dataset.sent = '1'; }).catch(() => {});
     if (d.list === 'walink') return open('https://wa.me/?text=' + encodeURIComponent(quizzes[id].title + '\n' + url), '_blank');
     try { await navigator.clipboard.writeText(url); e.target.textContent = 'הועתק ✅'; }
     catch (err) { prompt('העתק את הקישור:', url); }
@@ -320,16 +324,18 @@ async function showLinks(id) {
   catch (e) { box.innerHTML = '<p class="err">לא הצלחתי לטעון. נסה שוב.</p>'; return; }
   const codes = Object.keys(inv).sort((a, b) => (inv[a].used ? 1 : 0) - (inv[b].used ? 1 : 0));
   const free = codes.filter(c => !inv[c].used).length;
+  const unsent = codes.filter(c => !inv[c].used && !inv[c].sent).length;
   box.innerHTML = '<div class="item" style="margin-top:12px">' +
     '<b>קישורים אישיים — כל קישור להגשה אחת</b>' +
-    '<p class="muted">פנויים: ' + free + ' · נוצלו: ' + (codes.length - free) + '</p>' +
+    '<p class="muted">פנויים: ' + free + ' (מתוכם ' + unsent + ' עוד לא נשלחו) · נוצלו: ' + (codes.length - free) + '</p>' +
     '<div class="opt"><input id="cnt-' + id + '" type="number" min="1" max="50" value="5" style="flex:none;width:90px">' +
     '<button class="mini" data-list="mklinks" data-id="' + id + '">צור קישורים</button></div>' +
     codes.map(c => inv[c].used
       ? '<div class="opt" style="justify-content:space-between;opacity:.65"><span>🔒 ' + esc(inv[c].name || '') +
         '<span class="muted"> · ' + new Date(inv[c].used).toLocaleString('he-IL') + '</span></span>' +
         '<button class="mini del" data-list="dellink" data-id="' + id + '" data-key="' + esc(c) + '">מחיקה</button></div>'
-      : '<div class="opt" style="justify-content:space-between;flex-wrap:wrap"><span dir="ltr">' + esc(c) + '</span><span class="row" style="margin:0">' +
+      : '<div class="opt" id="row-' + esc(c) + '" data-sent="' + (inv[c].sent ? '1' : '') + '" style="justify-content:space-between;flex-wrap:wrap">' +
+        '<span dir="ltr">' + esc(c) + '<span class="sent"> · נשלח</span></span><span class="row" style="margin:0">' +
         '<button class="mini" data-list="walink" data-id="' + id + '" data-key="' + esc(c) + '">וואטסאפ</button>' +
         '<button class="mini" data-list="copylink" data-id="' + id + '" data-key="' + esc(c) + '">העתקה</button>' +
         '<button class="mini del" data-list="dellink" data-id="' + id + '" data-key="' + esc(c) + '">מחיקה</button></span></div>').join('') +
