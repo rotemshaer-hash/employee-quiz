@@ -121,11 +121,18 @@
     <button id="send">שליחת המבחן</button>
   </section>
 
+  <!-- 5. קישור לא תקין -->
+  <section id="s-bad" class="card done hidden">
+    <div class="tick" style="background:#8a94a0">?</div>
+    <h2>הקישור לא תקין</h2>
+    <p class="muted">בקש מהמנהל קישור חדש.</p>
+  </section>
+
   <!-- 5. כבר ביצע -->
   <section id="s-used" class="card done hidden">
     <div class="tick" style="background:#8a94a0">!</div>
-    <h2>כבר ביצעת את המבחן</h2>
-    <p class="muted">המבחן הזה הוא חד־פעמי. אם אתה צריך לבצע אותו שוב, פנה למנהל.</p>
+    <h2>הקישור כבר נוצל</h2>
+    <p class="muted" id="usedBy">המבחן הזה הוא חד־פעמי. אם אתה צריך לבצע אותו שוב, פנה למנהל.</p>
   </section>
 
   <!-- 6. סיום -->
@@ -136,23 +143,27 @@
   </section>
 </main>
 
-<script src="settings.js?v=10"></script>
-<script src="demo.js?v=10"></script>
+<script src="settings.js?v=11"></script>
+<script src="demo.js?v=11"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 // ---------- טעינת המבחן (מה שהמנהל שמר) ----------
-let CONFIG = null, quizId = null;
+let CONFIG = null, quizId = null, code = null;
 const DONE_KEY = n => 'done-' + quizId + '-' + nameKey(n);
 // מפתח אחיד לשם: בלי רווחים כפולים, בלי תווים שפיירבייס לא מקבל במפתח
 const nameKey = n => n.trim().replace(/\s+/g, ' ').toLowerCase().replace(/[.$#\[\]/]/g, '_');
 const subUrl = key => SETTINGS.databaseURL + '/submissions/' + quizId + '/' + encodeURIComponent(key) + '.json';
+const inviteUrl = () => SETTINGS.databaseURL + '/invites/' + quizId + '/' + encodeURIComponent(code) + '.json';
 (async () => {
   try {
-    quizId = new URLSearchParams(location.search).get('t');
+    const qs = new URLSearchParams(location.search);
+    quizId = qs.get('t');
+    code = qs.get('c');
     if (!/^[\w-]+$/.test(quizId || '')) throw 0;
+    if (code && !/^[\w-]+$/.test(code)) { code = null; return show('s-bad'); }
     const res = await fetch(SETTINGS.databaseURL + '/quizzes/' + quizId + '.json', { cache: 'no-store' });
     CONFIG = await res.json();
     if (!res.ok || !CONFIG || !(CONFIG.questions || []).length) throw 0;
@@ -160,6 +171,15 @@ const subUrl = key => SETTINGS.databaseURL + '/submissions/' + quizId + '/' + en
     document.title = CONFIG.title;
     $('title').textContent = CONFIG.title;
     $('name').dispatchEvent(new Event('input'));
+    if (code) {                                   // קישור אישי — בדיקה מיד עם הפתיחה
+      const inv = await (await fetch(inviteUrl(), { cache: 'no-store' })).json();
+      if (!inv) return show('s-bad');
+      if (inv.used) {
+        $('usedBy').textContent = 'הקישור הזה כבר שימש להגשה' +
+          (inv.name ? ' של ' + inv.name : '') + '. אם צריך לבצע שוב, פנה למנהל.';
+        return show('s-used');
+      }
+    }
   } catch (e) {
     $('s-name').innerHTML = '<h2>המבחן עדיין לא מוכן</h2><p class="muted">נסה שוב מאוחר יותר.</p>';
   }
@@ -170,6 +190,14 @@ $('name').addEventListener('input', () => { $('start').disabled = !CONFIG || $('
 $('start').onclick = async () => {
   const who = $('name').value;
   $('start').disabled = true; $('start').textContent = 'בודק...';
+  if (code) {                                     // קישור אישי: הבדיקה כבר נעשתה בפתיחה
+    const inv = await (await fetch(inviteUrl(), { cache: 'no-store' })).json().catch(() => null);
+    if (inv && inv.used) return show('s-used');
+    $('start').disabled = false; $('start').textContent = 'התחלה';
+    if (CONFIG.videos.length) { show('s-videos'); playVideo(0); }
+    else { buildQuiz(); show('s-quiz'); }
+    return;
+  }
   try {
     // המסד הוא מקור האמת, כדי ש"לאפשר שוב" של המנהל יעבוד גם באותו מכשיר
     const res = await fetch(subUrl(nameKey(who)), { cache: 'no-store' });
@@ -304,8 +332,13 @@ $('send').onclick = async () => {
     if (!res.ok || String(json.success) !== 'true') throw new Error(json.message || res.status);
     // נועלים את המבחן לעובד הזה. אם הרישום נכשל, ההגשה עצמה כבר הצליחה ולא מבטלים אותה.
     try { localStorage.setItem(DONE_KEY(name), '1'); } catch (e) {}
-    fetch(subUrl(nameKey(name)), { method: 'PUT', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name, at: Date.now() }) }).catch(() => {});
+    if (code) {
+      fetch(inviteUrl(), { method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ used: Date.now(), name: name }) }).catch(() => {});
+    } else {
+      fetch(subUrl(nameKey(name)), { method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, at: Date.now() }) }).catch(() => {});
+    }
     show('s-done');
   } catch (err) {
     $('qerr').textContent = 'השליחה נכשלה. בדוק שיש אינטרנט ולחץ שוב. התשובות שלך נשמרו במסך.';

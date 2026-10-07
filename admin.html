@@ -84,7 +84,7 @@
 <body>
 <header>
   <img class="logo" src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי">
-  <h1>ניהול המבחן<span class="ver">גרסה 10</span></h1>
+  <h1>ניהול המבחן<span class="ver">גרסה 11</span></h1>
 </header>
 <main>
 
@@ -144,8 +144,8 @@
   <button id="save">שמירה</button>
 </div><div id="status"></div></div>
 
-<script src="settings.js?v=10"></script>
-<script src="demo.js?v=10"></script>
+<script src="settings.js?v=11"></script>
+<script src="demo.js?v=11"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -157,6 +157,10 @@ let pendingDeletes = [];                // קבצים שהוסרו מהמבחן 
 let token = null, quizzes = {}, quizId = null, quiz = null, dirty = false;
 const DB = path => SETTINGS.databaseURL + '/quizzes' + path + '.json';
 const SUBS = path => SETTINGS.databaseURL + '/submissions' + path + '.json';
+const INV = path => SETTINGS.databaseURL + '/invites' + path + '.json';
+const CODE_CHARS = 'abcdefghjkmnpqrstuvwxyz23456789';           // בלי אותיות וספרות שמתבלבלות
+const newCode = () => Array.from({ length: 6 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join('');
+const inviteLink = (id, c) => new URL('index.html?t=' + id + '&c=' + c, location.href).href;
 const quizLink = id => new URL('index.html?t=' + id, location.href).href;
 const newId = () => Math.random().toString(36).slice(2, 8);
 
@@ -230,6 +234,7 @@ function showList() {
       '<button class="mini" data-list="edit" data-id="' + id + '">עריכה</button>' +
       '<button class="mini" data-list="wa" data-id="' + id + '">שליחה בוואטסאפ</button>' +
       '<button class="mini" data-list="copy" data-id="' + id + '">העתקת קישור</button>' +
+      '<button class="mini" data-list="links" data-id="' + id + '">קישורים אישיים</button>' +
       '<button class="mini" data-list="who" data-id="' + id + '">מי הגיש</button>' +
       '<button class="mini" data-list="dup" data-id="' + id + '">שכפול</button>' +
       '<button class="mini del" data-list="del" data-id="' + id + '">מחיקה</button></div>' +
@@ -260,15 +265,34 @@ $('list').addEventListener('click', async e => {
   if (!d.list) return;
   if (d.list === 'edit') openQuiz(id, quizzes[id]);
   else if (d.list === 'who') showWho(id);
+  else if (d.list === 'links') showLinks(id);
+  else if (d.list === 'mklinks') {
+    const n = Math.min(50, Math.max(1, +($('cnt-' + id) || {}).value || 1));
+    const batch = {};
+    for (let i = 0; i < n; i++) batch[newCode()] = { created: Date.now() };
+    try { await authedUrl('PATCH', INV('/' + id), batch); } catch (e) { alert('היצירה נכשלה. נסה שוב.'); return; }
+    $('who-' + id).dataset.open = ''; showLinks(id);
+  }
+  else if (d.list === 'copylink' || d.list === 'walink') {
+    const url = inviteLink(id, d.key);
+    if (d.list === 'walink') return open('https://wa.me/?text=' + encodeURIComponent(quizzes[id].title + '\n' + url), '_blank');
+    try { await navigator.clipboard.writeText(url); e.target.textContent = 'הועתק ✅'; }
+    catch (err) { prompt('העתק את הקישור:', url); }
+  }
+  else if (d.list === 'dellink') {
+    if (!confirm('למחוק את הקישור הזה? הוא יפסיק לעבוד.')) return;
+    await authedUrl('DELETE', INV('/' + id + '/' + encodeURIComponent(d.key)));
+    $('who-' + id).dataset.open = ''; showLinks(id);
+  }
   else if (d.list === 'reopen') {
     if (!confirm('לאפשר למשתתף הזה לעשות את המבחן שוב?')) return;
     await authedUrl('DELETE', SUBS('/' + id + '/' + encodeURIComponent(d.key)));
-    $('who-' + id).dataset.open = '0'; showWho(id);
+    $('who-' + id).dataset.open = ''; showWho(id);
   }
   else if (d.list === 'reopenall') {
     if (!confirm('לאפס את כל ההגשות? כל מי שכבר עשה את המבחן יוכל לעשות אותו שוב.')) return;
     await authedUrl('DELETE', SUBS('/' + id));
-    $('who-' + id).dataset.open = '0'; showWho(id);
+    $('who-' + id).dataset.open = ''; showWho(id);
   }
   else if (d.list === 'wa') open('https://wa.me/?text=' + encodeURIComponent(quizzes[id].title + '\n' + quizLink(id)), '_blank');
   else if (d.list === 'copy') {
@@ -286,16 +310,43 @@ $('list').addEventListener('click', async e => {
       const paths = (quizzes[id].videos || []).filter(v => v.path).map(v => v.path);
       await authed('DELETE', '/' + id); delete quizzes[id];
       authedUrl('DELETE', SUBS('/' + id)).catch(() => {});
+      authedUrl('DELETE', INV('/' + id)).catch(() => {});
       deleteUnused(paths);
       showList();
     }
     catch (err) { alert('המחיקה נכשלה. נסה שוב.'); }
   }
 });
+async function showLinks(id) {
+  const box = $('who-' + id);
+  if (box.dataset.open === 'links') { box.dataset.open = ''; box.innerHTML = ''; return; }
+  box.dataset.open = 'links';
+  box.innerHTML = '<p class="muted">טוען...</p>';
+  let inv = {};
+  try { inv = (await (await fetch(INV('/' + id), { cache: 'no-store' })).json()) || {}; }
+  catch (e) { box.innerHTML = '<p class="err">לא הצלחתי לטעון. נסה שוב.</p>'; return; }
+  const codes = Object.keys(inv).sort((a, b) => (inv[a].used ? 1 : 0) - (inv[b].used ? 1 : 0));
+  const free = codes.filter(c => !inv[c].used).length;
+  box.innerHTML = '<div class="item" style="margin-top:12px">' +
+    '<b>קישורים אישיים — כל קישור להגשה אחת</b>' +
+    '<p class="muted">פנויים: ' + free + ' · נוצלו: ' + (codes.length - free) + '</p>' +
+    '<div class="opt"><input id="cnt-' + id + '" type="number" min="1" max="50" value="5" style="flex:none;width:90px">' +
+    '<button class="mini" data-list="mklinks" data-id="' + id + '">צור קישורים</button></div>' +
+    codes.map(c => inv[c].used
+      ? '<div class="opt" style="justify-content:space-between;opacity:.65"><span>🔒 ' + esc(inv[c].name || '') +
+        '<span class="muted"> · ' + new Date(inv[c].used).toLocaleString('he-IL') + '</span></span>' +
+        '<button class="mini del" data-list="dellink" data-id="' + id + '" data-key="' + esc(c) + '">מחיקה</button></div>'
+      : '<div class="opt" style="justify-content:space-between;flex-wrap:wrap"><span dir="ltr">' + esc(c) + '</span><span class="row" style="margin:0">' +
+        '<button class="mini" data-list="walink" data-id="' + id + '" data-key="' + esc(c) + '">וואטסאפ</button>' +
+        '<button class="mini" data-list="copylink" data-id="' + id + '" data-key="' + esc(c) + '">העתקה</button>' +
+        '<button class="mini del" data-list="dellink" data-id="' + id + '" data-key="' + esc(c) + '">מחיקה</button></span></div>').join('') +
+    '</div>';
+}
+
 async function showWho(id) {
   const box = $('who-' + id);
-  if (box.dataset.open === '1') { box.dataset.open = '0'; box.innerHTML = ''; return; }
-  box.dataset.open = '1';
+  if (box.dataset.open === 'who') { box.dataset.open = ''; box.innerHTML = ''; return; }
+  box.dataset.open = 'who';
   box.innerHTML = '<p class="muted">טוען...</p>';
   let subs = {};
   try { subs = (await (await fetch(SUBS('/' + id), { cache: 'no-store' })).json()) || {}; }

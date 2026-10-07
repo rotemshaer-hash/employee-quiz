@@ -80,6 +80,21 @@
         return new Response('');
       }
     }
+    if (url.startsWith(SETTINGS.databaseURL + '/invites')) {
+      mem.inv = mem.inv || {};
+      const parts = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean).slice(1);
+      const [qid, c] = parts.map(decodeURIComponent);
+      const node = () => (mem.inv[qid] = mem.inv[qid] || {});
+      if (method === 'PUT') { if (c) node()[c] = JSON.parse(opts.body); else mem.inv[qid] = JSON.parse(opts.body); write(); return json(JSON.parse(opts.body)); }
+      if (method === 'PATCH') {
+        const body = JSON.parse(opts.body);
+        if (c) Object.assign(node()[c] = node()[c] || {}, body); else Object.assign(node(), body);
+        write(); return json(body);
+      }
+      if (method === 'DELETE') { if (c) delete node()[c]; else delete mem.inv[qid]; write(); return json(null); }
+      const v = c ? (mem.inv[qid] || {})[c] : mem.inv[qid];
+      return json(v === undefined ? null : v);
+    }
     if (url.startsWith(SETTINGS.databaseURL + '/submissions')) {
       mem.subs = mem.subs || {};
       const parts = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean).slice(1);

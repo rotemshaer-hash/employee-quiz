@@ -7,11 +7,20 @@
     "submissions": {
       ".read": true,
       "$quizId": {
+        ".write": "auth != null",
         "$person": {
           ".write": "!data.exists() || auth != null",
           ".validate": "newData.hasChildren(['name','at'])"
-        },
-        ".write": "auth != null"
+        }
+      }
+    },
+    "invites": {
+      ".read": true,
+      "$quizId": {
+        ".write": "auth != null",
+        "$code": {
+          ".write": "auth != null || (data.exists() && !data.child('used').exists())"
+        }
       }
     }
   }
