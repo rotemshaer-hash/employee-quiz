@@ -86,7 +86,7 @@
 <body>
 <header>
   <img class="logo" src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי">
-  <h1>ניהול המבחן<span class="ver">גרסה 13</span></h1>
+  <h1>ניהול המבחן<span class="ver">גרסה 14</span></h1>
 </header>
 <main>
 
@@ -146,8 +146,8 @@
   <button id="save">שמירה</button>
 </div><div id="status"></div></div>
 
-<script src="settings.js?v=13"></script>
-<script src="demo.js?v=13"></script>
+<script src="settings.js?v=14"></script>
+<script src="demo.js?v=14"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -299,7 +299,12 @@ $('list').addEventListener('click', async e => {
   else if (d.list === 'dup') {
     const copy = JSON.parse(JSON.stringify(quizzes[id]));
     copy.title += ' (עותק)';
-    openQuiz(newId(), copy); dirty = true; status('עותק חדש — שמור כדי ליצור אותו');
+    copy.updated = Date.now();
+    const nid = newId();
+    try { await authedUrl('PUT', DB('/' + nid), copy); } catch (err) { alert('השכפול נכשל. נסה שוב.'); return; }
+    quizzes[nid] = copy;
+    showList();
+    alert('נוצר עותק: "' + copy.title + '". הוא לא מקבל את הקישורים של המקור — צור לו קישורים חדשים.');
   }
   else if (d.list === 'del') {
     if (!confirm('למחוק את "' + quizzes[id].title + '"? הקישור שלו יפסיק לעבוד.')) return;
@@ -331,11 +336,14 @@ async function showLinks(id) {
     '<div class="opt"><input id="cnt-' + id + '" type="number" min="1" max="50" value="5" style="flex:none;width:90px">' +
     '<button class="mini" data-list="mklinks" data-id="' + id + '">צור קישורים</button></div>' +
     codes.map(c => inv[c].used
-      ? '<div class="opt" style="justify-content:space-between;opacity:.65"><span>🔒 ' + esc(inv[c].name || '') +
+      ? '<div class="opt" style="justify-content:space-between;opacity:.65"><span>🔒 ' +
+        (inv[c].for ? esc(inv[c].for) + ' <span class="muted">(הגיש: ' + esc(inv[c].name || '—') + ')</span>' : esc(inv[c].name || '')) +
         '<span class="muted"> · ' + new Date(inv[c].used).toLocaleString('he-IL') + '</span></span>' +
         '<button class="mini del" data-list="dellink" data-id="' + id + '" data-key="' + esc(c) + '">מחיקה</button></div>'
       : '<div class="opt" id="row-' + esc(c) + '" data-sent="' + (inv[c].sent ? '1' : '') + '" style="justify-content:space-between;flex-wrap:wrap">' +
-        '<span dir="ltr">' + esc(c) + '<span class="sent"> · נשלח</span></span><span class="row" style="margin:0">' +
+        '<input placeholder="שם העובד (לא חובה)" data-forid="' + id + '" data-forkey="' + esc(c) + '" value="' + esc(inv[c].for || '') + '">' +
+        '<span dir="ltr" class="muted" style="font-size:13px">' + esc(c) + '<span class="sent"> · נשלח</span></span>' +
+        '<span class="row" style="margin:0">' +
         '<button class="mini" data-list="walink" data-id="' + id + '" data-key="' + esc(c) + '">וואטסאפ</button>' +
         '<button class="mini" data-list="copylink" data-id="' + id + '" data-key="' + esc(c) + '">העתקה</button>' +
         '<button class="mini del" data-list="dellink" data-id="' + id + '" data-key="' + esc(c) + '">מחיקה</button></span></div>').join('') +
@@ -415,6 +423,14 @@ document.addEventListener('input', e => {
   else return;
   dirty = true; status('יש שינויים שלא נשמרו');
 });
+// שמירת שם העובד שליד הקישור
+document.addEventListener('change', e => {
+  const d = e.target.dataset;
+  if (!d.forid) return;
+  authedUrl('PATCH', INV('/' + d.forid + '/' + encodeURIComponent(d.forkey)), { for: e.target.value.trim() })
+    .catch(() => alert('השם לא נשמר. בדוק אינטרנט ונסה שוב.'));
+});
+
 document.addEventListener('click', e => {
   const d = e.target.dataset;
   if (!d.act) return;
