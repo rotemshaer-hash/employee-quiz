@@ -2,11 +2,17 @@
   "rules": {
     "quizzes": {
       ".read": true,
-      ".write": "auth != null",
-      "$quizId": {
-        ".validate": "newData.hasChildren(['title', 'questions'])"
-      }
+      ".write": "auth != null"
     },
-    "$other": { ".read": false, ".write": false }
+    "submissions": {
+      ".read": true,
+      "$quizId": {
+        "$person": {
+          ".write": "!data.exists() || auth != null",
+          ".validate": "newData.hasChildren(['name','at'])"
+        },
+        ".write": "auth != null"
+      }
+    }
   }
 }

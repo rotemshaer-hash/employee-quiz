@@ -84,7 +84,7 @@
 <body>
 <header>
   <img class="logo" src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי">
-  <h1>ניהול המבחן<span class="ver">גרסה 9</span></h1>
+  <h1>ניהול המבחן<span class="ver">גרסה 10</span></h1>
 </header>
 <main>
 
@@ -144,8 +144,8 @@
   <button id="save">שמירה</button>
 </div><div id="status"></div></div>
 
-<script src="settings.js?v=9"></script>
-<script src="demo.js?v=9"></script>
+<script src="settings.js?v=10"></script>
+<script src="demo.js?v=10"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -156,6 +156,7 @@ const files = new Map();                // _key -> File, לסרטונים שבה
 let pendingDeletes = [];                // קבצים שהוסרו מהמבחן ויימחקו בשמירה, אם אף מבחן אחר לא משתמש בהם
 let token = null, quizzes = {}, quizId = null, quiz = null, dirty = false;
 const DB = path => SETTINGS.databaseURL + '/quizzes' + path + '.json';
+const SUBS = path => SETTINGS.databaseURL + '/submissions' + path + '.json';
 const quizLink = id => new URL('index.html?t=' + id, location.href).href;
 const newId = () => Math.random().toString(36).slice(2, 8);
 
@@ -201,6 +202,15 @@ async function relogin() {                // הכניסה פגה (אחרי שע�
   if (!c) throw new Error('auth');
   token = await login(c.e, c.p);
 }
+async function authedUrl(method, url, body) {
+  const go = () => fetch(url + '?auth=' + encodeURIComponent(token), {
+    method, headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  let res = await go();
+  if (res.status === 401) { await relogin(); res = await go(); }
+  if (!res.ok) throw new Error(res.status);
+  return res;
+}
 async function load() {
   const res = await fetch(DB(''), { cache: 'no-store' });
   quizzes = (await res.json()) || {};
@@ -220,8 +230,10 @@ function showList() {
       '<button class="mini" data-list="edit" data-id="' + id + '">עריכה</button>' +
       '<button class="mini" data-list="wa" data-id="' + id + '">שליחה בוואטסאפ</button>' +
       '<button class="mini" data-list="copy" data-id="' + id + '">העתקת קישור</button>' +
+      '<button class="mini" data-list="who" data-id="' + id + '">מי הגיש</button>' +
       '<button class="mini" data-list="dup" data-id="' + id + '">שכפול</button>' +
-      '<button class="mini del" data-list="del" data-id="' + id + '">מחיקה</button></div></div>';
+      '<button class="mini del" data-list="del" data-id="' + id + '">מחיקה</button></div>' +
+      '<div id="who-' + id + '"></div></div>';
   }).join('') : '<p class="muted">עוד אין מבחנים. לחץ "+ מבחן חדש".</p>';
   screen('s-list');
 }
@@ -247,6 +259,17 @@ $('list').addEventListener('click', async e => {
   const d = e.target.dataset, id = d.id;
   if (!d.list) return;
   if (d.list === 'edit') openQuiz(id, quizzes[id]);
+  else if (d.list === 'who') showWho(id);
+  else if (d.list === 'reopen') {
+    if (!confirm('לאפשר למשתתף הזה לעשות את המבחן שוב?')) return;
+    await authedUrl('DELETE', SUBS('/' + id + '/' + encodeURIComponent(d.key)));
+    $('who-' + id).dataset.open = '0'; showWho(id);
+  }
+  else if (d.list === 'reopenall') {
+    if (!confirm('לאפס את כל ההגשות? כל מי שכבר עשה את המבחן יוכל לעשות אותו שוב.')) return;
+    await authedUrl('DELETE', SUBS('/' + id));
+    $('who-' + id).dataset.open = '0'; showWho(id);
+  }
   else if (d.list === 'wa') open('https://wa.me/?text=' + encodeURIComponent(quizzes[id].title + '\n' + quizLink(id)), '_blank');
   else if (d.list === 'copy') {
     try { await navigator.clipboard.writeText(quizLink(id)); e.target.textContent = 'הועתק ✅'; }
@@ -262,12 +285,31 @@ $('list').addEventListener('click', async e => {
     try {
       const paths = (quizzes[id].videos || []).filter(v => v.path).map(v => v.path);
       await authed('DELETE', '/' + id); delete quizzes[id];
+      authedUrl('DELETE', SUBS('/' + id)).catch(() => {});
       deleteUnused(paths);
       showList();
     }
     catch (err) { alert('המחיקה נכשלה. נסה שוב.'); }
   }
 });
+async function showWho(id) {
+  const box = $('who-' + id);
+  if (box.dataset.open === '1') { box.dataset.open = '0'; box.innerHTML = ''; return; }
+  box.dataset.open = '1';
+  box.innerHTML = '<p class="muted">טוען...</p>';
+  let subs = {};
+  try { subs = (await (await fetch(SUBS('/' + id), { cache: 'no-store' })).json()) || {}; }
+  catch (e) { box.innerHTML = '<p class="err">לא הצלחתי לטעון. נסה שוב.</p>'; return; }
+  const keys = Object.keys(subs).sort((a, b) => (subs[b].at || 0) - (subs[a].at || 0));
+  box.innerHTML = '<div class="item" style="margin-top:12px"><b>הגישו: ' + keys.length + '</b>' +
+    (keys.length ? keys.map(k =>
+      '<div class="opt" style="justify-content:space-between"><span>' + esc(subs[k].name || k) +
+      '<span class="muted"> · ' + new Date(subs[k].at || 0).toLocaleString('he-IL') + '</span></span>' +
+      '<button class="mini" data-list="reopen" data-id="' + id + '" data-key="' + esc(k) + '">לאפשר שוב</button></div>').join('') +
+      '<button class="mini del" style="margin-top:10px" data-list="reopenall" data-id="' + id + '">איפוס כל ההגשות</button>'
+      : '<p class="muted">עוד אף אחד לא הגיש.</p>') + '</div>';
+}
+
 $('newQuiz').onclick = () => openQuiz(newId(), null);
 $('back').onclick = () => {
   if (dirty && !confirm('יש שינויים שלא נשמרו. לצאת בלי לשמור?')) return;

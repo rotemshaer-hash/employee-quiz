@@ -80,6 +80,15 @@
         return new Response('');
       }
     }
+    if (url.startsWith(SETTINGS.databaseURL + '/submissions')) {
+      mem.subs = mem.subs || {};
+      const parts = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean).slice(1);
+      const [qid, key] = parts.map(decodeURIComponent);
+      if (method === 'PUT') { (mem.subs[qid] = mem.subs[qid] || {})[key] = JSON.parse(opts.body); write(); return json(JSON.parse(opts.body)); }
+      if (method === 'DELETE') { if (key) { delete (mem.subs[qid] || {})[key]; } else { delete mem.subs[qid]; } write(); return json(null); }
+      const node = key ? (mem.subs[qid] || {})[key] : mem.subs[qid];
+      return json(node === undefined ? null : node);
+    }
     if (url.startsWith(SETTINGS.databaseURL)) {
       const id = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean)[1];
       if (method === 'PUT') { mem.quizzes[id] = JSON.parse(opts.body); write(); return json(mem.quizzes[id]); }
