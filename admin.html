@@ -84,7 +84,7 @@
 <body>
 <header>
   <img class="logo" src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי">
-  <h1>ניהול המבחן<span class="ver">גרסה 11</span></h1>
+  <h1>ניהול המבחן<span class="ver">גרסה 12</span></h1>
 </header>
 <main>
 
@@ -144,8 +144,8 @@
   <button id="save">שמירה</button>
 </div><div id="status"></div></div>
 
-<script src="settings.js?v=11"></script>
-<script src="demo.js?v=11"></script>
+<script src="settings.js?v=12"></script>
+<script src="demo.js?v=12"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -232,8 +232,6 @@ function showList() {
     return '<div class="item"><b>' + esc(q.title) + '</b><div class="muted">' +
       (q.videos || []).length + ' סרטונים · ' + (q.questions || []).length + ' שאלות</div><div class="row">' +
       '<button class="mini" data-list="edit" data-id="' + id + '">עריכה</button>' +
-      '<button class="mini" data-list="wa" data-id="' + id + '">שליחה בוואטסאפ</button>' +
-      '<button class="mini" data-list="copy" data-id="' + id + '">העתקת קישור</button>' +
       '<button class="mini" data-list="links" data-id="' + id + '">קישורים אישיים</button>' +
       '<button class="mini" data-list="who" data-id="' + id + '">מי הגיש</button>' +
       '<button class="mini" data-list="dup" data-id="' + id + '">שכפול</button>' +
@@ -293,11 +291,6 @@ $('list').addEventListener('click', async e => {
     if (!confirm('לאפס את כל ההגשות? כל מי שכבר עשה את המבחן יוכל לעשות אותו שוב.')) return;
     await authedUrl('DELETE', SUBS('/' + id));
     $('who-' + id).dataset.open = ''; showWho(id);
-  }
-  else if (d.list === 'wa') open('https://wa.me/?text=' + encodeURIComponent(quizzes[id].title + '\n' + quizLink(id)), '_blank');
-  else if (d.list === 'copy') {
-    try { await navigator.clipboard.writeText(quizLink(id)); e.target.textContent = 'הועתק ✅'; }
-    catch (err) { prompt('העתק את הקישור:', quizLink(id)); }
   }
   else if (d.list === 'dup') {
     const copy = JSON.parse(JSON.stringify(quizzes[id]));
