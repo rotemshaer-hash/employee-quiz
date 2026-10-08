@@ -52,6 +52,7 @@
          box-shadow:0 8px 20px -12px var(--accent);transition:transform .12s,filter .15s,opacity .15s}
   button:active:not(:disabled){transform:scale(.985)}
   button:disabled{background:var(--line);color:var(--muted);box-shadow:none;cursor:default}
+  button.soft{background:none;border:1.5px solid var(--line);color:var(--accent);box-shadow:none}
 
   /* סרטון */
   .video{position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;background:#000}
@@ -103,14 +104,16 @@
     <span class="count" id="vcount"></span>
     <h2 id="vtitle" style="margin:10px 0 12px"></h2>
     <div class="video" id="vbox"></div>
+    <p class="muted" id="vask" style="margin:16px 0 0;font-weight:600;color:var(--text)">הסרטון מספיק ברור כדי להתחיל את המבחן?</p>
+    <button id="vquiz">כן — התחל את המבחן</button>
     <button id="vnext"></button>
   </section>
 
   <!-- 3. אישור צפייה -->
   <section id="s-confirm" class="card hidden">
-    <h2>סיימת את הסרטונים</h2>
+    <h2 id="confirmTitle">סיימת את הסרטונים</h2>
     <p class="muted">עוד שלב אחד ואפשר להתחיל במבחן.</p>
-    <label class="opt"><input type="checkbox" id="watched"> <span>אני מאשר/ת שצפיתי בכל הסרטונים</span></label>
+    <label class="opt"><input type="checkbox" id="watched"> <span>אני מאשר/ת שצפיתי בחומר ההדרכה</span></label>
     <button id="confirm" disabled>אישור שצפיתי — למבחן</button>
   </section>
 
@@ -223,12 +226,18 @@ function embedUrl(url) {
                       fallback: 'https://drive.google.com/file/d/' + drive[1] + '/preview', drive: true };
   return { kind: 'video', src: url };
 }
-let vIndex = 0, vTimer = null;
+let vIndex = 0, vTimer = null, watchedCount = 0;
 const resolveSrc = window.resolveVideoSrc || (async u => u);   // במצב בדיקה demo.js מחליף את זה
 async function playVideo(i) {
   vIndex = i;
   const v = CONFIG.videos[i], total = CONFIG.videos.length, last = i === total - 1;
-  const label = last ? 'סיימתי לצפות' : 'לסרטון הבא';
+  const label = last ? 'סיימתי לצפות' : 'אני רוצה לראות עוד סרטון';
+  const ask = ready => {                    // שתי האפשרויות נפתחות רק אחרי שהסרטון נצפה
+    $('vask').style.display = ready && !last ? 'block' : 'none';
+    $('vquiz').style.display = ready && !last ? 'block' : 'none';
+    $('vnext').className = ready && !last ? 'soft' : '';
+  };
+  ask(false);
   $('vcount').textContent = 'סרטון ' + (i + 1) + ' מתוך ' + total;
   $('vprog').style.width = ((i + 1) / total * 100) + '%';
   $('steps').innerHTML = CONFIG.videos.map((_, j) => '<i class="' + (j <= i ? 'on' : '') + '"></i>').join('');
@@ -245,6 +254,7 @@ async function playVideo(i) {
     const tick = () => {
       $('vnext').disabled = left > 0;
       $('vnext').textContent = left > 0 ? label + ' (' + left + ')' : label;
+      ask(left <= 0);
       left--;
       if (left < -1) clearInterval(vTimer);
     };
@@ -267,6 +277,7 @@ async function playVideo(i) {
   video.addEventListener('ended', () => {
     if (vIndex !== i) return;
     $('vnext').disabled = false; $('vnext').textContent = label;
+    ask(true);
   });
   video.addEventListener('error', () => {
     if (e.fallback) useIframe(e.fallback);                            // Drive חסם נגינה ישירה
@@ -291,10 +302,21 @@ function preloadNext(i) {
   Promise.resolve(resolveSrc(e.src)).then(src => { if (preloadEl) preloadEl.src = src; });
 }
 
+function toConfirm() {
+  watchedCount = vIndex + 1;
+  clearInterval(vTimer);
+  $('vbox').innerHTML = '';
+  const total = CONFIG.videos.length;
+  $('confirmTitle').textContent = watchedCount < total
+    ? 'צפית ב-' + watchedCount + ' מתוך ' + total + ' סרטונים'
+    : 'סיימת את הסרטונים';
+  show('s-confirm');
+}
 $('vnext').onclick = () => {
   if (vIndex < CONFIG.videos.length - 1) playVideo(vIndex + 1);
-  else { $('vbox').innerHTML = ''; show('s-confirm'); }
+  else toConfirm();
 };
+$('vquiz').onclick = toConfirm;
 
 // ---------- אישור ----------
 $('watched').onchange = () => { $('confirm').disabled = !$('watched').checked; };
@@ -342,7 +364,8 @@ $('send').onclick = async () => {
     _captcha: 'false',
     'שם': name,
     'ציון אמריקאיות': right + '/' + choices + ' (' + pct + '%)',
-    'אישור צפייה': 'אישר שצפה ב-' + CONFIG.videos.length + ' סרטונים',
+    'אישור צפייה': 'צפה ב-' + watchedCount + ' מתוך ' + CONFIG.videos.length + ' סרטונים' +
+      (watchedCount < CONFIG.videos.length ? ' (בחר להתחיל את המבחן מוקדם)' : ''),
     'זמן הגשה': new Date().toLocaleString('he-IL'),
   };
   out.forEach((r, i) => {
