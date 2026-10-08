@@ -147,8 +147,8 @@
   </section>
 </main>
 
-<script src="settings.js?v=17"></script>
-<script src="demo.js?v=17"></script>
+<script src="settings.js?v=18"></script>
+<script src="demo.js?v=18"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
@@ -158,6 +158,7 @@ let CONFIG = null, quizId = null, code = null;
 const DONE_KEY = n => 'done-' + quizId + '-' + nameKey(n);
 const nameKey = n => n.trim().replace(/\s+/g, ' ').toLowerCase().replace(/[.$#\[\]/]/g, '_');
 const subUrl = key => SETTINGS.databaseURL + '/submissions/' + quizId + '/' + encodeURIComponent(key) + '.json';
+const subKey = name => code ? 'c_' + code : nameKey(name);   // קישור אישי = רשומה לקישור, אחרת לפי שם
 const inviteUrl = () => SETTINGS.databaseURL + '/invites/' + quizId + '/' + encodeURIComponent(code) + '.json';
 
 // מבחן ישן (רשימת סרטונים שטוחה) הופך לנושא אחד לכל סרטון
@@ -187,6 +188,7 @@ const allQuestions = () => CONFIG.topics.flatMap((t, ti) => t.questions.map((q, 
     if (code) {
       const inv = await (await fetch(inviteUrl(), { cache: 'no-store' })).json();
       if (!inv) return show('s-bad');
+      if (inv.for) { $('name').value = inv.for; $('name').dispatchEvent(new Event('input')); }
       if (inv.used) {
         $('usedBy').textContent = 'הקישור הזה כבר שימש להגשה' + (inv.name ? ' של ' + inv.name : '') +
           '. אם צריך לבצע שוב, פנה למנהל.';
@@ -208,7 +210,7 @@ $('start').onclick = async () => {
     if (inv && inv.used) return show('s-used');
   } else {
     try {
-      const res = await fetch(subUrl(nameKey(who)), { cache: 'no-store' });
+      const res = await fetch(subUrl(subKey(who)), { cache: 'no-store' });
       if (!res.ok) throw 0;
       if ((await res.json()) !== null) return show('s-used');
       try { localStorage.removeItem(DONE_KEY(who)); } catch (e) {}
@@ -410,12 +412,22 @@ $('send').onclick = async () => {
     const json = await res.json().catch(() => ({}));
     if (!res.ok || String(json.success) !== 'true') throw new Error(json.message || res.status);
     try { localStorage.setItem(DONE_KEY(name), '1'); } catch (e) {}
+    // עותק מלא של ההגשה נשמר במערכת, כדי שהתוצאות לא יאבדו אם המייל נכשל
+    const record = {
+      name: name, at: Date.now(), right: totalRight, total: totalChoices, pct: pct,
+      topics: CONFIG.topics.filter(t => t.name).map((t, i) => {
+        const ti = CONFIG.topics.indexOf(t);
+        return { name: t.name, right: perTopic[ti].right, choices: perTopic[ti].choices,
+                 watched: seen[t.name] || seen[ti] || 0 };
+      }),
+      answers: rows.map(r => ({ topic: CONFIG.topics[r.ti].name || '', q: r.q.text, a: r.answer,
+                                ok: r.ok === null ? 'open' : (r.ok ? 'yes' : 'no') })),
+    };
+    fetch(subUrl(subKey(name)), { method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(record) }).catch(() => {});
     if (code) {
       fetch(inviteUrl(), { method: 'PATCH', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ used: Date.now(), name: name }) }).catch(() => {});
-    } else {
-      fetch(subUrl(nameKey(name)), { method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name, at: Date.now() }) }).catch(() => {});
     }
     show('s-done');
   } catch (err) {

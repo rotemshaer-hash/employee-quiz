@@ -90,7 +90,7 @@
 <body>
 <header>
   <img class="logo" src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי">
-  <h1>ניהול המבחן<span class="ver">גרסה 17</span></h1>
+  <h1>ניהול המבחן<span class="ver">גרסה 18</span></h1>
 </header>
 <main>
   <!-- כניסה -->
@@ -140,8 +140,8 @@
 
 <input type="file" id="pick" accept="video/*" multiple hidden>
 
-<script src="settings.js?v=17"></script>
-<script src="demo.js?v=17"></script>
+<script src="settings.js?v=18"></script>
+<script src="demo.js?v=18"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -365,11 +365,22 @@ async function showWho(id) {
   try { subs = (await (await fetch(SUBS('/' + id), { cache: 'no-store' })).json()) || {}; }
   catch (e) { box.innerHTML = '<p class="err">לא הצלחתי לטעון. נסה שוב.</p>'; return; }
   const keys = Object.keys(subs).sort((a, b) => (subs[b].at || 0) - (subs[a].at || 0));
+  const mark = { yes: ' ✅', no: ' ❌', open: ' (פתוחה — לבדיקה)' };
   box.innerHTML = '<div class="item" style="margin-top:12px"><b>הגישו: ' + keys.length + '</b>' +
-    (keys.length ? keys.map(k =>
-      '<div class="opt" style="justify-content:space-between"><span>' + esc(subs[k].name || k) +
-      '<span class="muted"> · ' + new Date(subs[k].at || 0).toLocaleString('he-IL') + '</span></span>' +
-      '<button class="mini" data-list="reopen" data-id="' + id + '" data-key="' + esc(k) + '">לאפשר שוב</button></div>').join('') +
+    (keys.length ? keys.map(k => {
+      const r = subs[k];
+      const score = r.total ? ' · ' + r.right + '/' + r.total + ' (' + r.pct + '%)' : '';
+      return '<div class="item" style="margin-top:10px">' +
+        '<div class="opt" style="justify-content:space-between"><b>' + esc(r.name || k) + score + '</b>' +
+        '<button class="mini" data-list="reopen" data-id="' + id + '" data-key="' + esc(k) + '">לאפשר שוב</button></div>' +
+        '<details><summary class="muted" style="font-weight:500">פרטים · ' + new Date(r.at || 0).toLocaleString('he-IL') + '</summary>' +
+        (r.topics || []).map(t => '<div class="muted">· <b>' + esc(t.name) + '</b>: ' +
+          (t.choices ? 'ציון ' + t.right + '/' + t.choices : 'בלי שאלות') +
+          (t.watched ? ' · ' + (t.watched === 1 ? 'הבין אחרי סרטון אחד' : 'נזקק ל-' + t.watched + ' סרטונים') : '') + '</div>').join('') +
+        (r.answers || []).map((a, i) => '<div style="margin-top:8px"><b>' + (i + 1) + '. ' +
+          (a.topic ? '[' + esc(a.topic) + '] ' : '') + esc(a.q) + '</b><br>' + esc(a.a) + (mark[a.ok] || '') + '</div>').join('') +
+        '</details></div>';
+    }).join('') +
       '<button class="mini del" style="margin-top:10px" data-list="reopenall" data-id="' + id + '">איפוס כל ההגשות</button>'
       : '<p class="muted">עוד אף אחד לא הגיש.</p>') + '</div>';
 }
@@ -494,6 +505,12 @@ $('pick').onchange = async () => {
   const ti = +$('pick').dataset.ti;
   const picked = Array.from($('pick').files);
   $('pick').value = '';
+  const BIG = 200 * 1024 * 1024;
+  const heavy = picked.filter(f => f.size > BIG);
+  if (heavy.length && !confirm('שים לב: ' + heavy.length + ' מהסרטונים כבדים מ-200MB (' +
+      heavy.map(f => Math.round(f.size / 1048576) + 'MB').join(', ') + ').\n' +
+      'סרטונים כבדים אוכלים מהנפח החינמי ונטענים לאט אצל העובד. ' +
+      'אפשר להקליט ב-720p במקום 4K ולקבל קובץ קטן בהרבה.\n\nלהעלות בכל זאת?')) { return; }
   const items = picked.map(f => {
     const v = { kind: 'file', _key: newId(), title: f.name.replace(/\.[^.]+$/, ''), url: '', size: f.size,
                 path: 'videos/' + Date.now() + '-' + newId() + (f.name.match(/\.[\w]+$/) || ['.mp4'])[0].toLowerCase() };
