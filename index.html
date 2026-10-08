@@ -92,26 +92,25 @@
   <!-- 1. שם -->
   <section id="s-name" class="card">
     <h2>ברוך הבא</h2>
-    <p class="muted">תצפה בכל הסרטונים, תאשר שצפית, ואחר כך תענה על המבחן.</p>
+    <p class="muted">בכל נושא תצפה בסרטון. אם הבנת — תתקדם. אם לא — תקבל עוד הסבר. בסוף יש מבחן.</p>
     <input id="name" type="text" placeholder="שם מלא" autocomplete="name">
     <button id="start" disabled>התחלה</button>
   </section>
 
-  <!-- 2. סרטונים -->
+  <!-- 2. נושא וסרטון -->
   <section id="s-videos" class="card hidden">
     <div class="steps" id="steps"></div>
-    <div class="progress"><div id="vprog"></div></div>
     <span class="count" id="vcount"></span>
     <h2 id="vtitle" style="margin:10px 0 12px"></h2>
     <div class="video" id="vbox"></div>
-    <p class="muted" id="vask" style="margin:16px 0 0;font-weight:600;color:var(--text)">הסרטון מספיק ברור כדי להתחיל את המבחן?</p>
-    <button id="vquiz">כן — התחל את המבחן</button>
-    <button id="vnext"></button>
+    <p class="muted" id="vask" style="margin:16px 0 0;font-weight:600;color:var(--text)"></p>
+    <button id="vdone">הבנתי — אפשר להמשיך</button>
+    <button id="vmore" class="soft">לא הבנתי — תן לי עוד הסבר</button>
   </section>
 
-  <!-- 3. אישור צפייה -->
+  <!-- 3. אישור -->
   <section id="s-confirm" class="card hidden">
-    <h2 id="confirmTitle">סיימת את הסרטונים</h2>
+    <h2 id="confirmTitle">סיימת את ההדרכה</h2>
     <p class="muted">עוד שלב אחד ואפשר להתחיל במבחן.</p>
     <label class="opt"><input type="checkbox" id="watched"> <span>אני מאשר/ת שצפיתי בחומר ההדרכה</span></label>
     <button id="confirm" disabled>אישור שצפיתי — למבחן</button>
@@ -133,14 +132,14 @@
     <p class="muted">בקש מהמנהל קישור חדש.</p>
   </section>
 
-  <!-- 5. כבר ביצע -->
+  <!-- 6. כבר נוצל -->
   <section id="s-used" class="card done hidden">
     <div class="tick" style="background:#8a94a0">!</div>
     <h2>הקישור כבר נוצל</h2>
     <p class="muted" id="usedBy">המבחן הזה הוא חד־פעמי. אם אתה צריך לבצע אותו שוב, פנה למנהל.</p>
   </section>
 
-  <!-- 6. סיום -->
+  <!-- 7. סיום -->
   <section id="s-done" class="card done hidden">
     <div class="tick">✓</div>
     <h2>תודה! המבחן נשלח</h2>
@@ -148,20 +147,28 @@
   </section>
 </main>
 
-<script src="settings.js?v=11"></script>
-<script src="demo.js?v=11"></script>
+<script src="settings.js?v=17"></script>
+<script src="demo.js?v=17"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
-const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-// ---------- טעינת המבחן (מה שהמנהל שמר) ----------
 let CONFIG = null, quizId = null, code = null;
 const DONE_KEY = n => 'done-' + quizId + '-' + nameKey(n);
-// מפתח אחיד לשם: בלי רווחים כפולים, בלי תווים שפיירבייס לא מקבל במפתח
 const nameKey = n => n.trim().replace(/\s+/g, ' ').toLowerCase().replace(/[.$#\[\]/]/g, '_');
 const subUrl = key => SETTINGS.databaseURL + '/submissions/' + quizId + '/' + encodeURIComponent(key) + '.json';
 const inviteUrl = () => SETTINGS.databaseURL + '/invites/' + quizId + '/' + encodeURIComponent(code) + '.json';
+
+// מבחן ישן (רשימת סרטונים שטוחה) הופך לנושא אחד לכל סרטון
+function normalize(q) {
+  if (!q.topics) q.topics = (q.videos || []).map(v => ({ name: v.title || 'נושא', videos: [v], questions: [] }));
+  q.topics = q.topics.map(t => Object.assign({ name: '', videos: [], questions: [] }, t));
+  if ((q.questions || []).length) q.topics.push({ name: '', videos: [], questions: q.questions });
+  return q;
+}
+const allQuestions = () => CONFIG.topics.flatMap((t, ti) => t.questions.map((q, qi) => ({ q, ti, qi })));
+
 (async () => {
   try {
     const qs = new URLSearchParams(location.search);
@@ -171,17 +178,18 @@ const inviteUrl = () => SETTINGS.databaseURL + '/invites/' + quizId + '/' + enco
     if (code && !/^[\w-]+$/.test(code)) { code = null; return show('s-bad'); }
     const res = await fetch(SETTINGS.databaseURL + '/quizzes/' + quizId + '.json', { cache: 'no-store' });
     CONFIG = await res.json();
-    if (!res.ok || !CONFIG || !(CONFIG.questions || []).length) throw 0;
-    CONFIG.videos = CONFIG.videos || [];
+    if (!res.ok || !CONFIG) throw 0;
+    normalize(CONFIG);
+    if (!allQuestions().length) throw 0;
     document.title = CONFIG.title;
     $('title').textContent = CONFIG.title;
     $('name').dispatchEvent(new Event('input'));
-    if (code) {                                   // קישור אישי — בדיקה מיד עם הפתיחה
+    if (code) {
       const inv = await (await fetch(inviteUrl(), { cache: 'no-store' })).json();
       if (!inv) return show('s-bad');
       if (inv.used) {
-        $('usedBy').textContent = 'הקישור הזה כבר שימש להגשה' +
-          (inv.name ? ' של ' + inv.name : '') + '. אם צריך לבצע שוב, פנה למנהל.';
+        $('usedBy').textContent = 'הקישור הזה כבר שימש להגשה' + (inv.name ? ' של ' + inv.name : '') +
+          '. אם צריך לבצע שוב, פנה למנהל.';
         return show('s-used');
       }
     }
@@ -195,128 +203,122 @@ $('name').addEventListener('input', () => { $('start').disabled = !CONFIG || $('
 $('start').onclick = async () => {
   const who = $('name').value;
   $('start').disabled = true; $('start').textContent = 'בודק...';
-  if (code) {                                     // קישור אישי: הבדיקה כבר נעשתה בפתיחה
+  if (code) {
     const inv = await (await fetch(inviteUrl(), { cache: 'no-store' })).json().catch(() => null);
     if (inv && inv.used) return show('s-used');
-    $('start').disabled = false; $('start').textContent = 'התחלה';
-    if (CONFIG.videos.length) { show('s-videos'); playVideo(0); }
-    else { buildQuiz(); show('s-quiz'); }
-    return;
-  }
-  try {
-    // המסד הוא מקור האמת, כדי ש"לאפשר שוב" של המנהל יעבוד גם באותו מכשיר
-    const res = await fetch(subUrl(nameKey(who)), { cache: 'no-store' });
-    if (!res.ok) throw 0;
-    if ((await res.json()) !== null) return show('s-used');
-    try { localStorage.removeItem(DONE_KEY(who)); } catch (e) {}
-  } catch (e) {
-    // אין רשת: נופלים לסימון המקומי
-    try { if (localStorage.getItem(DONE_KEY(who))) return show('s-used'); } catch (e2) {}
+  } else {
+    try {
+      const res = await fetch(subUrl(nameKey(who)), { cache: 'no-store' });
+      if (!res.ok) throw 0;
+      if ((await res.json()) !== null) return show('s-used');
+      try { localStorage.removeItem(DONE_KEY(who)); } catch (e) {}
+    } catch (e) {
+      try { if (localStorage.getItem(DONE_KEY(who))) return show('s-used'); } catch (e2) {}
+    }
   }
   $('start').disabled = false; $('start').textContent = 'התחלה';
-  if (CONFIG.videos.length) { show('s-videos'); playVideo(0); }
-  else { buildQuiz(); show('s-quiz'); }
+  startTopics();
 };
 
-// ---------- סרטונים ----------
-function embedUrl(url) {
-  const drive = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]+)/);
-  // Drive: מנסים קודם נגינה ישירה (נפתחת הרבה יותר מהר), ורק אם היא נכשלת נופלים לנגן של Drive
-  if (drive) return { kind: 'video', src: 'https://drive.usercontent.google.com/download?id=' + drive[1] + '&export=download',
-                      fallback: 'https://drive.google.com/file/d/' + drive[1] + '/preview', drive: true };
-  return { kind: 'video', src: url };
-}
-let vIndex = 0, vTimer = null, watchedCount = 0;
-const resolveSrc = window.resolveVideoSrc || (async u => u);   // במצב בדיקה demo.js מחליף את זה
-async function playVideo(i) {
-  vIndex = i;
-  const v = CONFIG.videos[i], total = CONFIG.videos.length, last = i === total - 1;
-  const label = last ? 'סיימתי לצפות' : 'אני רוצה לראות עוד סרטון';
-  const ask = ready => {                    // שתי האפשרויות נפתחות רק אחרי שהסרטון נצפה
-    $('vask').style.display = ready && !last ? 'block' : 'none';
-    $('vquiz').style.display = ready && !last ? 'block' : 'none';
-    $('vnext').className = ready && !last ? 'soft' : '';
-  };
-  ask(false);
-  $('vcount').textContent = 'סרטון ' + (i + 1) + ' מתוך ' + total;
-  $('vprog').style.width = ((i + 1) / total * 100) + '%';
-  $('steps').innerHTML = CONFIG.videos.map((_, j) => '<i class="' + (j <= i ? 'on' : '') + '"></i>').join('');
-  $('vtitle').textContent = v.title;
-  clearInterval(vTimer);
-  const e = embedUrl(v.url);
-  preloadNext(i);
+// ---------- נושאים וסרטונים ----------
+const topicsWithVideo = () => CONFIG.topics.filter(t => t.videos.length);
+let tList = [], tIndex = 0, vIndex = 0, vTimer = null;
+const seen = {};                                   // שם נושא -> כמה סרטונים נצפו בו
 
-  // נגן של Drive: אי אפשר לדעת מתי הסרטון נגמר, אז הכפתור נפתח אחרי זמן ההמתנה שהמנהל קבע
+function startTopics() {
+  tList = topicsWithVideo();
+  if (!tList.length) { buildQuiz(); return show('s-quiz'); }
+  tIndex = 0; show('s-videos'); playTopic(0, 0);
+}
+
+function resolveSrcDefault(u) { return u; }
+const resolveSrc = window.resolveVideoSrc || resolveSrcDefault;   // במצב בדיקה demo.js מחליף את זה
+
+function embedUrl(url) {
+  const drive = String(url).match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]+)/);
+  if (drive) return { src: 'https://drive.usercontent.google.com/download?id=' + drive[1] + '&export=download',
+                      fallback: 'https://drive.google.com/file/d/' + drive[1] + '/preview' };
+  return { src: url };
+}
+
+async function playTopic(ti, vi) {
+  tIndex = ti; vIndex = vi;
+  const t = tList[ti], v = t.videos[vi], lastTopic = ti === tList.length - 1;
+  const hasMore = vi < t.videos.length - 1;
+  seen[t.name || ti] = vi + 1;
+
+  $('steps').innerHTML = tList.map((_, j) => '<i class="' + (j <= ti ? 'on' : '') + '"></i>').join('');
+  $('vcount').textContent = (t.name ? t.name + ' · ' : '') + 'נושא ' + (ti + 1) + ' מתוך ' + tList.length +
+    (t.videos.length > 1 ? ' · הסבר ' + (vi + 1) + ' מתוך ' + t.videos.length : '');
+  $('vtitle').textContent = v.title || t.name;
+  clearInterval(vTimer);
+
+  const ready = on => {
+    $('vask').textContent = on
+      ? (t.name ? 'הבנת את הנושא "' + t.name + '"? אפשר להתקדם, או לראות עוד הסבר.'
+                : 'הבנת? אפשר להתקדם, או לראות עוד הסבר.')
+      : '';
+    $('vdone').style.display = on ? 'block' : 'none';
+    $('vdone').textContent = lastTopic ? 'הבנתי — למבחן' : 'הבנתי — לנושא הבא';
+    $('vmore').style.display = on && hasMore ? 'block' : 'none';
+    if (on && !hasMore) {
+      $('vask').textContent += ' (אלה כל הסרטונים בנושא הזה)';
+    }
+  };
+  ready(false);
+  $('vask').textContent = 'טוען סרטון...';
+
+  const e = embedUrl(v.url);
   const useIframe = src => {
-    if (vIndex !== i) return;
+    if (tIndex !== ti || vIndex !== vi) return;
     $('vbox').innerHTML = '<iframe src="' + esc(src) + '" allow="autoplay; fullscreen" allowfullscreen></iframe>';
     let left = v.minSeconds || 0;
     const tick = () => {
-      $('vnext').disabled = left > 0;
-      $('vnext').textContent = left > 0 ? label + ' (' + left + ')' : label;
-      ask(left <= 0);
+      if (left <= 0) { ready(true); clearInterval(vTimer); return; }
+      $('vask').textContent = 'אפשר להתקדם בעוד ' + left + ' שניות';
       left--;
-      if (left < -1) clearInterval(vTimer);
     };
     tick(); vTimer = setInterval(tick, 1000);
   };
 
-  // נגינה ישירה: נפתחת מהר, והכפתור נפתח רק כשהסרטון נגמר (בלי דילוג קדימה)
-  $('vnext').disabled = true;
-  $('vnext').textContent = 'טוען סרטון...';
   $('vbox').innerHTML = '<video controls playsinline preload="auto" controlslist="nodownload noplaybackrate noremoteplayback" disablepictureinpicture disableremoteplayback></video>';
   const video = $('vbox').querySelector('video');
-  video.addEventListener('contextmenu', ev => ev.preventDefault());   // חוסם "שמור וידאו" בלחיצה ארוכה
+  video.addEventListener('contextmenu', ev => ev.preventDefault());
   let maxT = 0;
-  video.addEventListener('loadedmetadata', () => {
-    if (vIndex === i) $('vnext').textContent = 'צפה בסרטון עד הסוף כדי להמשיך';
-  });
+  video.addEventListener('loadedmetadata', () => { if (tIndex === ti && vIndex === vi) $('vask').textContent = 'צפה בסרטון עד הסוף'; });
   video.addEventListener('timeupdate', () => { if (!video.seeking && video.currentTime > maxT) maxT = video.currentTime; });
   video.addEventListener('seeking', () => { if (video.currentTime > maxT + 1) video.currentTime = maxT; });
   video.addEventListener('ratechange', () => { if (video.playbackRate > 1) video.playbackRate = 1; });
-  video.addEventListener('ended', () => {
-    if (vIndex !== i) return;
-    $('vnext').disabled = false; $('vnext').textContent = label;
-    ask(true);
-  });
+  video.addEventListener('ended', () => { if (tIndex === ti && vIndex === vi) ready(true); });
   video.addEventListener('error', () => {
-    if (e.fallback) useIframe(e.fallback);                            // Drive חסם נגינה ישירה
-    else if (vIndex === i) $('vnext').textContent = 'הסרטון לא נטען — בדוק אינטרנט ורענן';
+    if (e.fallback) useIframe(e.fallback);
+    else if (tIndex === ti && vIndex === vi) $('vask').textContent = 'הסרטון לא נטען — בדוק אינטרנט ורענן';
   });
   video.src = await resolveSrc(e.src);
+  preloadNext(ti, vi);
 }
 
-// מושכים את תחילת הסרטון הבא כבר עכשיו, כדי שהמעבר אליו יהיה מיידי
 let preloadEl = null;
-function preloadNext(i) {
-  const next = CONFIG.videos[i + 1];
+function preloadNext(ti, vi) {
+  const t = tList[ti];
+  const next = t.videos[vi + 1] || (tList[ti + 1] || {}).videos && tList[ti + 1].videos[0];
   if (preloadEl) { preloadEl.remove(); preloadEl = null; }
   if (!next) return;
-  const e = embedUrl(next.url);
-  if (e.kind !== 'video') return;
   preloadEl = document.createElement('video');
-  preloadEl.preload = 'auto';
-  preloadEl.muted = true;
-  preloadEl.style.display = 'none';
+  preloadEl.preload = 'auto'; preloadEl.muted = true; preloadEl.style.display = 'none';
   document.body.appendChild(preloadEl);
-  Promise.resolve(resolveSrc(e.src)).then(src => { if (preloadEl) preloadEl.src = src; });
+  Promise.resolve(resolveSrc(embedUrl(next.url).src)).then(src => { if (preloadEl) preloadEl.src = src; });
 }
 
-function toConfirm() {
-  watchedCount = vIndex + 1;
+$('vmore').onclick = () => playTopic(tIndex, vIndex + 1);
+$('vdone').onclick = () => {
   clearInterval(vTimer);
+  if (tIndex < tList.length - 1) return playTopic(tIndex + 1, 0);
   $('vbox').innerHTML = '';
-  const total = CONFIG.videos.length;
-  $('confirmTitle').textContent = watchedCount < total
-    ? 'צפית ב-' + watchedCount + ' מתוך ' + total + ' סרטונים'
-    : 'סיימת את הסרטונים';
+  if (preloadEl) { preloadEl.remove(); preloadEl = null; }
+  $('confirmTitle').textContent = 'סיימת את ההדרכה';
   show('s-confirm');
-}
-$('vnext').onclick = () => {
-  if (vIndex < CONFIG.videos.length - 1) playVideo(vIndex + 1);
-  else toConfirm();
 };
-$('vquiz').onclick = toConfirm;
 
 // ---------- אישור ----------
 $('watched').onchange = () => { $('confirm').disabled = !$('watched').checked; };
@@ -324,52 +326,78 @@ $('confirm').onclick = () => { buildQuiz(); show('s-quiz'); };
 
 // ---------- מבחן ----------
 function buildQuiz() {
-  $('quiz').innerHTML = CONFIG.questions.map((q, i) => {
-    const head = '<p><b>' + (i + 1) + '. ' + esc(q.text) + '</b></p>';
-    const body = q.type === 'choice'
-      ? q.options.map((o, j) => '<label class="opt"><input type="radio" name="q' + i + '" value="' + j + '"> <span>' + esc(o) + '</span></label>').join('')
-      : '<textarea name="q' + i + '" placeholder="התשובה שלך"></textarea>';
-    return '<div class="q" id="qq' + i + '">' + head + body + '</div>';
-  }).join('');
+  let html = '', n = 0;
+  CONFIG.topics.forEach((t, ti) => {
+    if (!t.questions.length) return;
+    if (t.name) html += '<h2 style="margin:22px 0 10px">' + esc(t.name) + '</h2>';
+    t.questions.forEach((q, qi) => {
+      const key = ti + '_' + qi;
+      n++;
+      const body = q.type === 'choice'
+        ? q.options.map((o, j) => '<label class="opt"><input type="radio" name="q' + key + '" value="' + j + '"> <span>' + esc(o) + '</span></label>').join('')
+        : '<textarea name="q' + key + '" placeholder="התשובה שלך"></textarea>';
+      html += '<div class="q" id="qq' + key + '"><p><b>' + n + '. ' + esc(q.text) + '</b></p>' + body + '</div>';
+    });
+  });
+  $('quiz').innerHTML = html;
 }
 
 function collect() {
-  const f = $('quiz'), out = [];
-  let missing = null, right = 0, choices = 0;
-  CONFIG.questions.forEach((q, i) => {
-    $('qq' + i).classList.remove('missing');
+  const f = $('quiz');
+  const perTopic = CONFIG.topics.map(() => ({ right: 0, choices: 0 }));
+  const rows = [];
+  let missing = null;
+  CONFIG.topics.forEach((t, ti) => t.questions.forEach((q, qi) => {
+    const key = ti + '_' + qi;
+    $('qq' + key).classList.remove('missing');
     let answer, ok = null;
     if (q.type === 'choice') {
-      const sel = f.querySelector('input[name="q' + i + '"]:checked');
-      if (sel) { answer = q.options[+sel.value]; ok = +sel.value === q.correct - 1; choices++; if (ok) right++; }
+      const sel = f.querySelector('input[name="q' + key + '"]:checked');
+      if (sel) {
+        answer = q.options[+sel.value];
+        ok = +sel.value === q.correct - 1;
+        perTopic[ti].choices++; if (ok) perTopic[ti].right++;
+      }
     } else {
-      answer = f.elements['q' + i].value.trim();
+      answer = f.elements['q' + key].value.trim();
     }
-    if (!answer) { $('qq' + i).classList.add('missing'); missing = missing || $('qq' + i); }
-    out.push({ q, answer, ok });
-  });
-  return { out, missing, right, choices };
+    if (!answer) { $('qq' + key).classList.add('missing'); missing = missing || $('qq' + key); }
+    rows.push({ ti, q, answer, ok });
+  }));
+  return { rows, perTopic, missing };
 }
 
 $('send').onclick = async () => {
-  const { out, missing, right, choices } = collect();
+  const { rows, perTopic, missing } = collect();
   $('qerr').textContent = '';
   if (missing) { $('qerr').textContent = 'יש שאלות שלא נענו (מסומנות באדום).'; missing.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
 
   const name = $('name').value.trim();
-  const pct = choices ? Math.round(right / choices * 100) : 0;
+  const totalRight = perTopic.reduce((a, t) => a + t.right, 0);
+  const totalChoices = perTopic.reduce((a, t) => a + t.choices, 0);
+  const pct = totalChoices ? Math.round(totalRight / totalChoices * 100) : 0;
   const data = {
-    _subject: CONFIG.title + ': ' + name + (choices ? ' — ' + pct + '%' : ''),
+    _subject: CONFIG.title + ': ' + name + (totalChoices ? ' — ' + pct + '%' : ''),
     _template: 'box',
     _captcha: 'false',
     'שם': name,
-    'ציון אמריקאיות': right + '/' + choices + ' (' + pct + '%)',
-    'אישור צפייה': 'צפה ב-' + watchedCount + ' מתוך ' + CONFIG.videos.length + ' סרטונים' +
-      (watchedCount < CONFIG.videos.length ? ' (בחר להתחיל את המבחן מוקדם)' : ''),
+    'ציון כולל': totalRight + '/' + totalChoices + ' (' + pct + '%)',
     'זמן הגשה': new Date().toLocaleString('he-IL'),
   };
-  out.forEach((r, i) => {
-    data[(i + 1) + '. ' + r.q.text] = r.answer + (r.ok === true ? '  ✅' : r.ok === false ? '  ❌' : '  (פתוחה — לבדיקה)');
+  CONFIG.topics.forEach((t, ti) => {
+    if (!t.name) return;
+    const watched = seen[t.name] || seen[ti];
+    const bits = [];
+    if (perTopic[ti].choices) bits.push('ציון ' + perTopic[ti].right + '/' + perTopic[ti].choices);
+    if (watched) bits.push(watched === 1 ? 'הבין אחרי סרטון אחד' : 'נזקק ל-' + watched + ' סרטונים');
+    if (bits.length) data['נושא: ' + t.name] = bits.join(' · ');
+  });
+  let n = 0;
+  rows.forEach(r => {
+    n++;
+    const topic = CONFIG.topics[r.ti].name;
+    data[n + '. ' + (topic ? '[' + topic + '] ' : '') + r.q.text] =
+      r.answer + (r.ok === true ? '  ✅' : r.ok === false ? '  ❌' : '  (פתוחה — לבדיקה)');
   });
 
   $('send').disabled = true; $('send').textContent = 'שולח...';
@@ -381,7 +409,6 @@ $('send').onclick = async () => {
     });
     const json = await res.json().catch(() => ({}));
     if (!res.ok || String(json.success) !== 'true') throw new Error(json.message || res.status);
-    // נועלים את המבחן לעובד הזה. אם הרישום נכשל, ההגשה עצמה כבר הצליחה ולא מבטלים אותה.
     try { localStorage.setItem(DONE_KEY(name), '1'); } catch (e) {}
     if (code) {
       fetch(inviteUrl(), { method: 'PATCH', headers: { 'Content-Type': 'application/json' },
