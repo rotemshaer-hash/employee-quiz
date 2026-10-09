@@ -78,6 +78,28 @@
   details ol{padding-inline-start:20px;margin:10px 0}
 
   .row{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+  .topbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--card) 92%,transparent);
+          backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:10px 16px;margin-bottom:16px}
+  .topbar > div{max-width:620px;margin:0 auto;display:flex;align-items:center;gap:10px}
+  .topbar button{background:none;color:var(--accent);padding:8px 10px;font-size:16px;box-shadow:none}
+  .topbar b{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pick{display:flex;align-items:flex-start;gap:10px}
+  .pick > input{width:24px;height:24px;flex:none;accent-color:var(--accent2);margin:3px 0 0}
+  .item.chk{border-color:var(--accent2);background:color-mix(in srgb,var(--accent2) 8%,transparent)}
+  .selbar{position:fixed;bottom:0;inset-inline:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+          background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+  .selbar .in{max-width:620px;margin:0 auto}
+  .selbar .t{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:700}
+  .selbar .b{display:flex;gap:10px}
+  .selbar .b button{flex:1}
+  @media (min-width:900px){
+    main{max-width:980px}
+    .topbar > div,.bar div,.selbar .in{max-width:980px}
+    #list{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+    #list > .item{margin:0}
+    header{padding:30px 20px 50px}
+    header h1{font-size:27px}
+  }
   .sent{display:none;font-size:13px;font-weight:700;color:var(--accent2)}
   [data-sent="1"] .sent{display:inline}
   .hidden{display:none}
@@ -90,7 +112,7 @@
 <body>
 <header>
   <img class="logo" src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי">
-  <h1>ניהול המבחן<span class="ver">גרסה 18</span></h1>
+  <h1>ניהול המבחן<span class="ver">גרסה 19</span></h1>
 </header>
 <main>
   <!-- כניסה -->
@@ -105,13 +127,14 @@
   <!-- רשימת מבחנים -->
   <section id="s-list" class="card hidden">
     <h2>המבחנים שלי</h2>
+    <p class="muted">סמן כמה מבחנים כדי לשלוח אותם יחד בהודעה אחת.</p>
     <div id="list"></div>
     <button class="full" id="newQuiz">+ מבחן חדש</button>
   </section>
 
   <!-- עורך -->
   <div id="editor" class="hidden">
-    <button class="ghost" id="back" style="margin-bottom:12px">→ לכל המבחנים</button>
+    <div class="topbar"><div><button id="back">→ חזרה</button><b id="crumb"></b></div></div>
 
     <section class="card">
       <h2>הגדרות</h2>
@@ -133,6 +156,11 @@
   </div>
 </main>
 
+<div class="selbar hidden" id="selbar"><div class="in">
+  <div class="t"><span id="selCount"></span><button class="mini" id="selClear">ניקוי</button></div>
+  <div class="b"><button id="selWa">שליחה בוואטסאפ</button><button class="ghost" id="selCopy">העתקת הקישורים</button></div>
+</div></div>
+
 <div class="bar hidden" id="bar"><div>
   <button class="ghost" id="preview">תצוגה מקדימה</button>
   <button id="save">שמירה</button>
@@ -140,8 +168,8 @@
 
 <input type="file" id="pick" accept="video/*" multiple hidden>
 
-<script src="settings.js?v=18"></script>
-<script src="demo.js?v=18"></script>
+<script src="settings.js?v=19"></script>
+<script src="demo.js?v=19"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -158,6 +186,7 @@ const quizLink = id => new URL('index.html?t=' + id, location.href).href;
 const inviteLink = (id, c) => new URL('index.html?t=' + id + '&c=' + c, location.href).href;
 
 let token = null, quizzes = {}, quizId = null, quiz = null, dirty = false;
+const selected = new Set();                 // מבחנים שסומנו לשליחה מרוכזת
 const files = new Map();
 let pendingDeletes = [];
 
@@ -207,8 +236,55 @@ async function load() {
 function screen(id) {
   ['s-login', 's-list', 'editor'].forEach(x => $(x).classList.toggle('hidden', x !== id));
   $('bar').classList.toggle('hidden', id !== 'editor');
+  $('selbar').classList.toggle('hidden', id !== 's-list' || !selected.size);
   status(''); scrollTo(0, 0);
 }
+function updateSel() {
+  $('selCount').textContent = 'נבחרו ' + selected.size + (selected.size === 1 ? ' מבחן' : ' מבחנים');
+  $('selbar').classList.toggle('hidden', !selected.size || $('s-list').classList.contains('hidden'));
+}
+document.addEventListener('change', e => {
+  const id = e.target.dataset.sel;
+  if (!id) return;
+  e.target.checked ? selected.add(id) : selected.delete(id);
+  const card = $('card-' + id);
+  if (card) card.classList.toggle('chk', e.target.checked);
+  updateSel();
+});
+$('selClear').onclick = () => {
+  selected.clear();
+  document.querySelectorAll('[data-sel]').forEach(c => { c.checked = false; c.closest('.item').classList.remove('chk'); });
+  updateSel();
+};
+// יוצר קישור אישי חדש לכל מבחן מסומן ומחזיר הודעה מוכנה
+async function buildMessage() {
+  const ids = [...selected];
+  const lines = ['שלום, אלה המבחנים שלך:', ''];
+  for (const [n, id] of ids.entries()) {
+    const c = newCode();
+    await authedUrl('PATCH', INV('/' + id), { [c]: { created: Date.now(), sent: Date.now() } });
+    lines.push((n + 1) + ') ' + quizzes[id].title, inviteLink(id, c), '');
+  }
+  lines.push('בהצלחה!');
+  return lines.join('\n');
+}
+async function bulk(action) {
+  const btn = action === 'wa' ? $('selWa') : $('selCopy');
+  const label = btn.textContent;
+  btn.disabled = true; btn.textContent = 'מכין קישורים...';
+  try {
+    const msg = await buildMessage();
+    if (action === 'wa') open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+    else {
+      try { await navigator.clipboard.writeText(msg); btn.textContent = 'הועתק ✅'; setTimeout(() => { btn.textContent = label; }, 2000); }
+      catch (err) { prompt('העתק את ההודעה:', msg); }
+    }
+  } catch (e) { alert('יצירת הקישורים נכשלה. בדוק אינטרנט ונסה שוב.'); }
+  btn.disabled = false;
+  if (btn.textContent === 'מכין קישורים...') btn.textContent = label;
+}
+$('selWa').onclick = () => bulk('wa');
+$('selCopy').onclick = () => bulk('copy');
 function countOf(q) {
   const t = normalize(JSON.parse(JSON.stringify(q)));
   return { topics: t.topics.length,
@@ -219,8 +295,10 @@ function showList() {
   const ids = Object.keys(quizzes).sort((a, b) => (quizzes[b].updated || 0) - (quizzes[a].updated || 0));
   $('list').innerHTML = ids.length ? ids.map(id => {
     const c = countOf(quizzes[id]);
-    return '<div class="item"><b>' + esc(quizzes[id].title) + '</b><div class="muted">' +
-      c.topics + ' נושאים · ' + c.videos + ' סרטונים · ' + c.questions + ' שאלות</div><div class="row">' +
+    return '<div class="item' + (selected.has(id) ? ' chk' : '') + '" id="card-' + id + '">' +
+      '<label class="pick"><input type="checkbox" data-sel="' + id + '"' + (selected.has(id) ? ' checked' : '') + '>' +
+      '<span><b>' + esc(quizzes[id].title) + '</b><div class="muted">' +
+      c.topics + ' נושאים · ' + c.videos + ' סרטונים · ' + c.questions + ' שאלות</div></span></label><div class="row">' +
       '<button class="mini" data-list="edit" data-id="' + id + '">עריכה</button>' +
       '<button class="mini" data-list="links" data-id="' + id + '">קישורים אישיים</button>' +
       '<button class="mini" data-list="who" data-id="' + id + '">מי הגיש</button>' +
@@ -228,6 +306,8 @@ function showList() {
       '<button class="mini del" data-list="del" data-id="' + id + '">מחיקה</button></div>' +
       '<div id="who-' + id + '"></div></div>';
   }).join('') : '<p class="muted">עוד אין מבחנים. לחץ "+ מבחן חדש".</p>';
+  [...selected].forEach(id => { if (!quizzes[id]) selected.delete(id); });
+  updateSel();
   screen('s-list');
 }
 
@@ -257,6 +337,7 @@ function openQuiz(id, data) {
   if (!data) quiz.resultsEmail = lastEmail();
   pendingDeletes = [];
   $('title').value = quiz.title;
+  $('crumb').textContent = quiz.title;
   $('resultsEmail').value = quiz.resultsEmail;
   dirty = !data;
   render();
@@ -454,7 +535,7 @@ document.addEventListener('input', e => {
   else if (d.kind && d.f) quiz.topics[+d.ti][d.kind][+d.i][d.f] = t.type === 'number' ? (t.value === '' ? 0 : +t.value) : t.value;
   else if (d.opt != null) { const [ti, i] = d.opt.split('_'); quiz.topics[+ti].questions[+i].options[+d.j] = t.value; }
   else if (d.correct != null) { const [ti, i] = d.correct.split('_'); quiz.topics[+ti].questions[+i].correct = +t.value; }
-  else if (['title', 'resultsEmail'].includes(t.id)) quiz[t.id] = t.value;
+  else if (['title', 'resultsEmail'].includes(t.id)) { quiz[t.id] = t.value; if (t.id === 'title') $('crumb').textContent = t.value; }
   else return;
   dirty = true; status('יש שינויים שלא נשמרו');
 });

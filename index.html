@@ -79,6 +79,12 @@
   .tick{width:74px;height:74px;margin:0 auto 14px;border-radius:50%;background:var(--grad);
         display:grid;place-items:center;color:#fff;font-size:36px;animation:pop .45s cubic-bezier(.2,1.4,.5,1) both}
   @keyframes pop{from{transform:scale(.4);opacity:0}}
+  @media (min-width:900px){
+    main{max-width:760px}
+    header{padding:32px 20px 52px}
+    header h1{font-size:27px}
+    header .logo{width:170px}
+  }
   .hidden{display:none}
 </style>
 </head>
@@ -147,8 +153,8 @@
   </section>
 </main>
 
-<script src="settings.js?v=18"></script>
-<script src="demo.js?v=18"></script>
+<script src="settings.js?v=19"></script>
+<script src="demo.js?v=19"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
