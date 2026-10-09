@@ -28,6 +28,8 @@
   header::after{content:"";position:absolute;inset-inline:0;bottom:-1px;height:26px;background:var(--bg);border-radius:26px 26px 0 0}
   header .logo{display:block;width:140px;max-width:52%;border-radius:12px;margin-bottom:12px;
                box-shadow:0 6px 18px -8px rgba(0,0,0,.55)}
+  header #logout{position:absolute;top:18px;inset-inline-start:16px;width:auto;padding:8px 14px;font-size:14px;
+                 background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;box-shadow:none}
   header h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.01em}
   header .ver{font-size:12px;font-weight:500;opacity:.75;margin-inline-start:8px}
 
@@ -112,7 +114,8 @@
 <body>
 <header>
   <img class="logo" src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי">
-  <h1>ניהול המבחן<span class="ver">גרסה 19</span></h1>
+  <h1>ניהול המבחן<span class="ver">גרסה 20</span></h1>
+  <button id="logout" class="hidden">יציאה</button>
 </header>
 <main>
   <!-- כניסה -->
@@ -168,8 +171,8 @@
 
 <input type="file" id="pick" accept="video/*" multiple hidden>
 
-<script src="settings.js?v=19"></script>
-<script src="demo.js?v=19"></script>
+<script src="settings.js?v=20"></script>
+<script src="demo.js?v=20"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -235,6 +238,7 @@ async function load() {
 }
 function screen(id) {
   ['s-login', 's-list', 'editor'].forEach(x => $(x).classList.toggle('hidden', x !== id));
+  $('logout').classList.toggle('hidden', id === 's-login');
   $('bar').classList.toggle('hidden', id !== 'editor');
   $('selbar').classList.toggle('hidden', id !== 's-list' || !selected.size);
   status(''); scrollTo(0, 0);
@@ -465,6 +469,15 @@ async function showWho(id) {
       '<button class="mini del" style="margin-top:10px" data-list="reopenall" data-id="' + id + '">איפוס כל ההגשות</button>'
       : '<p class="muted">עוד אף אחד לא הגיש.</p>') + '</div>';
 }
+
+$('logout').onclick = () => {
+  if (dirty && !confirm('יש שינויים שלא נשמרו. לצאת בכל זאת?')) return;
+  try { sessionStorage.removeItem('cred'); } catch (e) {}
+  token = null; quiz = null; dirty = false; quizzes = {}; selected.clear();
+  $('email').value = ''; $('pass').value = ''; $('loginErr').textContent = '';
+  $('list').innerHTML = ''; updateSel();
+  screen('s-login');
+};
 
 $('newQuiz').onclick = () => openQuiz(newId(), null);
 $('back').onclick = () => {
