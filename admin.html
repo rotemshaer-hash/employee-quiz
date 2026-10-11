@@ -132,7 +132,7 @@
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
     <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 25</span></p></div>
+    <p>מבנים<span class="ver">· גרסה 26</span></p></div>
     <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
@@ -144,6 +144,14 @@
     <label class="f">סיסמה</label><input id="pass" type="password" autocomplete="current-password">
     <button class="full" id="login">כניסה</button>
     <p id="loginErr" class="err"></p>
+  </section>
+
+  <!-- הגדרות כלליות -->
+  <section id="s-global" class="card hidden">
+    <h2>הגדרה כללית</h2>
+    <label class="f">לאיזה מייל נשלחות כל התוצאות</label>
+    <input id="globalEmail" type="email" placeholder="name@example.com">
+    <p class="muted" id="emailMsg" style="margin:8px 0 0"></p>
   </section>
 
   <!-- רשימת מבחנים -->
@@ -161,7 +169,11 @@
     <section class="card">
       <h2>הגדרות</h2>
       <label class="f">כותרת המבחן</label><input id="title">
-      <label class="f">לאיזה מייל לשלוח את התוצאות</label><input id="resultsEmail" type="email">
+      <label class="f">מתי מציגים את השאלות</label>
+      <select id="qMode">
+        <option value="end">בסוף — אחרי כל הסרטונים</option>
+        <option value="topic">אחרי כל נושא</option>
+      </select>
     </section>
 
     <section class="card">
@@ -190,8 +202,8 @@
 
 <input type="file" id="pick" accept="video/*" multiple hidden>
 
-<script src="settings.js?v=25"></script>
-<script src="demo.js?v=25"></script>
+<script src="settings.js?v=26"></script>
+<script src="demo.js?v=26"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -201,6 +213,7 @@ const STORAGE = 'https://firebasestorage.googleapis.com/v0/b/' + SETTINGS.storag
 const DB = path => SETTINGS.databaseURL + '/quizzes' + path + '.json';
 const SUBS = path => SETTINGS.databaseURL + '/submissions' + path + '.json';
 const INV = path => SETTINGS.databaseURL + '/invites' + path + '.json';
+const BUN = path => SETTINGS.databaseURL + '/bundles' + path + '.json';
 const CODE_CHARS = 'abcdefghjkmnpqrstuvwxyz23456789';
 const newCode = () => Array.from({ length: 6 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join('');
 const newId = () => Math.random().toString(36).slice(2, 8);
@@ -214,8 +227,9 @@ const ICON = {
   back: '<svg viewBox="0 0 24 24" style="width:17px;height:17px"><path d="M9 18l6-6-6-6"/></svg>',
 };
 const inviteLink = (id, c) => new URL('index.html?q=' + id + '-' + c, location.href).href;
+const bundleLink = b => new URL('index.html?b=' + b, location.href).href;
 
-let token = null, quizzes = {}, quizId = null, quiz = null, dirty = false;
+let token = null, quizzes = {}, quizId = null, quiz = null, dirty = false, globalEmail = '';
 const selected = new Set();                 // מבחנים שסומנו לשליחה מרוכזת
 const files = new Map();
 let pendingDeletes = [];
@@ -261,10 +275,27 @@ async function authedUrl(method, url, body) {
 // ---------- רשימת המבחנים ----------
 async function load() {
   quizzes = (await (await fetch(DB(''), { cache: 'no-store' })).json()) || {};
+  globalEmail = (await (await fetch(SETTINGS.databaseURL + '/settings/resultsEmail.json', { cache: 'no-store' })).json()) || '';
+  if (!globalEmail) {                      // העברה חד־פעמית מהמייל שהוגדר במבחן קיים
+    const any = Object.values(quizzes).find(q => q.resultsEmail);
+    if (any) { globalEmail = any.resultsEmail; saveGlobalEmail(true); }
+  }
+  $('globalEmail').value = globalEmail;
   showList();
 }
+async function saveGlobalEmail(quiet) {
+  const v = $('globalEmail').value.trim();
+  if (!/^\S+@\S+\.\S+$/.test(v)) { if (!quiet) $('emailMsg').textContent = 'צריך מייל תקין.'; return; }
+  try {
+    await authedUrl('PUT', SETTINGS.databaseURL + '/settings/resultsEmail', v);
+    globalEmail = v;
+    if (!quiet) { $('emailMsg').textContent = 'נשמר ✅'; setTimeout(() => { $('emailMsg').textContent = ''; }, 2500); }
+  } catch (e) { $('emailMsg').textContent = 'השמירה נכשלה. נסה שוב.'; }
+}
+$('globalEmail').addEventListener('change', () => saveGlobalEmail(false));
 function screen(id) {
   ['s-login', 's-list', 'editor'].forEach(x => $(x).classList.toggle('hidden', x !== id));
+  $('s-global').classList.toggle('hidden', id !== 's-list');
   $('logout').classList.toggle('hidden', id === 's-login');
   $('bar').classList.toggle('hidden', id !== 'editor');
   $('selbar').classList.toggle('hidden', id !== 's-list' || !selected.size);
@@ -287,16 +318,19 @@ $('selClear').onclick = () => {
   document.querySelectorAll('[data-sel]').forEach(c => { c.checked = false; c.closest('.item').classList.remove('chk'); });
   updateSel();
 };
-// יוצר קישור אישי חדש לכל מבחן מסומן ומחזיר הודעה מוכנה
+// קישור אחד לכל המבחנים שסומנו: העובד ממלא שם פעם אחת ועובר את כולם ברצף
 async function buildMessage() {
   const ids = [...selected];
-  const lines = ['שלום, אלה המבחנים שלך:', ''];
-  for (const [n, id] of ids.entries()) {
+  if (ids.length === 1) {
     const c = newCode();
-    await authedUrl('PATCH', INV('/' + id), { [c]: { created: Date.now(), sent: Date.now() } });
-    lines.push((n + 1) + ') ' + quizzes[id].title, inviteLink(id, c), '');
+    await authedUrl('PATCH', INV('/' + ids[0]), { [c]: { created: Date.now(), sent: Date.now() } });
+    return ['שלום, זה המבחן שלך:', '', quizzes[ids[0]].title, inviteLink(ids[0], c), '', 'בהצלחה!'].join('\n');
   }
-  lines.push('בהצלחה!');
+  const bid = newId() + newId();
+  await authedUrl('PUT', BUN('/' + bid), { quizzes: ids, created: Date.now(), sent: Date.now() });
+  const lines = ['שלום, אלה המבחנים שלך בקישור אחד:', ''];
+  ids.forEach((id, n) => lines.push((n + 1) + ') ' + quizzes[id].title));
+  lines.push('', bundleLink(bid), '', 'ממלאים שם פעם אחת ועוברים אותם ברצף.', 'בהצלחה!');
   return lines.join('\n');
 }
 async function bulk(action) {
@@ -304,6 +338,7 @@ async function bulk(action) {
   const label = btn.textContent;
   btn.disabled = true; btn.textContent = 'מכין קישורים...';
   try {
+    if (!/^\S+@\S+\.\S+$/.test(globalEmail)) { alert('קודם הגדר מייל לקבלת תוצאות במסך הראשי.'); throw 0; }
     const msg = await buildMessage();
     if (action === 'wa') open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
     else {
@@ -346,7 +381,7 @@ function showList() {
 // מבנה אחיד: נושאים. מבחן ישן מומר אוטומטית.
 function normalize(q) {
   q.title = q.title || 'מבחן חדש';
-  q.resultsEmail = q.resultsEmail || '';
+  q.qMode = q.qMode === 'topic' ? 'topic' : 'end';
   if (!q.topics) {
     q.topics = (q.videos || []).map(v => ({ name: v.title || 'נושא', videos: [v], questions: [] }));
     if ((q.questions || []).length) {
@@ -354,7 +389,7 @@ function normalize(q) {
       else q.topics.push({ name: 'נושא', videos: [], questions: q.questions });
     }
   }
-  delete q.videos; delete q.questions; delete q.passScore;
+  delete q.videos; delete q.questions; delete q.passScore; delete q.resultsEmail;
   if (!q.topics.length) q.topics = [{ name: '', videos: [], questions: [] }];
   q.topics = q.topics.map(t => ({
     name: t.name || '',
@@ -366,18 +401,13 @@ function normalize(q) {
 function openQuiz(id, data) {
   quizId = id;
   quiz = normalize(JSON.parse(JSON.stringify(data || {})));
-  if (!data) quiz.resultsEmail = lastEmail();
   pendingDeletes = [];
   $('title').value = quiz.title;
   $('crumb').textContent = quiz.title;
-  $('resultsEmail').value = quiz.resultsEmail;
+  $('qMode').value = quiz.qMode;
   dirty = !data;
   render();
   screen('editor');
-}
-function lastEmail() {
-  const any = Object.values(quizzes).find(q => q.resultsEmail);
-  return any ? any.resultsEmail : '';
 }
 
 $('list').addEventListener('click', async e => {
@@ -577,11 +607,12 @@ document.addEventListener('input', e => {
   else if (d.kind && d.f) quiz.topics[+d.ti][d.kind][+d.i][d.f] = t.type === 'number' ? (t.value === '' ? 0 : +t.value) : t.value;
   else if (d.opt != null) { const [ti, i] = d.opt.split('_'); quiz.topics[+ti].questions[+i].options[+d.j] = t.value; }
   else if (d.correct != null) { const [ti, i] = d.correct.split('_'); quiz.topics[+ti].questions[+i].correct = +t.value; }
-  else if (['title', 'resultsEmail'].includes(t.id)) { quiz[t.id] = t.value; if (t.id === 'title') $('crumb').textContent = t.value; }
+  else if (t.id === 'title') { quiz.title = t.value; $('crumb').textContent = t.value; }
   else return;
   dirty = true; status('יש שינויים שלא נשמרו');
 });
 document.addEventListener('change', e => {
+  if (e.target.id === 'qMode') { quiz.qMode = e.target.value; dirty = true; status('יש שינויים שלא נשמרו'); return; }
   const d = e.target.dataset;
   if (!d.forid) return;
   authedUrl('PATCH', INV('/' + d.forid + '/' + encodeURIComponent(d.forkey)), { for: e.target.value.trim() })
@@ -719,7 +750,6 @@ function deleteUnused(paths) {
 
 // ---------- בדיקה ושמירה ----------
 function validate() {
-  if (!/^\S+@\S+\.\S+$/.test(quiz.resultsEmail)) return 'צריך מייל תקין לתוצאות.';
   let questions = 0;
   for (let ti = 0; ti < quiz.topics.length; ti++) {
     const t = quiz.topics[ti], where = 'בנושא ' + (ti + 1) + (t.name ? ' (' + t.name + ')' : '');
@@ -750,7 +780,7 @@ $('save').onclick = async () => {
   if (problem) { status(problem, 'err'); return; }
   $('save').disabled = true; status('שומר...');
   try {
-    const clean = { title: quiz.title, resultsEmail: quiz.resultsEmail, updated: Date.now(),
+    const clean = { title: quiz.title, qMode: quiz.qMode, updated: Date.now(),
       topics: quiz.topics.map(t => ({
         name: t.name,
         videos: t.videos.map(v => {

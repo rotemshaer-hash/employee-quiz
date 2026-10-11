@@ -22,7 +22,7 @@
 | מה | כתובת |
 |----|-------|
 | מסך הניהול | `https://rotemshaer-hash.github.io/employee-quiz/admin.html` |
-| דף העובד | `index.html?q=<מזהה מבחן>-<קוד אישי>` (הפורמט הישן `?t=..&c=..` עדיין נתמך) |
+| דף העובד | `index.html?q=<מבחן>-<קוד>` למבחן בודד, `index.html?b=<חבילה>` לכמה מבחנים (הפורמט הישן `?t=..&c=..` עדיין נתמך) |
 | מאגר הקוד | `https://github.com/rotemshaer-hash/employee-quiz` |
 | פרויקט Firebase | `employee-quiz-81499` |
 
@@ -54,8 +54,10 @@
 ## 4. מבנה הנתונים (Realtime Database)
 
 ```
+settings/resultsEmail        ← מייל אחד לכל התוצאות, במסך הראשי
+
 quizzes/<quizId>
-  title, resultsEmail, updated
+  title, qMode:'end'|'topic', updated
   topics[]
     name
     videos[]  { kind:'file'|'drive', title, url, path?, size?, minSeconds? }
@@ -64,6 +66,9 @@ quizzes/<quizId>
 invites/<quizId>/<code>
   created, sent?, for?, used?, name?
 
+bundles/<bundleId>
+  quizzes[], created, sent, used?, name?
+
 submissions/<quizId>/<key>
   name, at, right, total, pct
   topics[]  { name, right, choices, watched }
@@ -71,9 +76,10 @@ submissions/<quizId>/<key>
 ```
 
 - `correct` הוא **מבוסס 1**, לא 0. טעות נפוצה.
-- `key` ב־submissions הוא `c_<code>` לקישור אישי, או השם המנורמל לקישור כללי.
+- `key` ב־submissions הוא `b_<bundleId>` לחבילה, `c_<code>` לקישור אישי, או השם המנורמל לקישור כללי.
 - נרמול שם: trim, איחוד רווחים, אותיות קטנות, והחלפת `. $ # [ ] /` בקו תחתון
   (פיירבייס לא מקבל אותם במפתח).
+- `qMode`: `end` = כל השאלות בסוף. `topic` = שאלות הנושא מיד אחרי הסרטונים שלו.
 - **תאימות לאחור:** מבחן ישן עם `videos`/`questions` שטוחים מומר אוטומטית ל־`topics`
   בפונקציה `normalize()`, שקיימת בשני הקבצים.
 
@@ -97,6 +103,13 @@ submissions/<quizId>/<key>
 (`deleteUnused`) שאף מבחן אחר לא מצביע על אותו `path`. חשוב בגלל שכפול מבחנים.
 
 ---
+
+## 5א. חבילות
+
+שליחה מרוכזת של כמה מבחנים יוצרת רשומת `bundles/<id>` אחת וקישור `?b=<id>`.
+העובד מקליד שם פעם אחת, עובר את המבחנים ברצף, ובסוף נשלח מייל אחד עם הכול.
+רשומת הגשה נכתבת לכל מבחן בנפרד (מפתח `b_<id>`), כדי ש"מי הגיש" ימשיך לעבוד לכל מבחן.
+הנעילה היא על החבילה כולה.
 
 ## 6. חד־פעמיות
 

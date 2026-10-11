@@ -80,6 +80,22 @@
         return new Response('');
       }
     }
+    if (url.startsWith(SETTINGS.databaseURL + '/settings')) {
+      mem.cfg = mem.cfg || {};
+      const key = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean)[1];
+      if (method === 'PUT') { const v = JSON.parse(opts.body); if (key) mem.cfg[key] = v; else mem.cfg = v; write(); return json(v); }
+      const v = key ? mem.cfg[key] : mem.cfg;
+      return json(v === undefined ? null : v);
+    }
+    if (url.startsWith(SETTINGS.databaseURL + '/bundles')) {
+      mem.bun = mem.bun || {};
+      const id = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean)[1];
+      if (method === 'PUT') { mem.bun[id] = JSON.parse(opts.body); write(); return json(mem.bun[id]); }
+      if (method === 'PATCH') { Object.assign(mem.bun[id] = mem.bun[id] || {}, JSON.parse(opts.body)); write(); return json(mem.bun[id]); }
+      if (method === 'DELETE') { delete mem.bun[id]; write(); return json(null); }
+      const v = id ? mem.bun[id] : mem.bun;
+      return json(v === undefined ? null : v);
+    }
     if (url.startsWith(SETTINGS.databaseURL + '/invites')) {
       mem.inv = mem.inv || {};
       const parts = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean).slice(1);

@@ -1,5 +1,9 @@
 {
   "rules": {
+    "settings": {
+      ".read": true,
+      ".write": "auth != null"
+    },
     "quizzes": {
       ".read": true,
       ".write": "auth != null"
@@ -21,6 +25,12 @@
         "$code": {
           ".write": "auth != null || (data.exists() && !data.child('used').exists())"
         }
+      }
+    },
+    "bundles": {
+      ".read": true,
+      "$bundleId": {
+        ".write": "auth != null || (data.exists() && !data.child('used').exists())"
       }
     }
   }
