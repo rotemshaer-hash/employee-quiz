@@ -34,9 +34,11 @@
   .htxt h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
   .htxt p{margin:2px 0 0;font-size:13px;opacity:.85}
   .ver{font-size:12px;font-weight:500;opacity:.8;margin-inline-start:8px}
-  header #logout{position:absolute;top:22px;inset-inline-end:20px;z-index:2;width:auto;
+  header #logout{margin-inline-start:auto;flex:none;align-self:flex-start;width:auto;
     background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;
-    border-radius:12px;padding:8px 14px;font-size:14px;font-weight:600;box-shadow:none;margin:0}
+    border-radius:12px;padding:7px 13px;font-size:13.5px;font-weight:600;box-shadow:none}
+  .htxt{min-width:0}
+  .htxt h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
   main{max-width:640px;margin:-26px auto 0;padding:0 16px 150px;position:relative;z-index:1}
   h2{font-size:20px;font-weight:800;margin:0 0 4px;letter-spacing:-.02em}
@@ -128,11 +130,11 @@
 </head>
 <body>
 <header>
-  <button id="logout" class="hidden">יציאה</button>
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
-    <div class="htxt"><h1>ניהול המבחנים<span class="ver">גרסה 22</span></h1>
-    <p>מבנים · בדק בית וייעוץ הנדסי</p></div>
+    <div class="htxt"><h1>ניהול המבחנים</h1>
+    <p>מבנים · בדק בית<span class="ver">גרסה 23</span></p></div>
+    <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
 <main>
@@ -189,8 +191,8 @@
 
 <input type="file" id="pick" accept="video/*" multiple hidden>
 
-<script src="settings.js?v=22"></script>
-<script src="demo.js?v=22"></script>
+<script src="settings.js?v=23"></script>
+<script src="demo.js?v=23"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
