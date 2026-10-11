@@ -162,13 +162,13 @@
   <!-- 7. סיום -->
   <section id="s-done" class="card done hidden">
     <div class="tick">✓</div>
-    <h2>תודה! נשלח בהצלחה</h2>
-    <p class="muted">אפשר לסגור את הדף.</p>
+    <h2>תודה! ההגשה נקלטה</h2>
+    <p class="muted" id="doneNote">אפשר לסגור את הדף.</p>
   </section>
 </main>
 
-<script src="settings.js?v=26"></script>
-<script src="demo.js?v=26"></script>
+<script src="settings.js?v=31"></script>
+<script src="demo.js?v=31"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
@@ -263,7 +263,7 @@ $('start').onclick = async () => {
     if (lock && lock.used) return usedScreen(lock.name);
   } else {
     try {
-      const res = await fetch(DB('/submissions/' + PKG[0].id + '/' + encodeURIComponent(nameKey(who))), { cache: 'no-store' });
+      const res = await fetch(DB('/done/' + PKG[0].id + '/' + encodeURIComponent(nameKey(who))), { cache: 'no-store' });
       if (!res.ok) throw 0;
       if ((await res.json()) !== null) return usedScreen(who);
       try { localStorage.removeItem(DONE_KEY(who)); } catch (e) {}
@@ -484,8 +484,7 @@ $('send').onclick = () => {
 };
 
 // ---------- שליחה ----------
-async function sendAll() {
-  const name = $('name').value.trim();
+function buildEmailData(name) {
   const totals = results.reduce((a, r) => {
     r.perTopic.forEach(p => { a.right += p.right; a.choices += p.choices; });
     return a;
@@ -523,8 +522,89 @@ async function sendAll() {
         row.answer + (row.ok === true ? '  ✅' : row.ok === false ? '  ❌' : '  (פתוחה — לבדיקה)');
     });
   });
+  return data;
+}
+
+async function putJSON(url, body) {
+  const res = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (!res.ok) throw new Error('save ' + res.status);
+  return res;
+}
+function subRecord(r, name, mail) {
+  const rt = r.perTopic.reduce((a, p) => ({ right: a.right + p.right, choices: a.choices + p.choices }), { right: 0, choices: 0 });
+  return {
+    name: name, at: Date.now(), right: rt.right, total: rt.choices,
+    pct: rt.choices ? Math.round(rt.right / rt.choices * 100) : 0, mail: mail,
+    topics: r.topics.filter(t => t.name).map(t => {
+      const ti = r.topics.indexOf(t);
+      return { name: t.name, right: r.perTopic[ti].right, choices: r.perTopic[ti].choices,
+               watched: r.seen[t.name] || r.seen[ti] || 0 };
+    }),
+    answers: r.rows.map(row => ({ topic: r.topics[row.ti].name || '', q: row.q.text, a: row.answer,
+                                  ok: row.ok === null ? 'open' : (row.ok ? 'yes' : 'no') })),
+  };
+}
+// שמירה: PUT לכל מבחן, עם המתנה לאישור. אותו מפתח בכל ניסיון, לכן לחיצה חוזרת לא מכפילה.
+async function saveResults(name, mail) {
+  const key = subKeyFor(name);
+  for (const r of results) {
+    await putJSON(DB('/submissions/' + r.id + '/' + encodeURIComponent(key)), subRecord(r, name, mail));
+  }
+}
+// נעילת הקישור. חד־פעמיות נאכפת ברגע ההגשה, לא רק בפתיחה.
+async function lockLink(name) {
+  if (!(code || bundleId)) {
+    await putJSON(DB('/done/' + PKG[0].id + '/' + encodeURIComponent(nameKey(name))), Date.now());
+    return;
+  }
+  const res = await fetch(lockUrl(), { method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ used: Date.now(), name: name }) });
+  if (!res.ok) throw new Error('lock ' + res.status);
+}
+async function markMail(name, mail) {
+  const key = subKeyFor(name);
+  for (const r of results) {
+    try {
+      await fetch(DB('/submissions/' + r.id + '/' + encodeURIComponent(key)), {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mail: mail }) });
+    } catch (e) {}
+  }
+}
+
+let savedOk = false;     // כדי שלחיצה חוזרת אחרי כשל מייל לא תשמור מחדש
+
+async function sendAll() {
+  const name = $('name').value.trim();
+  const data = buildEmailData(name);
 
   $('send').disabled = true; $('send').textContent = 'שולח...';
+  $('qerr').textContent = '';
+
+  // 1. שמירה למסד — קודם כול, ועם המתנה לאישור. בלי זה אין הגשה.
+  if (!savedOk) {
+    try {
+      await saveResults(name, 'pending');
+      savedOk = true;
+    } catch (err) {
+      $('qerr').textContent = 'ההגשה לא נשמרה. בדוק שיש אינטרנט ולחץ שוב — התשובות שלך נשארו כאן.';
+      $('send').disabled = false; $('send').textContent = 'שליחת המבחן';
+      return;
+    }
+    // 2. נעילת הקישור. אם מישהו אחר הגיש בינתיים — מסך "כבר נוצל".
+    try {
+      await lockLink(name);
+    } catch (err) {
+      let used = null;
+      if (code || bundleId) { try { used = (await (await fetch(lockUrl(), { cache: 'no-store' })).json()) || null; } catch (e) {} }
+      if (used && used.used) return usedScreen(used.name);
+      $('qerr').textContent = 'ההגשה נשמרה אבל לא הושלמה. בדוק שיש אינטרנט ולחץ שוב.';
+      $('send').disabled = false; $('send').textContent = 'שליחת המבחן';
+      return;
+    }
+    try { localStorage.setItem(DONE_KEY(name), '1'); } catch (e) {}
+  }
+
+  // 3. מייל. זה השלב היחיד שמותר לו להיכשל בלי שהעובד ימלא מחדש.
   try {
     const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(resultsEmail), {
       method: 'POST',
@@ -533,34 +613,12 @@ async function sendAll() {
     });
     const json = await res.json().catch(() => ({}));
     if (!res.ok || String(json.success) !== 'true') throw new Error(json.message || res.status);
-    try { localStorage.setItem(DONE_KEY(name), '1'); } catch (e) {}
-    const key = subKeyFor(name);
-    results.forEach(r => {
-      const rt = r.perTopic.reduce((a, p) => ({ right: a.right + p.right, choices: a.choices + p.choices }), { right: 0, choices: 0 });
-      fetch(DB('/submissions/' + r.id + '/' + encodeURIComponent(key)), {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name, at: Date.now(), right: rt.right, total: rt.choices,
-          pct: rt.choices ? Math.round(rt.right / rt.choices * 100) : 0,
-          topics: r.topics.filter(t => t.name).map(t => {
-            const ti = r.topics.indexOf(t);
-            return { name: t.name, right: r.perTopic[ti].right, choices: r.perTopic[ti].choices,
-                     watched: r.seen[t.name] || r.seen[ti] || 0 };
-          }),
-          answers: r.rows.map(row => ({ topic: r.topics[row.ti].name || '', q: row.q.text, a: row.answer,
-                                        ok: row.ok === null ? 'open' : (row.ok ? 'yes' : 'no') })),
-        }),
-      }).catch(() => {});
-    });
-    if (code || bundleId) {
-      fetch(lockUrl(), { method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ used: Date.now(), name: name }) }).catch(() => {});
-    }
+    await markMail(name, 'sent');
     show('s-done');
   } catch (err) {
-    $('qerr').textContent = 'השליחה נכשלה. בדוק שיש אינטרנט ולחץ שוב. התשובות שלך נשמרו במסך.';
-    $('send').disabled = false; $('send').textContent = 'שליחת המבחן';
-    show('s-quiz');
+    await markMail(name, 'failed');
+    $('doneNote').textContent = 'ההגשה נקלטה ונשמרה. שליחת המייל למנהל לא עברה — המנהל רואה את התוצאות אצלו ויכול לשלוח שוב. אתה לא צריך למלא שוב.';
+    show('s-done');
   }
 }
 </script>

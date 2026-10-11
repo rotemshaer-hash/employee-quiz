@@ -47,7 +47,8 @@
     url = String(url); opts = opts || {};
     const method = (opts.method || 'GET').toUpperCase();
     read();
-    if (url.includes('identitytoolkit.googleapis.com')) return json({ idToken: 'demo' });
+    if (url.includes('identitytoolkit.googleapis.com')) return json({ idToken: 'demo', refreshToken: 'demo' });
+    if (url.includes('securetoken.googleapis.com')) return json({ id_token: 'demo', refresh_token: 'demo' });
     if (url.includes('formsubmit.co')) {
       mem.mails.unshift(Object.assign({ _at: Date.now() }, JSON.parse(opts.body)));
       write(); return json({ success: 'true' });
@@ -85,7 +86,13 @@
       const parts = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean).slice(1);
       const [kind, key] = parts;
       if (kind) mem.lib[kind] = mem.lib[kind] || {};
-      if (method === 'PATCH') { Object.assign(mem.lib[kind], JSON.parse(opts.body)); write(); return json(JSON.parse(opts.body)); }
+      if (method === 'PATCH') {
+        const body = JSON.parse(opts.body);
+        if (key) { const it = mem.lib[kind][key] = mem.lib[kind][key] || {};
+          Object.keys(body).forEach(f => { if (body[f] === null) delete it[f]; else it[f] = body[f]; }); }
+        else Object.assign(mem.lib[kind], body);
+        write(); return json(body);
+      }
       if (method === 'PUT') { if (key) mem.lib[kind][key] = JSON.parse(opts.body); else if (kind) mem.lib[kind] = JSON.parse(opts.body); else mem.lib = JSON.parse(opts.body); write(); return json(JSON.parse(opts.body)); }
       if (method === 'DELETE') { if (key) delete mem.lib[kind][key]; else if (kind) delete mem.lib[kind]; else mem.lib = {}; write(); return json(null); }
       const v = key ? mem.lib[kind][key] : (kind ? mem.lib[kind] : mem.lib);
@@ -119,7 +126,16 @@
         write(); return json(body);
       }
       if (method === 'DELETE') { if (c) delete node()[c]; else delete mem.inv[qid]; write(); return json(null); }
-      const v = c ? (mem.inv[qid] || {})[c] : mem.inv[qid];
+      const v = qid ? (c ? (mem.inv[qid] || {})[c] : mem.inv[qid]) : mem.inv;
+      return json(v === undefined ? null : v);
+    }
+    if (url.startsWith(SETTINGS.databaseURL + '/done')) {
+      mem.done = mem.done || {};
+      const parts = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean).slice(1);
+      const [qid, key] = parts.map(decodeURIComponent);
+      if (method === 'PUT') { (mem.done[qid] = mem.done[qid] || {})[key] = JSON.parse(opts.body); write(); return json(JSON.parse(opts.body)); }
+      if (method === 'DELETE') { if (key) delete (mem.done[qid] || {})[key]; else delete mem.done[qid]; write(); return json(null); }
+      const v = qid ? (key ? (mem.done[qid] || {})[key] : mem.done[qid]) : mem.done;
       return json(v === undefined ? null : v);
     }
     if (url.startsWith(SETTINGS.databaseURL + '/submissions')) {
@@ -127,8 +143,13 @@
       const parts = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean).slice(1);
       const [qid, key] = parts.map(decodeURIComponent);
       if (method === 'PUT') { (mem.subs[qid] = mem.subs[qid] || {})[key] = JSON.parse(opts.body); write(); return json(JSON.parse(opts.body)); }
+      if (method === 'PATCH') {
+        const body = JSON.parse(opts.body);
+        Object.assign((mem.subs[qid] = mem.subs[qid] || {})[key] = (mem.subs[qid][key] || {}), body);
+        write(); return json(body);
+      }
       if (method === 'DELETE') { if (key) { delete (mem.subs[qid] || {})[key]; } else { delete mem.subs[qid]; } write(); return json(null); }
-      const node = key ? (mem.subs[qid] || {})[key] : mem.subs[qid];
+      const node = qid ? (key ? (mem.subs[qid] || {})[key] : mem.subs[qid]) : mem.subs;
       return json(node === undefined ? null : node);
     }
     if (url.startsWith(SETTINGS.databaseURL)) {

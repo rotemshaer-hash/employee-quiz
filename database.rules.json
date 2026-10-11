@@ -1,5 +1,9 @@
 {
   "rules": {
+    "quizzes": {
+      ".read": true,
+      ".write": "auth != null"
+    },
     "library": {
       ".read": true,
       ".write": "auth != null"
@@ -8,33 +12,63 @@
       ".read": true,
       ".write": "auth != null"
     },
-    "quizzes": {
-      ".read": true,
-      ".write": "auth != null"
-    },
+
     "submissions": {
-      ".read": true,
+      ".read": "auth != null",
+      ".write": "auth != null",
       "$quizId": {
-        ".write": "auth != null",
         "$person": {
-          ".write": "!data.exists() || auth != null",
-          ".validate": "newData.hasChildren(['name','at'])"
+          ".write": "auth != null || !data.exists()",
+          ".validate": "newData.hasChildren(['name','at'])",
+          "mail": {
+            ".write": "auth != null || data.parent().exists()",
+            ".validate": "newData.isString() && newData.val().length < 10"
+          }
         }
       }
     },
+
+    "done": {
+      ".read": true,
+      ".write": "auth != null",
+      "$quizId": {
+        "$person": {
+          ".write": "auth != null || !data.exists()",
+          ".validate": "newData.isNumber()"
+        }
+      }
+    },
+
     "invites": {
       ".read": true,
       "$quizId": {
         ".write": "auth != null",
         "$code": {
-          ".write": "auth != null || (data.exists() && !data.child('used').exists())"
+          ".write": "auth != null",
+          "used": {
+            ".write": "auth != null || (data.parent().exists() && !data.parent().child('used').exists())",
+            ".validate": "newData.isNumber()"
+          },
+          "name": {
+            ".write": "auth != null || (data.parent().exists() && !data.parent().child('used').exists())",
+            ".validate": "newData.isString() && newData.val().length < 80"
+          }
         }
       }
     },
+
     "bundles": {
       ".read": true,
       "$bundleId": {
-        ".write": "auth != null || (data.exists() && !data.child('used').exists())"
+        ".write": "auth != null",
+        "used": {
+          ".write": "auth != null || (data.parent().exists() && !data.parent().child('used').exists())",
+          ".validate": "newData.isNumber()"
+        },
+        "name": {
+          ".write": "auth != null || (data.parent().exists() && !data.parent().child('used').exists())",
+          ".validate": "newData.isString() && newData.val().length < 80"
+        }
       }
     }
   }

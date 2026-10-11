@@ -71,6 +71,7 @@
   .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
   .tag{font-size:12px;font-weight:600;color:var(--muted);background:var(--soft);
        border:1px solid var(--line);border-radius:99px;padding:3px 9px}
+  .tag.warn{color:#9a3412;background:#fff7ed;border-color:#fdba74}
   .opt{display:flex;gap:10px;align-items:center;margin-top:9px}
   .opt input[type=radio]{width:22px;height:22px;flex:none;accent-color:var(--accent2)}
   .opt input[type=text]{flex:1}
@@ -170,7 +171,7 @@
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
     <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 30</span></p></div>
+    <p>מבנים<span class="ver">· גרסה 31</span></p></div>
     <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
@@ -187,7 +188,8 @@
   <!-- רשימת מבחנים -->
   <section id="s-list" class="card hidden">
     <div class="sect"><h2>המבחנים שלי</h2>
-      <button class="mini" id="openLib">📚 מאגר</button></div>
+      <span class="row" style="flex:none;gap:6px"><button class="mini" id="backup" title="הורדת גיבוי">💾 גיבוי</button>
+      <button class="mini" id="openLib">📚 מאגר</button></span></div>
     <div class="emailrow"><span>📧 תוצאות ל־<bdi id="emailText" dir="ltr"></bdi></span>
       <button class="mini" id="emailEdit">שינוי</button></div>
     <div id="emailBox" class="hidden" style="margin:-6px 0 14px">
@@ -206,7 +208,9 @@
     <section class="card">
       <div class="seg"><button id="tabQ" class="on">שאלות</button><button id="tabV">סרטונים</button></div>
       <input id="libSearch" type="text" placeholder="חיפוש חופשי...">
-      <p class="muted" style="margin:10px 0 14px">כל מה שהעלית אי פעם. סמן פריטים וצור מהם מבחן חדש.</p>
+      <div class="row" style="margin-top:10px"><button class="mini" id="libArch">📦 ארכיון</button></div>
+      <p class="muted" style="margin:10px 0 14px">כל מה שהעלית אי פעם, עם המבחנים שמשתמשים בכל פריט.
+      סמן פריטים וצור מהם מבחן חדש. פריט שלא צריך — "לארכיון", וכך לא שוברים תוכן קיים.</p>
       <div id="libList"></div>
     </section>
   </div>
@@ -260,8 +264,8 @@
 
 <input type="file" id="pick" accept="video/*" multiple hidden>
 
-<script src="settings.js?v=30"></script>
-<script src="demo.js?v=30"></script>
+<script src="settings.js?v=31"></script>
+<script src="demo.js?v=31"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -273,6 +277,8 @@ const SUBS = path => SETTINGS.databaseURL + '/submissions' + path + '.json';
 const INV = path => SETTINGS.databaseURL + '/invites' + path + '.json';
 const BUN = path => SETTINGS.databaseURL + '/bundles' + path + '.json';
 const LIB = path => SETTINGS.databaseURL + '/library' + path + '.json';
+const SET = path => SETTINGS.databaseURL + '/settings' + path + '.json';
+const DONE = path => SETTINGS.databaseURL + '/done' + path + '.json';
 const hash = str => { let h = 0; for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
                       return Math.abs(h).toString(36) + str.length.toString(36); };
 const CODE_CHARS = 'abcdefghjkmnpqrstuvwxyz23456789';
@@ -293,6 +299,9 @@ const bundleLink = b => new URL('index.html?b=' + b, location.href).href;
 let token = null, quizzes = {}, quizId = null, quiz = null, dirty = false, globalEmail = '';
 const selected = new Set();                 // מבחנים שסומנו לשליחה מרוכזת
 let library = { videos: {}, questions: {} };
+let invAll = {}, subCount = {};             // לשורת המצב בכל מבחן
+let libArch = false;                        // האם מציגים פריטים בארכיון
+let pendingLib = null;                      // מבחן שנשמר אבל לא נכנס למאגר
 const libSel = new Set();                   // פריטים שסומנו במאגר: 'v:<key>' או 'q:<key>'
 let libTab = 'questions';
 let catFilter = '';                         // '' = כל הקטגוריות
@@ -313,18 +322,27 @@ async function login(email, password) {
   });
   const j = await res.json();
   if (!res.ok) throw new Error(j.error && j.error.message);
+  if (j.refreshToken) sessionSet('rt', j.refreshToken);
   return j.idToken;
 }
+// חידוש ההתחברות דרך refresh token של פיירבייס. הסיסמה לא נשמרת בדפדפן.
 async function relogin() {
-  const c = JSON.parse(sessionGet('cred') || 'null');
-  if (!c) throw new Error('auth');
-  token = await login(c.e, c.p);
+  const rt = sessionGet('rt');
+  if (!rt) throw new Error('auth');
+  const res = await fetch('https://securetoken.googleapis.com/v1/token?key=' + SETTINGS.apiKey, {
+    method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(rt),
+  });
+  const j = await res.json();
+  if (!res.ok || !(j.id_token || j.idToken)) throw new Error('auth');
+  token = j.id_token || j.idToken;
+  return token;
 }
 $('login').onclick = async () => {
   $('loginErr').textContent = ''; $('login').disabled = true;
   try {
     token = await login($('email').value.trim(), $('pass').value);
-    sessionSet('cred', JSON.stringify({ e: $('email').value.trim(), p: $('pass').value }));
+    $('pass').value = '';
     await load();
   } catch (e) { $('loginErr').textContent = 'אימייל או סיסמה לא נכונים.'; }
   $('login').disabled = false;
@@ -339,10 +357,19 @@ async function authedUrl(method, url, body) {
   return res;
 }
 
+// קריאה מאומתת. מאז הידוק הכללים, הגשות נקראות רק עם טוקן.
+async function authedGet(url) {
+  const go = () => fetch(url + (url.includes('?') ? '&' : '?') + 'auth=' + encodeURIComponent(token), { cache: 'no-store' });
+  let res = await go();
+  if (res.status === 401) { await relogin(); res = await go(); }
+  if (!res.ok) throw new Error(res.status);
+  return (await res.json()) || null;
+}
+
 // ---------- רשימת המבחנים ----------
 async function load() {
   quizzes = (await (await fetch(DB(''), { cache: 'no-store' })).json()) || {};
-  globalEmail = (await (await fetch(SETTINGS.databaseURL + '/settings/resultsEmail.json', { cache: 'no-store' })).json()) || '';
+  globalEmail = (await (await fetch(SET('/resultsEmail'), { cache: 'no-store' })).json()) || '';
   if (!globalEmail) {                      // העברה חד־פעמית מהמייל שהוגדר במבחן קיים
     const any = Object.values(quizzes).find(q => q.resultsEmail);
     if (any) { globalEmail = any.resultsEmail; saveGlobalEmail(true); }
@@ -350,12 +377,88 @@ async function load() {
   $('globalEmail').value = globalEmail;
   showEmailRow();
   showList();
+  loadLibrary().catch(() => {});
+  loadStats().catch(() => {});
+}
+// המאגר נטען גם ברשימה, כי ניקוי סרטונים חייב לדעת מה המאגר עוד מציע
+async function loadLibrary() {
+  const lib = (await (await fetch(LIB(''), { cache: 'no-store' })).json()) || {};
+  library = { videos: lib.videos || {}, questions: lib.questions || {} };
+  return library;
+}
+// כמה קישורים נשלחו, כמה הוגשו, כמה ממתינים
+async function loadStats() {
+  invAll = (await authedGet(SETTINGS.databaseURL + '/invites.json')) || {};
+  const ids = Object.keys(quizzes);
+  const counts = await Promise.all(ids.map(id =>
+    authedGet(SUBS('/' + id) + '?shallow=true').then(o => Object.keys(o || {}).length).catch(() => 0)));
+  subCount = {}; ids.forEach((id, i) => { subCount[id] = counts[i]; });
+  const open = [...document.querySelectorAll('[id^="who-"]')].some(x => x.dataset.open);
+  if (!$('s-list').classList.contains('hidden') && !open) showList();
+}
+
+// ---------- גיבוי וייצוא ----------
+async function exportBackup() {
+  try {
+    const data = {
+      exported: new Date().toISOString(), app: 'employee-quiz',
+      settings: { resultsEmail: globalEmail },
+      quizzes: quizzes,
+      submissions: (await authedGet(SETTINGS.databaseURL + '/submissions.json')) || {},
+      invites: (await authedGet(SETTINGS.databaseURL + '/invites.json')) || {},
+      bundles: (await authedGet(SETTINGS.databaseURL + '/bundles.json')) || {},
+      library: library,
+    };
+    const name = 'quiz-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+    a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+    return true;
+  } catch (e) { alert('הגיבוי נכשל. בדוק אינטרנט ונסה שוב.'); return false; }
+}
+$('backup').onclick = () => exportBackup();
+
+// שליחה חוזרת של מייל להגשה שנשמרה אבל המייל שלה נפל
+async function resendMail(id, key, btn) {
+  const r = await authedGet(SUBS('/' + id + '/' + encodeURIComponent(key))).catch(() => null);
+  if (!r) return alert('לא מצאתי את ההגשה.');
+  if (!/^\S+@\S+\.\S+$/.test(globalEmail)) return alert('קודם הגדר מייל לקבלת תוצאות.');
+  const data = {
+    _subject: (quizzes[id] ? quizzes[id].title : 'מבחן') + ': ' + (r.name || key) + (r.total ? ' — ' + r.pct + '%' : ''),
+    _template: 'box', _captcha: 'false',
+    'שם': r.name || key,
+    'ציון כולל': (r.right || 0) + '/' + (r.total || 0) + ' (' + (r.pct || 0) + '%)',
+    'זמן הגשה': new Date(r.at || 0).toLocaleString('he-IL'),
+  };
+  (r.topics || []).forEach(t => {
+    data['נושא: ' + t.name] = (t.choices ? 'ציון ' + t.right + '/' + t.choices : 'בלי שאלות') +
+      (t.watched ? ' · ' + (t.watched === 1 ? 'הבין אחרי סרטון אחד' : 'נזקק ל-' + t.watched + ' סרטונים') : '');
+  });
+  (r.answers || []).forEach((a, i) => {
+    data[(i + 1) + '. ' + (a.topic ? '[' + a.topic + '] ' : '') + a.q] =
+      a.a + (a.ok === 'yes' ? '  ✅' : a.ok === 'no' ? '  ❌' : '  (פתוחה — לבדיקה)');
+  });
+  if (btn) { btn.disabled = true; btn.textContent = 'שולח...'; }
+  try {
+    const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(globalEmail), {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(data),
+    });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok || String(j.success) !== 'true') throw new Error(j.message || res.status);
+    await authedUrl('PATCH', SUBS('/' + id + '/' + encodeURIComponent(key)), { mail: 'sent' });
+    $('who-' + id).dataset.open = ''; showWho(id);
+  } catch (e) {
+    alert('השליחה נכשלה. אם זו כתובת חדשה — חפש מייל אישור מ-FormSubmit, ואז נסה שוב.');
+    if (btn) { btn.disabled = false; btn.textContent = '📧 שלח שוב'; }
+  }
 }
 async function saveGlobalEmail(quiet) {
   const v = $('globalEmail').value.trim();
   if (!/^\S+@\S+\.\S+$/.test(v)) { if (!quiet) $('emailMsg').textContent = 'צריך מייל תקין.'; return; }
   try {
-    await authedUrl('PUT', SETTINGS.databaseURL + '/settings/resultsEmail', v);
+    await authedUrl('PUT', SET('/resultsEmail'), v);
     globalEmail = v;
     showEmailRow();
     if (!quiet) { $('emailMsg').textContent = 'נשמר ✅'; setTimeout(() => { $('emailMsg').textContent = ''; $('emailBox').classList.add('hidden'); }, 1500); }
@@ -413,6 +516,8 @@ async function bulk(action) {
   btn.disabled = true; btn.textContent = 'מכין קישורים...';
   try {
     if (!/^\S+@\S+\.\S+$/.test(globalEmail)) { alert('קודם הגדר מייל לקבלת תוצאות במסך הראשי.'); throw 0; }
+    const bad = [...selected].flatMap(id => readiness(id).map(x => quizzes[id].title + ' — ' + x));
+    if (bad.length && !confirm('יש מבחנים שעוד לא מוכנים:\n\n· ' + bad.join('\n· ') + '\n\nלשלוח בכל זאת?')) throw 0;
     const msg = await buildMessage();
     if (action === 'wa') open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
     else {
@@ -425,6 +530,36 @@ async function bulk(action) {
 }
 $('selWa').onclick = () => bulk('wa');
 $('selCopy').onclick = () => bulk('copy');
+// בדיקת מוכנות: מה שימנע ממבחן לעבוד אצל העובד, בפעולה אחת
+function readiness(id) {
+  const q = normalize(JSON.parse(JSON.stringify(quizzes[id])));
+  const bad = [];
+  let questions = 0, choices = 0;
+  q.topics.forEach((t, ti) => {
+    const where = t.name ? '"' + t.name + '"' : 'נושא ' + (ti + 1);
+    t.videos.forEach((v, i) => {
+      if (v.kind === 'file' && !v.path) bad.push('בנושא ' + where + ': סרטון ' + (i + 1) + ' לא סיים להיעלות.');
+      if (!v.url) bad.push('בנושא ' + where + ': לסרטון ' + (i + 1) + ' אין קובץ או קישור.');
+    });
+    t.questions.forEach((x, i) => {
+      questions++;
+      if (!String(x.text || '').trim()) bad.push('בנושא ' + where + ': לשאלה ' + (i + 1) + ' אין נוסח.');
+      if (x.type === 'choice') {
+        choices++;
+        if (!((x.options || []).length >= 2)) bad.push('בנושא ' + where + ': לשאלה ' + (i + 1) + ' אין מספיק תשובות.');
+        if (!(x.correct >= 1 && x.correct <= (x.options || []).length)) bad.push('בנושא ' + where + ': בשאלה ' + (i + 1) + ' לא סומנה תשובה נכונה.');
+      }
+    });
+  });
+  if (!questions) bad.push('אין אף שאלה במבחן.');
+  if (!/^\S+@\S+\.\S+$/.test(globalEmail)) bad.push('לא הוגדר מייל לקבלת תוצאות (במסך הראשי).');
+  return bad;
+}
+function readyReport(id) {
+  const bad = readiness(id);
+  if (!bad.length) return alert('מוכן לשליחה ✅\n\nיש שאלות, סומנו תשובות נכונות, ההעלאות הסתיימו, ומוגדר מייל לתוצאות.\n\nשים לב: אישור הכתובת אצל FormSubmit עדיין דורש הגשת ניסיון אחת שלך.');
+  alert('צריך לתקן לפני שליחה:\n\n· ' + bad.join('\n· '));
+}
 function countOf(q) {
   const t = normalize(JSON.parse(JSON.stringify(q)));
   return { topics: t.topics.length,
@@ -437,15 +572,29 @@ function quizCard(id) {
     '<label class="pick"><input type="checkbox" data-sel="' + id + '"' + (selected.has(id) ? ' checked' : '') + '>' +
     '<span style="flex:1"><b style="font-size:17px">' + esc(quizzes[id].title) + '</b><div class="tags">' +
     '<span class="tag">' + c.topics + ' נושאים</span><span class="tag">' + c.videos + ' סרטונים</span>' +
-    '<span class="tag">' + c.questions + ' שאלות</span></div></span></label><div class="row">' +
+    '<span class="tag">' + c.questions + ' שאלות</span>' + statTags(id) + '</div></span></label><div class="row">' +
     '<button class="mini key" data-list="edit" data-id="' + id + '">' + ICON.edit + 'עריכה</button>' +
     '<button class="mini" data-list="links" data-id="' + id + '">' + ICON.link + 'קישורים</button>' +
     '<button class="mini" data-list="who" data-id="' + id + '">' + ICON.users + 'מי הגיש</button>' +
     '<button class="mini" data-list="more" data-id="' + id + '" title="עוד">⋯</button></div>' +
     '<div class="menu hidden" id="menu-' + id + '">' +
+      '<button class="mini" data-list="ready" data-id="' + id + '">✅ בדיקת מוכנות</button>' +
       '<button class="mini" data-list="dup" data-id="' + id + '">' + ICON.copy + 'שכפול</button>' +
       '<button class="mini del" data-list="del" data-id="' + id + '">' + ICON.trash + 'מחיקה</button></div>' +
     '<div id="who-' + id + '"></div></div>';
+}
+// שורת מצב: כמה קישורים נשלחו, כמה הוגשו, כמה ממתינים
+function statTags(id) {
+  const inv = invAll[id] || {};
+  const codes = Object.keys(inv);
+  const sent = codes.filter(c => inv[c].sent).length;
+  const done = subCount[id] || 0;
+  const waiting = codes.filter(c => inv[c].sent && !inv[c].used).length;
+  const bad = readiness(id).length;
+  return (sent ? '<span class="tag">נשלחו ' + sent + '</span>' : '') +
+         (done ? '<span class="tag">הוגשו ' + done + '</span>' : '') +
+         (waiting ? '<span class="tag">ממתינים ' + waiting + '</span>' : '') +
+         (bad ? '<span class="tag warn">דורש טיפול</span>' : '');
 }
 function showList() {
   const ids = Object.keys(quizzes).sort((a, b) => (quizzes[b].updated || 0) - (quizzes[a].updated || 0));
@@ -521,12 +670,16 @@ $('list').addEventListener('click', async e => {
   if (d.list === 'edit') openQuiz(id, quizzes[id]);
   else if (d.list === 'who') showWho(id);
   else if (d.list === 'links') showLinks(id);
+  else if (d.list === 'ready') readyReport(id);
+  else if (d.list === 'resend') resendMail(id, d.key, e.target);
   else if (d.list === 'mklinks') {
+    const bad = readiness(id);
+    if (bad.length && !confirm('המבחן עוד לא מוכן:\n\n· ' + bad.join('\n· ') + '\n\nליצור קישורים בכל זאת?')) return;
     const n = Math.min(50, Math.max(1, +($('cnt-' + id) || {}).value || 1));
     const batch = {};
     for (let i = 0; i < n; i++) batch[newCode()] = { created: Date.now() };
     try { await authedUrl('PATCH', INV('/' + id), batch); } catch (err) { alert('היצירה נכשלה. נסה שוב.'); return; }
-    $('who-' + id).dataset.open = ''; showLinks(id);
+    $('who-' + id).dataset.open = ''; showLinks(id); loadStats().catch(() => {});
   }
   else if (d.list === 'copylink' || d.list === 'walink') {
     const url = inviteLink(id, d.key);
@@ -544,12 +697,16 @@ $('list').addEventListener('click', async e => {
   else if (d.list === 'reopen') {
     if (!confirm('לאפשר למשתתף הזה לעשות את המבחן שוב?')) return;
     await authedUrl('DELETE', SUBS('/' + id + '/' + encodeURIComponent(d.key)));
-    $('who-' + id).dataset.open = ''; showWho(id);
+    authedUrl('DELETE', DONE('/' + id + '/' + encodeURIComponent(d.key))).catch(() => {});
+    $('who-' + id).dataset.open = ''; showWho(id); loadStats().catch(() => {});
   }
   else if (d.list === 'reopenall') {
-    if (!confirm('לאפס את כל ההגשות?')) return;
+    if (!confirm('לאפס את כל ההגשות של "' + quizzes[id].title + '"? כל התוצאות יימחקו.')) return;
+    if (confirm('להוריד קודם גיבוי של התוצאות? (מומלץ)')) await exportBackup();
+    if (!confirm('למחוק עכשיו את כל ההגשות?')) return;
     await authedUrl('DELETE', SUBS('/' + id));
-    $('who-' + id).dataset.open = ''; showWho(id);
+    authedUrl('DELETE', DONE('/' + id)).catch(() => {});
+    $('who-' + id).dataset.open = ''; showWho(id); loadStats().catch(() => {});
   }
   else if (d.list === 'dup') {
     const copy = JSON.parse(JSON.stringify(quizzes[id]));
@@ -560,7 +717,8 @@ $('list').addEventListener('click', async e => {
     alert('נוצר עותק: "' + copy.title + '". צור לו קישורים חדשים.');
   }
   else if (d.list === 'del') {
-    if (!confirm('למחוק את "' + quizzes[id].title + '"? הקישורים שלו יפסיקו לעבוד.')) return;
+    if (!confirm('למחוק את "' + quizzes[id].title + '"? הקישורים שלו יפסיקו לעבוד, וההגשות שלו יימחקו.')) return;
+    if (confirm('להוריד קודם גיבוי? (מומלץ)')) await exportBackup();
     try {
       const paths = [];
       (quizzes[id].topics || []).forEach(t => (t.videos || []).forEach(v => v.path && paths.push(v.path)));
@@ -568,6 +726,7 @@ $('list').addEventListener('click', async e => {
       await authedUrl('DELETE', DB('/' + id)); delete quizzes[id];
       authedUrl('DELETE', SUBS('/' + id)).catch(() => {});
       authedUrl('DELETE', INV('/' + id)).catch(() => {});
+      authedUrl('DELETE', DONE('/' + id)).catch(() => {});
       deleteUnused(paths);
       showList();
     } catch (err) { alert('המחיקה נכשלה. נסה שוב.'); }
@@ -615,7 +774,7 @@ async function showWho(id) {
   box.dataset.open = 'who';
   box.innerHTML = '<p class="muted">טוען...</p>';
   let subs = {};
-  try { subs = (await (await fetch(SUBS('/' + id), { cache: 'no-store' })).json()) || {}; }
+  try { subs = (await authedGet(SUBS('/' + id))) || {}; }
   catch (e) { box.innerHTML = '<p class="err">לא הצלחתי לטעון. נסה שוב.</p>'; return; }
   const keys = Object.keys(subs).sort((a, b) => (subs[b].at || 0) - (subs[a].at || 0));
   const mark = { yes: ' ✅', no: ' ❌', open: ' (פתוחה — לבדיקה)' };
@@ -623,9 +782,14 @@ async function showWho(id) {
     (keys.length ? keys.map(k => {
       const r = subs[k];
       const score = r.total ? ' · ' + r.right + '/' + r.total + ' (' + r.pct + '%)' : '';
+      const mailOk = r.mail === 'sent';
       return '<div class="item" style="margin-top:10px">' +
         '<div class="opt" style="justify-content:space-between"><b>' + esc(r.name || k) + score + '</b>' +
         '<button class="mini" data-list="reopen" data-id="' + id + '" data-key="' + esc(k) + '">לאפשר שוב</button></div>' +
+        '<div class="tags">' + (mailOk
+          ? '<span class="tag">המייל נשלח ✓</span>'
+          : '<span class="tag warn">המייל לא נשלח</span>' +
+            '<button class="mini" data-list="resend" data-id="' + id + '" data-key="' + esc(k) + '">📧 שלח שוב</button>') + '</div>' +
         '<details><summary class="muted" style="font-weight:500">פרטים · ' + new Date(r.at || 0).toLocaleString('he-IL') + '</summary>' +
         (r.topics || []).map(t => '<div class="muted">· <b>' + esc(t.name) + '</b>: ' +
           (t.choices ? 'ציון ' + t.right + '/' + t.choices : 'בלי שאלות') +
@@ -640,7 +804,7 @@ async function showWho(id) {
 
 $('logout').onclick = () => {
   if (dirty && !confirm('יש שינויים שלא נשמרו. לצאת בכל זאת?')) return;
-  try { sessionStorage.removeItem('cred'); } catch (e) {}
+  try { sessionStorage.removeItem('rt'); sessionStorage.removeItem('cred'); } catch (e) {}
   token = null; quiz = null; dirty = false; quizzes = {}; selected.clear();
   $('email').value = ''; $('pass').value = ''; $('loginErr').textContent = '';
   $('list').innerHTML = ''; updateSel();
@@ -850,13 +1014,23 @@ async function uploadVideo(v) {
   if (!anyUploading()) status(anyError() ? 'חלק מההעלאות נכשלו' : 'ההעלאה הסתיימה — לחץ שמירה', anyError() ? 'err' : 'ok');
 }
 function deleteFile(path) {
-  return storageFetch(STORAGE + '/' + encodeURIComponent(path), { method: 'DELETE' }).catch(() => {});
+  return storageFetch(STORAGE + '/' + encodeURIComponent(path), { method: 'DELETE' })
+    .then(res => !res || res.ok || res.status === 404)
+    .catch(() => false);
 }
+// סרטון נמחק מהאחסון רק אם אף מבחן ואף פריט במאגר לא מצביע עליו
 function deleteUnused(paths) {
   const used = new Set();
   Object.values(quizzes).forEach(q => (q.topics || []).forEach(t => (t.videos || []).forEach(v => v.path && used.add(v.path))));
   if (quiz) quiz.topics.forEach(t => t.videos.forEach(v => v.path && used.add(v.path)));
-  paths.filter(p => !used.has(p)).forEach(deleteFile);
+  Object.values(library.videos || {}).forEach(v => { if (v.path && !v.archived) used.add(v.path); });
+  const todo = paths.filter(p => !used.has(p));
+  if (!todo.length) return;
+  // כשל במחיקה לא נבלע: הקובץ נשאר ותופס מכסה, וצריך לדעת עליו
+  Promise.all(todo.map(deleteFile)).then(ok => {
+    const failed = ok.filter(x => !x).length;
+    if (failed) status('שים לב: ' + failed + ' קובצי סרטון לא נמחקו מהאחסון. הם תופסים מכסה.', 'err');
+  });
 }
 
 // ---------- בדיקה ושמירה ----------
@@ -899,13 +1073,23 @@ $('save').onclick = async () => {
           if (v.kind === 'file') { o.path = v.path; o.size = v.size; } else o.minSeconds = v.minSeconds;
           return o;
         }),
-        questions: JSON.parse(JSON.stringify(t.questions)),
+        questions: t.questions.map(x => {
+          // מזהה קבוע לשאלה: נקבע פעם אחת, ולכן שינוי נוסח מעדכן את אותו פריט במאגר
+          if (!x.qid) x.qid = hash(String(x.text || '').trim());
+          return JSON.parse(JSON.stringify(x));
+        }),
       })) };
     await authedUrl('PUT', DB('/' + quizId), clean);
     quizzes[quizId] = clean;
-    saveToLibrary(clean).catch(() => {});
     deleteUnused(pendingDeletes); pendingDeletes = [];
     dirty = false; status('נשמר ✅ העובדים יראו את הגרסה החדשה מיד.', 'ok');
+    // המאגר הוא שלב נפרד, עם מצב משלו — כשל בו לא מסתיר את זה שהמבחן נשמר
+    try { await saveToLibrary(clean); pendingLib = null; }
+    catch (e2) {
+      pendingLib = clean;
+      $('status').className = 'err';
+      $('status').innerHTML = 'המבחן נשמר ✅ — אבל ההכנסה למאגר נכשלה. <button class="mini" id="libRetry">נסה שוב</button>';
+    }
   } catch (e) {
     status('השמירה נכשלה. בדוק אינטרנט ונסה שוב.', 'err');
   }
@@ -916,11 +1100,18 @@ async function saveToLibrary(q) {
   const vids = {}, qs = {};
   q.topics.forEach(t => {
     t.videos.forEach(v => { if (v.url) vids[hash(v.path || v.url)] = Object.assign({}, v, { topic: t.name || '', quiz: q.title, at: Date.now() }); });
-    t.questions.forEach(x => { if (x.text.trim()) qs[hash(x.text.trim())] = Object.assign({}, x, { topic: t.name || '', quiz: q.title, at: Date.now() }); });
+    t.questions.forEach(x => { if (x.text.trim()) qs[x.qid || hash(x.text.trim())] = Object.assign({}, x, { topic: t.name || '', quiz: q.title, at: Date.now() }); });
   });
   if (Object.keys(vids).length) { await authedUrl('PATCH', LIB('/videos'), vids); Object.assign(library.videos, vids); }
   if (Object.keys(qs).length) { await authedUrl('PATCH', LIB('/questions'), qs); Object.assign(library.questions, qs); }
 }
+
+document.addEventListener('click', async e => {
+  if (e.target.id !== 'libRetry' || !pendingLib) return;
+  e.target.disabled = true; e.target.textContent = 'שולח...';
+  try { await saveToLibrary(pendingLib); pendingLib = null; status('נכנס למאגר ✅', 'ok'); }
+  catch (err) { e.target.disabled = false; e.target.textContent = 'נסה שוב'; }
+});
 
 // ---------- מסך המאגר ----------
 $('libBack').innerHTML = ICON.back + 'חזרה';
@@ -928,22 +1119,34 @@ $('libBack').onclick = () => showList();
 $('openLib').onclick = async () => {
   $('libList').innerHTML = '<p class="muted">טוען...</p>';
   screen('s-lib');
-  try {
-    library = (await (await fetch(LIB(''), { cache: 'no-store' })).json()) || {};
-    library.videos = library.videos || {}; library.questions = library.questions || {};
-  } catch (e) { $('libList').innerHTML = '<p class="err">לא הצלחתי לטעון. נסה שוב.</p>'; return; }
+  try { await loadLibrary(); }
+  catch (e) { $('libList').innerHTML = '<p class="err">לא הצלחתי לטעון. נסה שוב.</p>'; return; }
   renderLib();
 };
 $('tabQ').onclick = () => { libTab = 'questions'; renderLib(); };
 $('tabV').onclick = () => { libTab = 'videos'; renderLib(); };
 $('libSearch').addEventListener('input', renderLib);
 
-function libLine(it, isV) {
+// באילו מבחנים הפריט בשימוש עכשיו — לפי הקוד, לא לפי מה שנרשם בזמן השמירה
+function usedIn(it, isV, key) {
+  const names = [];
+  Object.keys(quizzes).forEach(id => {
+    const q = quizzes[id];
+    const hit = (q.topics || []).some(t => isV
+      ? (t.videos || []).some(v => (it.path && v.path === it.path) || (!it.path && v.url === it.url))
+      : (t.questions || []).some(x => x.qid === key || String(x.text || '').trim() === String(it.text || '').trim()));
+    if (hit) names.push(q.title);
+  });
+  return names;
+}
+function libLine(it, isV, key) {
+  const names = usedIn(it, isV, key);
+  const use = names.length ? ' · בשימוש ב: ' + names.join(', ') : ' · לא בשימוש';
   if (isV) return (it.kind === 'file' ? 'מהגלריה' : 'מ־Drive') +
     (it.size ? ' · ' + Math.round(it.size / 1048576) + 'MB' : '') +
-    (it.topic ? ' · ' + it.topic : '') + (it.quiz ? ' · מתוך "' + it.quiz + '"' : '');
+    (it.topic ? ' · ' + it.topic : '') + use;
   return (it.type === 'choice' ? 'אמריקאית · ' + (it.options || []).length + ' תשובות' : 'פתוחה') +
-    (it.topic ? ' · ' + it.topic : '') + (it.quiz ? ' · מתוך "' + it.quiz + '"' : '');
+    (it.topic ? ' · ' + it.topic : '') + use;
 }
 function renderLib() {
   const isV = libTab === 'videos';
@@ -955,16 +1158,21 @@ function renderLib() {
   const src = isV ? library.videos : library.questions;
   const keys = Object.keys(src).filter(k => {
     const it = src[k];
+    if (libArch ? !it.archived : !!it.archived) return false;
     return !term || ((isV ? it.title : it.text) + ' ' + (it.topic || '') + ' ' + (it.quiz || '')).includes(term);
   }).sort((a, b) => (src[b].at || 0) - (src[a].at || 0));
+  const arch = Object.values(src).filter(x => x.archived).length;
+  $('libArch').textContent = libArch ? '← חזרה למאגר' : '📦 ארכיון (' + arch + ')';
   $('libList').innerHTML = keys.length ? keys.map(k => {
     const it = src[k], id = (isV ? 'v:' : 'q:') + k, on = libSel.has(id);
     return '<div class="libitem' + (on ? ' chk' : '') + '">' +
       '<input type="checkbox" data-lib="' + esc(id) + '"' + (on ? ' checked' : '') + '>' +
       '<div class="ico">' + (isV ? '🎬' : '❓') + '</div>' +
-      '<div class="mid"><b>' + esc(isV ? it.title : it.text) + '</b><div class="src">' + esc(libLine(it, isV)) + '</div></div>' +
+      '<div class="mid"><b>' + esc(isV ? it.title : it.text) + '</b><div class="src">' + esc(libLine(it, isV, k)) + '</div></div>' +
+      '<button class="mini" data-libarch="' + esc(id) + '" title="' + (libArch ? 'החזרה מהארכיון' : 'לארכיון') + '">' + (libArch ? '↩' : '📦') + '</button>' +
       '<button class="mini del" data-libdel="' + esc(id) + '" title="מחיקה מהמאגר">' + ICON.trash + '</button></div>';
-  }).join('') : '<p class="muted">' + (term ? 'אין תוצאות לחיפוש.' : 'המאגר ריק. הוא מתמלא מעצמו בכל שמירה של מבחן.') + '</p>';
+  }).join('') : '<p class="muted">' + (term ? 'אין תוצאות לחיפוש.'
+      : libArch ? 'הארכיון ריק.' : 'המאגר ריק. הוא מתמלא מעצמו בכל שמירה של מבחן.') + '</p>';
 }
 function libUpdate() {
   const v = [...libSel].filter(x => x[0] === 'v').length, q = libSel.size - v;
@@ -986,12 +1194,27 @@ document.addEventListener('click', async e => {
   const btn = e.target.closest('[data-libdel]');
   if (!btn) return;
   const id = btn.dataset.libdel;
-  if (!confirm('למחוק מהמאגר? המבחנים שכבר משתמשים בפריט לא ישתנו.')) return;
   const kind = id[0] === 'v' ? 'videos' : 'questions', key = id.slice(2);
+  const names = usedIn(library[kind][key] || {}, kind === 'videos', key);
+  if (!confirm(names.length
+    ? 'הפריט בשימוש ב: ' + names.join(', ') + '.\nהמחיקה מהמאגר לא תשנה את המבחנים האלה. למחוק מהמאגר?\n(אם רק רצית לנקות — עדיף "לארכיון")'
+    : 'למחוק מהמאגר? (אם רק רצית לנקות — עדיף "לארכיון")')) return;
   try { await authedUrl('DELETE', LIB('/' + kind + '/' + key)); } catch (err) { alert('המחיקה נכשלה.'); return; }
   delete library[kind][key]; libSel.delete(id); renderLib(); libUpdate();
 });
 $('libClear').onclick = () => { libSel.clear(); renderLib(); libUpdate(); };
+$('libArch').onclick = () => { libArch = !libArch; libSel.clear(); renderLib(); libUpdate(); };
+// ארכוב במקום מחיקה: הפריט יורד מהמאגר ולא נוגע במבחנים שמשתמשים בו
+document.addEventListener('click', async e => {
+  const btn = e.target.closest('[data-libarch]');
+  if (!btn) return;
+  const id = btn.dataset.libarch, kind = id[0] === 'v' ? 'videos' : 'questions', key = id.slice(2);
+  const to = libArch ? null : Date.now();
+  try { await authedUrl('PATCH', LIB('/' + kind + '/' + key), { archived: to }); }
+  catch (err) { alert('הפעולה נכשלה. נסה שוב.'); return; }
+  if (to) library[kind][key].archived = to; else delete library[kind][key].archived;
+  libSel.delete(id); renderLib(); libUpdate();
+});
 
 // בניית נושאים מהפריטים שסומנו, לפי הנושא המקורי שלהם
 function selectedTopics() {
@@ -1039,7 +1262,7 @@ document.addEventListener('click', async e => {
     if (exist) { exist.videos.push(...t.videos); exist.questions.push(...t.questions); }
     else target.topics.push(t);
   });
-  const clean = { title: target.title, qMode: target.qMode, updated: Date.now(),
+  const clean = { title: target.title, category: (target.category || '').trim(), qMode: target.qMode, updated: Date.now(),
     topics: target.topics.map(t => ({ name: t.name,
       videos: t.videos.map(v => { const o = { kind: v.kind, title: v.title, url: v.url };
         if (v.kind === 'file') { o.path = v.path; o.size = v.size; } else o.minSeconds = v.minSeconds == null ? DEFAULT_SECONDS : v.minSeconds;
@@ -1057,9 +1280,8 @@ $('preview').onclick = () => {
 addEventListener('beforeunload', e => { if (dirty || (quiz && anyUploading())) { e.preventDefault(); e.returnValue = ''; } });
 
 (async () => {
-  const c = JSON.parse(sessionGet('cred') || 'null');
-  if (!c) return;
-  try { token = await login(c.e, c.p); await load(); } catch (e) {}
+  if (!sessionGet('rt')) return;
+  try { await relogin(); await load(); } catch (e) {}
 })();
 </script>
 </body>
