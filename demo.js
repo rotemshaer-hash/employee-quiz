@@ -80,6 +80,17 @@
         return new Response('');
       }
     }
+    if (url.startsWith(SETTINGS.databaseURL + '/library')) {
+      mem.lib = mem.lib || { videos: {}, questions: {} };
+      const parts = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean).slice(1);
+      const [kind, key] = parts;
+      if (kind) mem.lib[kind] = mem.lib[kind] || {};
+      if (method === 'PATCH') { Object.assign(mem.lib[kind], JSON.parse(opts.body)); write(); return json(JSON.parse(opts.body)); }
+      if (method === 'PUT') { if (key) mem.lib[kind][key] = JSON.parse(opts.body); else if (kind) mem.lib[kind] = JSON.parse(opts.body); else mem.lib = JSON.parse(opts.body); write(); return json(JSON.parse(opts.body)); }
+      if (method === 'DELETE') { if (key) delete mem.lib[kind][key]; else if (kind) delete mem.lib[kind]; else mem.lib = {}; write(); return json(null); }
+      const v = key ? mem.lib[kind][key] : (kind ? mem.lib[kind] : mem.lib);
+      return json(v === undefined ? null : v);
+    }
     if (url.startsWith(SETTINGS.databaseURL + '/settings')) {
       mem.cfg = mem.cfg || {};
       const key = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean)[1];

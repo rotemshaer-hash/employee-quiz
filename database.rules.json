@@ -1,5 +1,9 @@
 {
   "rules": {
+    "library": {
+      ".read": true,
+      ".write": "auth != null"
+    },
     "settings": {
       ".read": true,
       ".write": "auth != null"

@@ -112,6 +112,18 @@
   .selbar .t{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;font-weight:800}
   .selbar .b{display:flex;gap:10px}
   .selbar .b button{flex:1}
+  .libitem{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;background:var(--card);
+           display:flex;gap:11px;align-items:flex-start}
+  .libitem.chk{border-color:var(--accent2);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent2) 16%,transparent)}
+  .libitem > input[type=checkbox]{width:22px;height:22px;flex:none;margin:3px 0 0;accent-color:var(--accent2)}
+  .libitem .ico{width:38px;height:38px;border-radius:11px;flex:none;display:grid;place-items:center;font-size:17px;
+                background:color-mix(in srgb,var(--accent2) 14%,transparent)}
+  .libitem .mid{flex:1;min-width:0}
+  .libitem b{display:block;font-size:15px;line-height:1.35}
+  .src{font-size:12px;color:var(--muted);margin-top:3px}
+  .seg{display:flex;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:4px;margin:0 0 12px}
+  .seg button{flex:1;background:none;color:var(--muted);box-shadow:none;padding:9px;border-radius:9px;font-size:14.5px;font-weight:700}
+  .seg button.on{background:var(--card);color:var(--accent)}
   .sent{display:none;font-size:13px;font-weight:700;color:var(--accent2)}
   [data-sent="1"] .sent{display:inline}
 
@@ -132,7 +144,7 @@
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
     <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 26</span></p></div>
+    <p>מבנים<span class="ver">· גרסה 27</span></p></div>
     <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
@@ -160,7 +172,19 @@
     <p class="muted">סמן כמה מבחנים כדי לשלוח אותם יחד בהודעה אחת.</p>
     <div id="list"></div>
     <button class="full" id="newQuiz">+ מבחן חדש</button>
+    <button class="full ghost" id="openLib">📚 מאגר שאלות וסרטונים</button>
   </section>
+
+  <!-- מאגר -->
+  <div id="s-lib" class="hidden">
+    <div class="topbar"><div><button id="libBack"></button><b>מאגר שאלות וסרטונים</b></div></div>
+    <section class="card">
+      <div class="seg"><button id="tabQ" class="on">שאלות</button><button id="tabV">סרטונים</button></div>
+      <input id="libSearch" type="text" placeholder="חיפוש חופשי...">
+      <p class="muted" style="margin:10px 0 14px">כל מה שהעלית אי פעם. סמן פריטים וצור מהם מבחן חדש.</p>
+      <div id="libList"></div>
+    </section>
+  </div>
 
   <!-- עורך -->
   <div id="editor" class="hidden">
@@ -190,6 +214,12 @@
   </div>
 </main>
 
+<div class="selbar hidden" id="libbar"><div class="in">
+  <div class="t"><span id="libCount"></span><button class="mini" id="libClear">ניקוי</button></div>
+  <div class="b"><button id="libNew">צור מבחן חדש</button><button class="ghost" id="libAdd">הוסף למבחן קיים</button></div>
+  <div id="libPick" class="row hidden"></div>
+</div></div>
+
 <div class="selbar hidden" id="selbar"><div class="in">
   <div class="t"><span id="selCount"></span><button class="mini" id="selClear">ניקוי</button></div>
   <div class="b"><button id="selWa">שליחה בוואטסאפ</button><button class="ghost" id="selCopy">העתקת הקישורים</button></div>
@@ -202,8 +232,8 @@
 
 <input type="file" id="pick" accept="video/*" multiple hidden>
 
-<script src="settings.js?v=26"></script>
-<script src="demo.js?v=26"></script>
+<script src="settings.js?v=27"></script>
+<script src="demo.js?v=27"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -214,6 +244,9 @@ const DB = path => SETTINGS.databaseURL + '/quizzes' + path + '.json';
 const SUBS = path => SETTINGS.databaseURL + '/submissions' + path + '.json';
 const INV = path => SETTINGS.databaseURL + '/invites' + path + '.json';
 const BUN = path => SETTINGS.databaseURL + '/bundles' + path + '.json';
+const LIB = path => SETTINGS.databaseURL + '/library' + path + '.json';
+const hash = str => { let h = 0; for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+                      return Math.abs(h).toString(36) + str.length.toString(36); };
 const CODE_CHARS = 'abcdefghjkmnpqrstuvwxyz23456789';
 const newCode = () => Array.from({ length: 6 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join('');
 const newId = () => Math.random().toString(36).slice(2, 8);
@@ -231,6 +264,9 @@ const bundleLink = b => new URL('index.html?b=' + b, location.href).href;
 
 let token = null, quizzes = {}, quizId = null, quiz = null, dirty = false, globalEmail = '';
 const selected = new Set();                 // מבחנים שסומנו לשליחה מרוכזת
+let library = { videos: {}, questions: {} };
+const libSel = new Set();                   // פריטים שסומנו במאגר: 'v:<key>' או 'q:<key>'
+let libTab = 'questions';
 const files = new Map();
 let pendingDeletes = [];
 
@@ -294,11 +330,12 @@ async function saveGlobalEmail(quiet) {
 }
 $('globalEmail').addEventListener('change', () => saveGlobalEmail(false));
 function screen(id) {
-  ['s-login', 's-list', 'editor'].forEach(x => $(x).classList.toggle('hidden', x !== id));
+  ['s-login', 's-list', 'editor', 's-lib'].forEach(x => $(x).classList.toggle('hidden', x !== id));
   $('s-global').classList.toggle('hidden', id !== 's-list');
   $('logout').classList.toggle('hidden', id === 's-login');
   $('bar').classList.toggle('hidden', id !== 'editor');
   $('selbar').classList.toggle('hidden', id !== 's-list' || !selected.size);
+  $('libbar').classList.toggle('hidden', id !== 's-lib' || !libSel.size);
   status(''); scrollTo(0, 0);
 }
 function updateSel() {
@@ -792,6 +829,7 @@ $('save').onclick = async () => {
       })) };
     await authedUrl('PUT', DB('/' + quizId), clean);
     quizzes[quizId] = clean;
+    saveToLibrary(clean).catch(() => {});
     deleteUnused(pendingDeletes); pendingDeletes = [];
     dirty = false; status('נשמר ✅ העובדים יראו את הגרסה החדשה מיד.', 'ok');
   } catch (e) {
@@ -799,6 +837,145 @@ $('save').onclick = async () => {
   }
   $('save').disabled = false;
 };
+// כל שאלה וכל סרטון נכנסים למאגר בשמירה. עריכה מעדכנת את אותו פריט.
+async function saveToLibrary(q) {
+  const vids = {}, qs = {};
+  q.topics.forEach(t => {
+    t.videos.forEach(v => { if (v.url) vids[hash(v.path || v.url)] = Object.assign({}, v, { topic: t.name || '', quiz: q.title, at: Date.now() }); });
+    t.questions.forEach(x => { if (x.text.trim()) qs[hash(x.text.trim())] = Object.assign({}, x, { topic: t.name || '', quiz: q.title, at: Date.now() }); });
+  });
+  if (Object.keys(vids).length) { await authedUrl('PATCH', LIB('/videos'), vids); Object.assign(library.videos, vids); }
+  if (Object.keys(qs).length) { await authedUrl('PATCH', LIB('/questions'), qs); Object.assign(library.questions, qs); }
+}
+
+// ---------- מסך המאגר ----------
+$('libBack').innerHTML = ICON.back + 'חזרה';
+$('libBack').onclick = () => showList();
+$('openLib').onclick = async () => {
+  $('libList').innerHTML = '<p class="muted">טוען...</p>';
+  screen('s-lib');
+  try {
+    library = (await (await fetch(LIB(''), { cache: 'no-store' })).json()) || {};
+    library.videos = library.videos || {}; library.questions = library.questions || {};
+  } catch (e) { $('libList').innerHTML = '<p class="err">לא הצלחתי לטעון. נסה שוב.</p>'; return; }
+  renderLib();
+};
+$('tabQ').onclick = () => { libTab = 'questions'; renderLib(); };
+$('tabV').onclick = () => { libTab = 'videos'; renderLib(); };
+$('libSearch').addEventListener('input', renderLib);
+
+function libLine(it, isV) {
+  if (isV) return (it.kind === 'file' ? 'מהגלריה' : 'מ־Drive') +
+    (it.size ? ' · ' + Math.round(it.size / 1048576) + 'MB' : '') +
+    (it.topic ? ' · ' + it.topic : '') + (it.quiz ? ' · מתוך "' + it.quiz + '"' : '');
+  return (it.type === 'choice' ? 'אמריקאית · ' + (it.options || []).length + ' תשובות' : 'פתוחה') +
+    (it.topic ? ' · ' + it.topic : '') + (it.quiz ? ' · מתוך "' + it.quiz + '"' : '');
+}
+function renderLib() {
+  const isV = libTab === 'videos';
+  $('tabQ').classList.toggle('on', !isV);
+  $('tabV').classList.toggle('on', isV);
+  $('tabQ').textContent = 'שאלות (' + Object.keys(library.questions).length + ')';
+  $('tabV').textContent = 'סרטונים (' + Object.keys(library.videos).length + ')';
+  const term = $('libSearch').value.trim();
+  const src = isV ? library.videos : library.questions;
+  const keys = Object.keys(src).filter(k => {
+    const it = src[k];
+    return !term || ((isV ? it.title : it.text) + ' ' + (it.topic || '') + ' ' + (it.quiz || '')).includes(term);
+  }).sort((a, b) => (src[b].at || 0) - (src[a].at || 0));
+  $('libList').innerHTML = keys.length ? keys.map(k => {
+    const it = src[k], id = (isV ? 'v:' : 'q:') + k, on = libSel.has(id);
+    return '<div class="libitem' + (on ? ' chk' : '') + '">' +
+      '<input type="checkbox" data-lib="' + esc(id) + '"' + (on ? ' checked' : '') + '>' +
+      '<div class="ico">' + (isV ? '🎬' : '❓') + '</div>' +
+      '<div class="mid"><b>' + esc(isV ? it.title : it.text) + '</b><div class="src">' + esc(libLine(it, isV)) + '</div></div>' +
+      '<button class="mini del" data-libdel="' + esc(id) + '" title="מחיקה מהמאגר">' + ICON.trash + '</button></div>';
+  }).join('') : '<p class="muted">' + (term ? 'אין תוצאות לחיפוש.' : 'המאגר ריק. הוא מתמלא מעצמו בכל שמירה של מבחן.') + '</p>';
+}
+function libUpdate() {
+  const v = [...libSel].filter(x => x[0] === 'v').length, q = libSel.size - v;
+  const parts = [];
+  if (q) parts.push(q + (q === 1 ? ' שאלה' : ' שאלות'));
+  if (v) parts.push(v + (v === 1 ? ' סרטון' : ' סרטונים'));
+  $('libCount').textContent = 'נבחרו ' + parts.join(' ו-');
+  $('libbar').classList.toggle('hidden', !libSel.size || $('s-lib').classList.contains('hidden'));
+  $('libPick').classList.add('hidden');
+}
+document.addEventListener('change', e => {
+  const id = e.target.dataset.lib;
+  if (!id) return;
+  e.target.checked ? libSel.add(id) : libSel.delete(id);
+  e.target.closest('.libitem').classList.toggle('chk', e.target.checked);
+  libUpdate();
+});
+document.addEventListener('click', async e => {
+  const btn = e.target.closest('[data-libdel]');
+  if (!btn) return;
+  const id = btn.dataset.libdel;
+  if (!confirm('למחוק מהמאגר? המבחנים שכבר משתמשים בפריט לא ישתנו.')) return;
+  const kind = id[0] === 'v' ? 'videos' : 'questions', key = id.slice(2);
+  try { await authedUrl('DELETE', LIB('/' + kind + '/' + key)); } catch (err) { alert('המחיקה נכשלה.'); return; }
+  delete library[kind][key]; libSel.delete(id); renderLib(); libUpdate();
+});
+$('libClear').onclick = () => { libSel.clear(); renderLib(); libUpdate(); };
+
+// בניית נושאים מהפריטים שסומנו, לפי הנושא המקורי שלהם
+function selectedTopics() {
+  const byTopic = new Map();
+  const get = n => { if (!byTopic.has(n)) byTopic.set(n, { name: n, videos: [], questions: [] }); return byTopic.get(n); };
+  [...libSel].forEach(id => {
+    const isV = id[0] === 'v', key = id.slice(2);
+    const it = (isV ? library.videos : library.questions)[key];
+    if (!it) return;
+    const t = get(it.topic || 'כללי');
+    if (isV) {
+      const o = { kind: it.kind || 'drive', title: it.title, url: it.url };
+      if (o.kind === 'file') { o.path = it.path; o.size = it.size; } else o.minSeconds = it.minSeconds == null ? DEFAULT_SECONDS : it.minSeconds;
+      t.videos.push(o);
+    } else {
+      t.questions.push({ type: it.type, text: it.text, options: it.options, correct: it.correct });
+    }
+  });
+  return [...byTopic.values()];
+}
+$('libNew').onclick = async () => {
+  const topics = selectedTopics();
+  if (!topics.length) return;
+  const title = prompt('שם המבחן החדש:', 'מבחן מהמאגר');
+  if (!title || !title.trim()) return;
+  const nid = newId();
+  const clean = { title: title.trim(), qMode: 'end', updated: Date.now(), topics };
+  try { await authedUrl('PUT', DB('/' + nid), clean); } catch (e) { alert('היצירה נכשלה. נסה שוב.'); return; }
+  quizzes[nid] = clean; libSel.clear(); libUpdate(); showList();
+  alert('נוצר המבחן "' + clean.title + '".');
+};
+$('libAdd').onclick = () => {
+  const ids = Object.keys(quizzes).sort((a, b) => (quizzes[b].updated || 0) - (quizzes[a].updated || 0));
+  if (!ids.length) return alert('אין עדיין מבחנים.');
+  $('libPick').innerHTML = '<span class="muted" style="width:100%">לאיזה מבחן להוסיף?</span>' +
+    ids.map(id => '<button class="mini" data-libto="' + id + '">' + esc(quizzes[id].title) + '</button>').join('');
+  $('libPick').classList.remove('hidden');
+};
+document.addEventListener('click', async e => {
+  const id = e.target.dataset.libto;
+  if (!id) return;
+  const target = normalize(JSON.parse(JSON.stringify(quizzes[id])));
+  selectedTopics().forEach(t => {
+    const exist = target.topics.find(x => x.name === t.name);
+    if (exist) { exist.videos.push(...t.videos); exist.questions.push(...t.questions); }
+    else target.topics.push(t);
+  });
+  const clean = { title: target.title, qMode: target.qMode, updated: Date.now(),
+    topics: target.topics.map(t => ({ name: t.name,
+      videos: t.videos.map(v => { const o = { kind: v.kind, title: v.title, url: v.url };
+        if (v.kind === 'file') { o.path = v.path; o.size = v.size; } else o.minSeconds = v.minSeconds == null ? DEFAULT_SECONDS : v.minSeconds;
+        return o; }),
+      questions: JSON.parse(JSON.stringify(t.questions)) })) };
+  try { await authedUrl('PUT', DB('/' + id), clean); } catch (err) { alert('ההוספה נכשלה. נסה שוב.'); return; }
+  quizzes[id] = clean; libSel.clear(); libUpdate(); showList();
+  alert('הפריטים נוספו למבחן "' + clean.title + '".');
+});
+
 $('preview').onclick = () => {
   if (dirty) { status('קודם שמור, ואז תצוגה מקדימה.', 'err'); return; }
   open(quizLink(quizId), '_blank');
