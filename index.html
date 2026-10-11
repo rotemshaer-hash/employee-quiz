@@ -188,8 +188,9 @@ const allQuestions = () => CONFIG.topics.flatMap((t, ti) => t.questions.map((q, 
 (async () => {
   try {
     const qs = new URLSearchParams(location.search);
-    quizId = qs.get('t');
-    code = qs.get('c');
+    const short = qs.get('q');                 // קישור קצר: ?q=<מבחן>-<קוד>, בלי & ששובר תוכנות מייל
+    if (short) { const parts = short.split('-'); quizId = parts[0]; code = parts[1] || null; }
+    else { quizId = qs.get('t'); code = qs.get('c'); }   // הפורמט הישן ממשיך לעבוד
     if (!/^[\w-]+$/.test(quizId || '')) throw 0;
     if (code && !/^[\w-]+$/.test(code)) { code = null; return show('s-bad'); }
     const res = await fetch(SETTINGS.databaseURL + '/quizzes/' + quizId + '.json', { cache: 'no-store' });
@@ -211,6 +212,7 @@ const allQuestions = () => CONFIG.topics.flatMap((t, ti) => t.questions.map((q, 
       }
     }
   } catch (e) {
+    if (code) return show('s-bad');              // קישור אישי שמצביע על מבחן שלא קיים
     $('s-name').innerHTML = '<h2>המבחן עדיין לא מוכן</h2><p class="muted">נסה שוב מאוחר יותר.</p>';
   }
 })();
