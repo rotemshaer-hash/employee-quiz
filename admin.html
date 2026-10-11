@@ -664,8 +664,9 @@ function openQuiz(id, data) {
 }
 
 $('list').addEventListener('click', async e => {
-  const d = e.target.dataset, id = d.id;
-  if (!d.list) return;
+  const btn = e.target.closest('[data-list]');
+  if (!btn) return;
+  const d = btn.dataset, id = d.id;
   if (d.list === 'more') { $('menu-' + id).classList.toggle('hidden'); return; }
   if (d.list === 'edit') openQuiz(id, quizzes[id]);
   else if (d.list === 'who') showWho(id);
@@ -686,7 +687,7 @@ $('list').addEventListener('click', async e => {
     authedUrl('PATCH', INV('/' + id + '/' + encodeURIComponent(d.key)), { sent: Date.now() })
       .then(() => { const row = $('row-' + d.key); if (row) row.dataset.sent = '1'; }).catch(() => {});
     if (d.list === 'walink') return open('https://wa.me/?text=' + encodeURIComponent(quizzes[id].title + '\n' + url), '_blank');
-    try { await navigator.clipboard.writeText(url); e.target.textContent = 'הועתק ✅'; }
+    try { await navigator.clipboard.writeText(url); btn.textContent = 'הועתק ✅'; }
     catch (err) { prompt('העתק את הקישור:', url); }
   }
   else if (d.list === 'dellink') {
@@ -1254,8 +1255,9 @@ $('libAdd').onclick = () => {
   $('libPick').classList.remove('hidden');
 };
 document.addEventListener('click', async e => {
-  const id = e.target.dataset.libto;
-  if (!id) return;
+  const to = e.target.closest('[data-libto]');
+  if (!to) return;
+  const id = to.dataset.libto;
   const target = normalize(JSON.parse(JSON.stringify(quizzes[id])));
   selectedTopics().forEach(t => {
     const exist = target.topics.find(x => x.name === t.name);
