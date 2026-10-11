@@ -121,6 +121,13 @@
   .libitem .mid{flex:1;min-width:0}
   .libitem b{display:block;font-size:15px;line-height:1.35}
   .src{font-size:12px;color:var(--muted);margin-top:3px}
+  .chips{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 16px}
+  .chip{font-size:13.5px;font-weight:700;color:var(--muted);background:var(--soft);
+        border:1px solid var(--line);border-radius:99px;padding:7px 13px;cursor:pointer;box-shadow:none}
+  .chip.on{background:var(--accent);color:#fff;border-color:transparent}
+  .ghead{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;margin:20px 0 10px}
+  .ghead::after{content:"";flex:1;height:1px;background:var(--line)}
+  .grp:first-child .ghead{margin-top:4px}
   .seg{display:flex;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:4px;margin:0 0 12px}
   .seg button{flex:1;background:none;color:var(--muted);box-shadow:none;padding:9px;border-radius:9px;font-size:14.5px;font-weight:700}
   .seg button.on{background:var(--card);color:var(--accent)}
@@ -130,8 +137,8 @@
   @media (min-width:900px){
     main{max-width:1000px}
     .topbar > div,.bar div,.selbar .in{max-width:1000px}
-    #list{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
-    #list > .item{margin:0}
+    .gitems{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+    .gitems > .item{margin:0}
     header{padding:28px 24px 60px}
     .chip-logo img{width:110px}
     .htxt h1{font-size:26px}
@@ -144,7 +151,7 @@
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
     <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 27</span></p></div>
+    <p>מבנים<span class="ver">· גרסה 28</span></p></div>
     <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
@@ -170,6 +177,7 @@
   <section id="s-list" class="card hidden">
     <h2>המבחנים שלי</h2>
     <p class="muted">סמן כמה מבחנים כדי לשלוח אותם יחד בהודעה אחת.</p>
+    <div id="chips" class="chips"></div>
     <div id="list"></div>
     <button class="full" id="newQuiz">+ מבחן חדש</button>
     <button class="full ghost" id="openLib">📚 מאגר שאלות וסרטונים</button>
@@ -193,6 +201,9 @@
     <section class="card">
       <h2>הגדרות</h2>
       <label class="f">כותרת המבחן</label><input id="title">
+      <label class="f">קטגוריה (למשל: אינסטלציה, צבע)</label>
+      <input id="category" list="catlist" placeholder="ללא קטגוריה">
+      <datalist id="catlist"></datalist>
       <label class="f">מתי מציגים את השאלות</label>
       <select id="qMode">
         <option value="end">בסוף — אחרי כל הסרטונים</option>
@@ -232,8 +243,8 @@
 
 <input type="file" id="pick" accept="video/*" multiple hidden>
 
-<script src="settings.js?v=27"></script>
-<script src="demo.js?v=27"></script>
+<script src="settings.js?v=28"></script>
+<script src="demo.js?v=28"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -267,6 +278,9 @@ const selected = new Set();                 // מבחנים שסומנו לשל�
 let library = { videos: {}, questions: {} };
 const libSel = new Set();                   // פריטים שסומנו במאגר: 'v:<key>' או 'q:<key>'
 let libTab = 'questions';
+let catFilter = '';                         // '' = כל הקטגוריות
+const NOCAT = 'ללא קטגוריה';
+const catOf = q => (q.category || '').trim() || NOCAT;
 const files = new Map();
 let pendingDeletes = [];
 
@@ -394,30 +408,55 @@ function countOf(q) {
            videos: t.topics.reduce((a, x) => a + x.videos.length, 0),
            questions: t.topics.reduce((a, x) => a + x.questions.length, 0) };
 }
+function quizCard(id) {
+  const c = countOf(quizzes[id]);
+  return '<div class="item' + (selected.has(id) ? ' chk' : '') + '" id="card-' + id + '">' +
+    '<label class="pick"><input type="checkbox" data-sel="' + id + '"' + (selected.has(id) ? ' checked' : '') + '>' +
+    '<span style="flex:1"><b style="font-size:17px">' + esc(quizzes[id].title) + '</b><div class="tags">' +
+    '<span class="tag">' + c.topics + ' נושאים</span><span class="tag">' + c.videos + ' סרטונים</span>' +
+    '<span class="tag">' + c.questions + ' שאלות</span></div></span></label><div class="row">' +
+    '<button class="mini key" data-list="edit" data-id="' + id + '">' + ICON.edit + 'עריכה</button>' +
+    '<button class="mini" data-list="links" data-id="' + id + '">' + ICON.link + 'קישורים</button>' +
+    '<button class="mini" data-list="who" data-id="' + id + '">' + ICON.users + 'מי הגיש</button>' +
+    '<button class="mini" data-list="dup" data-id="' + id + '">' + ICON.copy + 'שכפול</button>' +
+    '<button class="mini del" data-list="del" data-id="' + id + '" title="מחיקה">' + ICON.trash + '</button></div>' +
+    '<div id="who-' + id + '"></div></div>';
+}
 function showList() {
   const ids = Object.keys(quizzes).sort((a, b) => (quizzes[b].updated || 0) - (quizzes[a].updated || 0));
-  $('list').innerHTML = ids.length ? ids.map(id => {
-    const c = countOf(quizzes[id]);
-    return '<div class="item' + (selected.has(id) ? ' chk' : '') + '" id="card-' + id + '">' +
-      '<label class="pick"><input type="checkbox" data-sel="' + id + '"' + (selected.has(id) ? ' checked' : '') + '>' +
-      '<span style="flex:1"><b style="font-size:17px">' + esc(quizzes[id].title) + '</b><div class="tags">' +
-      '<span class="tag">' + c.topics + ' נושאים</span><span class="tag">' + c.videos + ' סרטונים</span>' +
-      '<span class="tag">' + c.questions + ' שאלות</span></div></span></label><div class="row">' +
-      '<button class="mini key" data-list="edit" data-id="' + id + '">' + ICON.edit + 'עריכה</button>' +
-      '<button class="mini" data-list="links" data-id="' + id + '">' + ICON.link + 'קישורים</button>' +
-      '<button class="mini" data-list="who" data-id="' + id + '">' + ICON.users + 'מי הגיש</button>' +
-      '<button class="mini" data-list="dup" data-id="' + id + '">' + ICON.copy + 'שכפול</button>' +
-      '<button class="mini del" data-list="del" data-id="' + id + '" title="מחיקה">' + ICON.trash + '</button></div>' +
-      '<div id="who-' + id + '"></div></div>';
+
+  // קטגוריות: מסודרות לפי א-ב, "ללא קטגוריה" אחרון
+  const cats = [...new Set(ids.map(id => catOf(quizzes[id])))]
+    .sort((a, b) => a === NOCAT ? 1 : b === NOCAT ? -1 : a.localeCompare(b, 'he'));
+  if (catFilter && !cats.includes(catFilter)) catFilter = '';
+  $('chips').innerHTML = cats.length > 1
+    ? '<button class="chip' + (catFilter ? '' : ' on') + '" data-cat="">הכול (' + ids.length + ')</button>' +
+      cats.map(c => '<button class="chip' + (catFilter === c ? ' on' : '') + '" data-cat="' + esc(c) + '">' +
+        esc(c) + ' (' + ids.filter(id => catOf(quizzes[id]) === c).length + ')</button>').join('')
+    : '';
+
+  const shown = cats.filter(c => !catFilter || c === catFilter);
+  $('list').innerHTML = ids.length ? shown.map(c => {
+    const inCat = ids.filter(id => catOf(quizzes[id]) === c);
+    const head = cats.length > 1 ? '<div class="ghead">' + esc(c) + '<span class="tag">' + inCat.length + '</span></div>' : '';
+    return '<div class="grp">' + head + '<div class="gitems">' + inCat.map(quizCard).join('') + '</div></div>';
   }).join('') : '<p class="muted">עוד אין מבחנים. לחץ "+ מבחן חדש".</p>';
+
   [...selected].forEach(id => { if (!quizzes[id]) selected.delete(id); });
   updateSel();
   screen('s-list');
 }
+$('chips').addEventListener('click', e => {
+  const c = e.target.dataset.cat;
+  if (c === undefined) return;
+  catFilter = c; showList();
+});
+
 
 // מבנה אחיד: נושאים. מבחן ישן מומר אוטומטית.
 function normalize(q) {
   q.title = q.title || 'מבחן חדש';
+  q.category = (q.category || '').trim();
   q.qMode = q.qMode === 'topic' ? 'topic' : 'end';
   if (!q.topics) {
     q.topics = (q.videos || []).map(v => ({ name: v.title || 'נושא', videos: [v], questions: [] }));
@@ -441,7 +480,10 @@ function openQuiz(id, data) {
   pendingDeletes = [];
   $('title').value = quiz.title;
   $('crumb').textContent = quiz.title;
+  $('category').value = quiz.category;
   $('qMode').value = quiz.qMode;
+  $('catlist').innerHTML = [...new Set(Object.values(quizzes).map(q => (q.category || '').trim()).filter(Boolean))]
+    .sort().map(c => '<option value="' + esc(c) + '">').join('');
   dirty = !data;
   render();
   screen('editor');
@@ -645,6 +687,7 @@ document.addEventListener('input', e => {
   else if (d.opt != null) { const [ti, i] = d.opt.split('_'); quiz.topics[+ti].questions[+i].options[+d.j] = t.value; }
   else if (d.correct != null) { const [ti, i] = d.correct.split('_'); quiz.topics[+ti].questions[+i].correct = +t.value; }
   else if (t.id === 'title') { quiz.title = t.value; $('crumb').textContent = t.value; }
+  else if (t.id === 'category') quiz.category = t.value;
   else return;
   dirty = true; status('יש שינויים שלא נשמרו');
 });
@@ -817,7 +860,7 @@ $('save').onclick = async () => {
   if (problem) { status(problem, 'err'); return; }
   $('save').disabled = true; status('שומר...');
   try {
-    const clean = { title: quiz.title, qMode: quiz.qMode, updated: Date.now(),
+    const clean = { title: quiz.title, category: quiz.category.trim(), qMode: quiz.qMode, updated: Date.now(),
       topics: quiz.topics.map(t => ({
         name: t.name,
         videos: t.videos.map(v => {

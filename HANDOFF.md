@@ -60,7 +60,7 @@ library/videos/<key>         ← מאגר: כל סרטון שהועלה אי פ�
 library/questions/<key>      ← מאגר: כל שאלה שנכתבה אי פעם
 
 quizzes/<quizId>
-  title, qMode:'end'|'topic', updated
+  title, category, qMode:'end'|'topic', updated
   topics[]
     name
     videos[]  { kind:'file'|'drive', title, url, path?, size?, minSeconds? }
@@ -82,6 +82,7 @@ submissions/<quizId>/<key>
 - `key` ב־submissions הוא `b_<bundleId>` לחבילה, `c_<code>` לקישור אישי, או השם המנורמל לקישור כללי.
 - נרמול שם: trim, איחוד רווחים, אותיות קטנות, והחלפת `. $ # [ ] /` בקו תחתון
   (פיירבייס לא מקבל אותם במפתח).
+- `category`: טקסט חופשי. הרשימה במסך הראשי מקובצת לפיו, עם צ'יפים לסינון. ריק = "ללא קטגוריה", שמופיע אחרון.
 - `qMode`: `end` = כל השאלות בסוף. `topic` = שאלות הנושא מיד אחרי הסרטונים שלו.
 - **תאימות לאחור:** מבחן ישן עם `videos`/`questions` שטוחים מומר אוטומטית ל־`topics`
   בפונקציה `normalize()`, שקיימת בשני הקבצים.
