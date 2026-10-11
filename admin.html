@@ -11,111 +11,129 @@
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#eef2f4; --card:#fff; --text:#0f1b21; --muted:#67757e; --line:#e2e8ec; --soft:#eaf4fc;
-    --accent:#0b63c4; --accent2:#41b8f0; --bad:#c0392b;
-    --grad:linear-gradient(135deg,#0b63c4 0%,#41b8f0 100%);
-    --shadow:0 10px 30px -18px rgba(10,30,50,.5);
-    --radius:18px;
+    --bg:#eef3f8; --card:#fff; --soft:#f3f7fb; --line:#e3eaf2;
+    --text:#0c1a26; --muted:#64788a;
+    --accent:#0a5fc4; --accent2:#2fa8ef; --bad:#d9372b;
+    --grad:linear-gradient(135deg,#0a5fc4 0%,#2fa8ef 100%);
+    --r:20px; --sh:0 1px 2px rgba(12,26,38,.05), 0 14px 32px -24px rgba(12,26,38,.45);
   }
   @media (prefers-color-scheme:dark){
-    :root{--bg:#0d1416;--card:#151f22;--text:#e7eef0;--muted:#93a3aa;--line:#243036;--soft:#13293d;--shadow:0 10px 30px -18px #000}
+    :root{--bg:#0a1016;--card:#121b23;--soft:#162230;--line:#1f2d3a;--text:#e8eff5;--muted:#8da0b1;
+          --sh:0 1px 2px rgba(0,0,0,.4), 0 14px 32px -24px #000}
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;background:var(--bg);color:var(--text);
-       font:17px/1.65 Heebo,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 Heebo,system-ui,-apple-system,Arial,sans-serif}
 
-  header{background:var(--grad);color:#fff;padding:24px 20px 44px;position:relative}
-  header::after{content:"";position:absolute;inset-inline:0;bottom:-1px;height:26px;background:var(--bg);border-radius:26px 26px 0 0}
-  header .logo{display:block;width:140px;max-width:52%;border-radius:12px;margin-bottom:12px;
-               box-shadow:0 6px 18px -8px rgba(0,0,0,.55)}
-  header #logout{position:absolute;top:18px;inset-inline-end:16px;width:auto;padding:8px 14px;font-size:14px;
-                 background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;box-shadow:none}
-  header h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.01em}
-  header .ver{font-size:12px;font-weight:500;opacity:.75;margin-inline-start:8px}
+  header{background:var(--grad);color:#fff;padding:22px 20px 56px;position:relative;overflow:hidden}
+  header::before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%);top:-160px;inset-inline-start:-80px}
+  header::after{content:"";position:absolute;inset-inline:0;bottom:-1px;height:30px;background:var(--bg);border-radius:30px 30px 0 0}
+  .hrow{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+  .chip-logo{background:#fff;border-radius:16px;padding:8px 10px;box-shadow:0 8px 22px -12px rgba(0,0,0,.6);flex:none}
+  .chip-logo img{display:block;width:92px}
+  .htxt h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
+  .htxt p{margin:2px 0 0;font-size:13px;opacity:.85}
+  .ver{font-size:12px;font-weight:500;opacity:.8;margin-inline-start:8px}
+  header #logout{position:absolute;top:22px;inset-inline-end:20px;z-index:2;width:auto;
+    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;
+    border-radius:12px;padding:8px 14px;font-size:14px;font-weight:600;box-shadow:none;margin:0}
 
-  main{max-width:620px;margin:-22px auto 0;padding:0 16px 130px;position:relative;z-index:1}
-  h2{font-size:19px;font-weight:700;margin:0 0 12px;letter-spacing:-.01em}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-        padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
-  .muted{color:var(--muted);font-size:15px}
+  main{max-width:640px;margin:-26px auto 0;padding:0 16px 150px;position:relative;z-index:1}
+  h2{font-size:20px;font-weight:800;margin:0 0 4px;letter-spacing:-.02em}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-bottom:18px;box-shadow:var(--sh)}
+  .muted{color:var(--muted);font-size:14.5px}
 
-  label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 5px}
-  input,textarea,select{width:100%;font:inherit;padding:13px;border:1.5px solid var(--line);border-radius:13px;
-        background:transparent;color:inherit;transition:border-color .15s,box-shadow .15s}
-  input:focus,textarea:focus{outline:0;border-color:var(--accent2);
-        box-shadow:0 0 0 4px color-mix(in srgb,var(--accent2) 18%,transparent)}
+  label.f{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin:16px 0 6px}
+  input,textarea,select{width:100%;font:inherit;padding:14px;border:1.5px solid var(--line);border-radius:14px;background:var(--soft);color:inherit}
+  input:focus,textarea:focus{outline:0;border-color:var(--accent2);background:var(--card);
+    box-shadow:0 0 0 4px color-mix(in srgb,var(--accent2) 16%,transparent)}
   textarea{min-height:76px;resize:vertical}
 
-  button{font:inherit;font-weight:700;padding:13px 16px;border:0;border-radius:14px;
-         background:var(--grad);color:#fff;cursor:pointer;transition:transform .12s,opacity .15s}
+  button{font:inherit;font-weight:700;border:0;cursor:pointer;border-radius:14px;padding:13px 16px;
+         background:var(--grad);color:#fff;box-shadow:0 10px 22px -14px var(--accent)}
   button:active:not(:disabled){transform:scale(.985)}
   button.full{width:100%;margin-top:14px}
   button.ghost{background:none;border:1.5px dashed var(--line);color:var(--accent2);box-shadow:none}
-  button.mini{padding:7px 12px;font-size:14px;border-radius:10px;background:var(--soft);color:var(--text)}
-  button.del{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
+  button.mini{padding:8px 11px;font-size:13.5px;border-radius:11px;background:var(--soft);
+              border:1px solid var(--line);color:var(--text);box-shadow:none;
+              display:inline-flex;align-items:center;gap:5px}
+  button.mini svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
+  button.key{background:var(--accent);color:#fff;border-color:transparent;box-shadow:none}
+  button.key svg{opacity:1}
+  button.del{color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,transparent);
+             border-color:color-mix(in srgb,var(--bad) 22%,transparent)}
   button:disabled{opacity:.4;cursor:default}
 
-  .item{border:1.5px solid var(--line);border-radius:15px;padding:14px;margin-bottom:12px;
-        background:color-mix(in srgb,var(--soft) 45%,transparent)}
+  .item{border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;background:var(--card)}
   .item-head{display:flex;gap:6px;align-items:center;justify-content:space-between;margin-bottom:2px}
   .item-head b{flex:1;font-size:15px}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+  .tag{font-size:12px;font-weight:600;color:var(--muted);background:var(--soft);
+       border:1px solid var(--line);border-radius:99px;padding:3px 9px}
   .opt{display:flex;gap:10px;align-items:center;margin-top:9px}
   .opt input[type=radio]{width:22px;height:22px;flex:none;accent-color:var(--accent2)}
   .opt input[type=text]{flex:1}
 
+  .topic{border:1px solid var(--line);border-radius:18px;background:var(--soft);padding:16px;margin-bottom:14px}
+  .num{width:30px;height:30px;border-radius:10px;background:var(--grad);color:#fff;
+       display:grid;place-items:center;font-weight:800;font-size:15px;flex:none}
+  .sub{font-size:12.5px;font-weight:700;color:var(--muted);margin:18px 0 8px;display:flex;align-items:center;gap:8px}
+  .sub::after{content:"";flex:1;height:1px;background:var(--line)}
+
   .bar{position:fixed;bottom:0;inset-inline:0;z-index:20;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
-       background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(14px);
-       border-top:1px solid var(--line)}
-  .bar div{max-width:620px;margin:0 auto;display:flex;gap:10px}
+       background:color-mix(in srgb,var(--card) 90%,transparent);backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+  .bar div{max-width:640px;margin:0 auto;display:flex;gap:10px}
   .bar button{flex:1}
   #status{font-size:14px;font-weight:600;min-height:1.3em;text-align:center;margin-top:7px}
-  .ok{color:var(--accent2)} .err{color:var(--bad)}
+  .ok{color:var(--accent)} .err{color:var(--bad)}
 
   .prog{height:9px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:12px}
-  .prog div{height:100%;width:0;background:var(--grad);transition:width .3s}
+  .prog div{height:100%;width:0;background:var(--grad)}
 
-  details{background:var(--soft);border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:15px}
+  details{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:14.5px}
   summary{font-weight:700;cursor:pointer;color:var(--accent)}
   @media (prefers-color-scheme:dark){summary{color:var(--accent2)}}
   details ol{padding-inline-start:20px;margin:10px 0}
 
-  .row{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+  .row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
   .topbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--card) 92%,transparent);
-          backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:10px 16px;margin-bottom:16px}
-  .topbar > div{max-width:620px;margin:0 auto;display:flex;align-items:center;gap:10px}
-  .topbar button{background:none;color:var(--accent);padding:8px 10px;font-size:16px;box-shadow:none}
-  .topbar b{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .pick{display:flex;align-items:flex-start;gap:10px}
-  .pick > input{width:24px;height:24px;flex:none;accent-color:var(--accent2);margin:3px 0 0}
-  .item.chk{border-color:var(--accent2);background:color-mix(in srgb,var(--accent2) 8%,transparent)}
+          backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:11px 16px;margin-bottom:18px}
+  .topbar > div{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:8px}
+  .topbar button{background:none;color:var(--accent);padding:6px 8px;font-size:15px;box-shadow:none}
+  .topbar b{font-size:15.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .pick{display:flex;align-items:flex-start;gap:12px}
+  .pick > input{width:22px;height:22px;flex:none;accent-color:var(--accent2);margin:3px 0 0}
+  .item.chk{border-color:var(--accent2);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent2) 16%,transparent)}
   .selbar{position:fixed;bottom:0;inset-inline:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
-          background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
-  .selbar .in{max-width:620px;margin:0 auto}
-  .selbar .t{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:700}
+          background:color-mix(in srgb,var(--card) 90%,transparent);backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+  .selbar .in{max-width:640px;margin:0 auto}
+  .selbar .t{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;font-weight:800}
   .selbar .b{display:flex;gap:10px}
   .selbar .b button{flex:1}
-  @media (min-width:900px){
-    main{max-width:980px}
-    .topbar > div,.bar div,.selbar .in{max-width:980px}
-    #list{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
-    #list > .item{margin:0}
-    header{padding:30px 20px 50px}
-    header h1{font-size:27px}
-  }
   .sent{display:none;font-size:13px;font-weight:700;color:var(--accent2)}
   [data-sent="1"] .sent{display:inline}
+
+  @media (min-width:900px){
+    main{max-width:1000px}
+    .topbar > div,.bar div,.selbar .in{max-width:1000px}
+    #list{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+    #list > .item{margin:0}
+    header{padding:28px 24px 60px}
+    .chip-logo img{width:110px}
+    .htxt h1{font-size:26px}
+  }
   .hidden{display:none}
-  .topic{border:1.5px solid var(--accent2);border-radius:16px;padding:14px;margin-bottom:16px;
-         background:color-mix(in srgb,var(--soft) 55%,transparent)}
-  .topic > .item-head b{font-size:17px}
-  .sub{font-size:13px;font-weight:700;color:var(--muted);margin:14px 0 6px}
 </style>
 </head>
 <body>
 <header>
-  <img class="logo" src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי">
-  <h1>ניהול המבחן<span class="ver">גרסה 21</span></h1>
   <button id="logout" class="hidden">יציאה</button>
+  <div class="hrow">
+    <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
+    <div class="htxt"><h1>ניהול המבחנים<span class="ver">גרסה 22</span></h1>
+    <p>מבנים · בדק בית וייעוץ הנדסי</p></div>
+  </div>
 </header>
 <main>
   <!-- כניסה -->
@@ -137,7 +155,7 @@
 
   <!-- עורך -->
   <div id="editor" class="hidden">
-    <div class="topbar"><div><button id="back">→ חזרה</button><b id="crumb"></b></div></div>
+    <div class="topbar"><div><button id="back"></button><b id="crumb"></b></div></div>
 
     <section class="card">
       <h2>הגדרות</h2>
@@ -171,8 +189,8 @@
 
 <input type="file" id="pick" accept="video/*" multiple hidden>
 
-<script src="settings.js?v=21"></script>
-<script src="demo.js?v=21"></script>
+<script src="settings.js?v=22"></script>
+<script src="demo.js?v=22"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -186,6 +204,14 @@ const CODE_CHARS = 'abcdefghjkmnpqrstuvwxyz23456789';
 const newCode = () => Array.from({ length: 6 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join('');
 const newId = () => Math.random().toString(36).slice(2, 8);
 const quizLink = id => new URL('index.html?t=' + id, location.href).href;
+const ICON = {
+  edit: '<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+  link: '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>',
+  users: '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/></svg>',
+  copy: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  trash: '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>',
+  back: '<svg viewBox="0 0 24 24" style="width:17px;height:17px"><path d="M9 18l6-6-6-6"/></svg>',
+};
 const inviteLink = (id, c) => new URL('index.html?t=' + id + '&c=' + c, location.href).href;
 
 let token = null, quizzes = {}, quizId = null, quiz = null, dirty = false;
@@ -301,13 +327,14 @@ function showList() {
     const c = countOf(quizzes[id]);
     return '<div class="item' + (selected.has(id) ? ' chk' : '') + '" id="card-' + id + '">' +
       '<label class="pick"><input type="checkbox" data-sel="' + id + '"' + (selected.has(id) ? ' checked' : '') + '>' +
-      '<span><b>' + esc(quizzes[id].title) + '</b><div class="muted">' +
-      c.topics + ' נושאים · ' + c.videos + ' סרטונים · ' + c.questions + ' שאלות</div></span></label><div class="row">' +
-      '<button class="mini" data-list="edit" data-id="' + id + '">עריכה</button>' +
-      '<button class="mini" data-list="links" data-id="' + id + '">קישורים אישיים</button>' +
-      '<button class="mini" data-list="who" data-id="' + id + '">מי הגיש</button>' +
-      '<button class="mini" data-list="dup" data-id="' + id + '">שכפול</button>' +
-      '<button class="mini del" data-list="del" data-id="' + id + '">מחיקה</button></div>' +
+      '<span style="flex:1"><b style="font-size:17px">' + esc(quizzes[id].title) + '</b><div class="tags">' +
+      '<span class="tag">' + c.topics + ' נושאים</span><span class="tag">' + c.videos + ' סרטונים</span>' +
+      '<span class="tag">' + c.questions + ' שאלות</span></div></span></label><div class="row">' +
+      '<button class="mini key" data-list="edit" data-id="' + id + '">' + ICON.edit + 'עריכה</button>' +
+      '<button class="mini" data-list="links" data-id="' + id + '">' + ICON.link + 'קישורים</button>' +
+      '<button class="mini" data-list="who" data-id="' + id + '">' + ICON.users + 'מי הגיש</button>' +
+      '<button class="mini" data-list="dup" data-id="' + id + '">' + ICON.copy + 'שכפול</button>' +
+      '<button class="mini del" data-list="del" data-id="' + id + '" title="מחיקה">' + ICON.trash + '</button></div>' +
       '<div id="who-' + id + '"></div></div>';
   }).join('') : '<p class="muted">עוד אין מבחנים. לחץ "+ מבחן חדש".</p>';
   [...selected].forEach(id => { if (!quizzes[id]) selected.delete(id); });
@@ -480,6 +507,7 @@ $('logout').onclick = () => {
 };
 
 $('newQuiz').onclick = () => openQuiz(newId(), null);
+$('back').innerHTML = ICON.back + 'חזרה';
 $('back').onclick = () => {
   if (dirty && !confirm('יש שינויים שלא נשמרו. לצאת בלי לשמור?')) return;
   dirty = false; showList();
@@ -525,7 +553,7 @@ function questionBlock(q, ti, i, n) {
 }
 function render() {
   $('topics').innerHTML = quiz.topics.map((t, ti) =>
-    '<div class="topic"><div class="item-head"><b>נושא ' + (ti + 1) + '</b>' +
+    '<div class="topic"><div class="item-head"><span class="num">' + (ti + 1) + '</span><b>' + esc(t.name || 'נושא חדש') + '</b>' +
       '<button class="mini" data-act="tup" data-ti="' + ti + '"' + (ti === 0 ? ' disabled' : '') + '>▲</button>' +
       '<button class="mini" data-act="tdown" data-ti="' + ti + '"' + (ti === quiz.topics.length - 1 ? ' disabled' : '') + '>▼</button>' +
       '<button class="mini del" data-act="tdel" data-ti="' + ti + '">מחיקת הנושא</button></div>' +

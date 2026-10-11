@@ -12,87 +12,95 @@
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#eef2f4; --card:#fff; --text:#0f1b21; --muted:#67757e; --line:#e2e8ec;
-    --accent:#0b63c4; --accent2:#41b8f0; --bad:#c0392b;
-    --grad:linear-gradient(135deg,#0b63c4 0%,#41b8f0 100%);
-    --shadow:0 10px 30px -18px rgba(10,30,50,.5);
-    --radius:18px;
+    --bg:#eef3f8; --card:#fff; --soft:#f3f7fb; --line:#e3eaf2;
+    --text:#0c1a26; --muted:#64788a;
+    --accent:#0a5fc4; --accent2:#2fa8ef; --bad:#d9372b;
+    --grad:linear-gradient(135deg,#0a5fc4 0%,#2fa8ef 100%);
+    --r:20px; --sh:0 1px 2px rgba(12,26,38,.05), 0 14px 32px -24px rgba(12,26,38,.45);
   }
   @media (prefers-color-scheme:dark){
-    :root{--bg:#0d1416; --card:#151f22; --text:#e7eef0; --muted:#93a3aa; --line:#243036; --shadow:0 10px 30px -18px #000}
+    :root{--bg:#0a1016;--card:#121b23;--soft:#162230;--line:#1f2d3a;--text:#e8eff5;--muted:#8da0b1;
+          --sh:0 1px 2px rgba(0,0,0,.4), 0 14px 32px -24px #000}
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;background:var(--bg);color:var(--text);
-       font:17px/1.65 Heebo,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 Heebo,system-ui,-apple-system,Arial,sans-serif}
 
-  /* כותרת עליונה */
-  header{background:var(--grad);color:#fff;padding:26px 20px 46px;position:relative}
-  header::after{content:"";position:absolute;inset-inline:0;bottom:-1px;height:26px;background:var(--bg);
-                border-radius:26px 26px 0 0}
-  header .logo{display:block;width:150px;max-width:55%;border-radius:12px;margin-bottom:14px;
-               box-shadow:0 6px 18px -8px rgba(0,0,0,.55)}
-  header h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.01em}
-  header p{margin:4px 0 0;opacity:.85;font-size:15px}
+  header{background:var(--grad);color:#fff;padding:22px 20px 56px;position:relative;overflow:hidden}
+  header::before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%);top:-160px;inset-inline-start:-80px}
+  header::after{content:"";position:absolute;inset-inline:0;bottom:-1px;height:30px;background:var(--bg);border-radius:30px 30px 0 0}
+  .hrow{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+  .chip-logo{background:#fff;border-radius:16px;padding:8px 10px;box-shadow:0 8px 22px -12px rgba(0,0,0,.6);flex:none}
+  .chip-logo img{display:block;width:92px}
+  .htxt h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
+  .htxt p{margin:2px 0 0;font-size:13px;opacity:.85}
 
-  main{max-width:620px;margin:-22px auto 0;padding:0 16px 40px;position:relative;z-index:1}
-  h2{font-size:20px;font-weight:700;margin:0 0 6px;letter-spacing:-.01em}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-        padding:20px;margin-bottom:16px;box-shadow:var(--shadow);animation:rise .35s ease both}
-  @keyframes rise{from{opacity:0;transform:translateY(10px)}}
-  .muted{color:var(--muted);font-size:15px}
+  main{max-width:640px;margin:-26px auto 0;padding:0 16px 48px;position:relative;z-index:1}
+  h2{font-size:20px;font-weight:800;margin:0 0 6px;letter-spacing:-.02em}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-bottom:18px;
+        box-shadow:var(--sh);animation:rise .3s ease both}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}}
+  .muted{color:var(--muted);font-size:14.5px}
 
-  input[type=text],textarea{width:100%;font:inherit;padding:14px;border:1.5px solid var(--line);
-        border-radius:13px;background:transparent;color:inherit;transition:border-color .15s,box-shadow .15s}
-  input[type=text]:focus,textarea:focus{outline:0;border-color:var(--accent2);
-        box-shadow:0 0 0 4px color-mix(in srgb,var(--accent2) 18%,transparent)}
+  input[type=text],textarea{width:100%;font:inherit;padding:15px;border:1.5px solid var(--line);
+    border-radius:14px;background:var(--soft);color:inherit}
+  input[type=text]:focus,textarea:focus{outline:0;border-color:var(--accent2);background:var(--card);
+    box-shadow:0 0 0 4px color-mix(in srgb,var(--accent2) 16%,transparent)}
   textarea{min-height:110px;resize:vertical}
 
   button{width:100%;font:inherit;font-weight:700;padding:15px;border:0;border-radius:14px;
-         background:var(--grad);color:#fff;cursor:pointer;margin-top:14px;
-         box-shadow:0 8px 20px -12px var(--accent);transition:transform .12s,filter .15s,opacity .15s}
+         background:var(--grad);color:#fff;cursor:pointer;margin-top:12px;
+         box-shadow:0 10px 22px -14px var(--accent)}
   button:active:not(:disabled){transform:scale(.985)}
   button:disabled{background:var(--line);color:var(--muted);box-shadow:none;cursor:default}
-  button.soft{background:none;border:1.5px solid var(--line);color:var(--accent);box-shadow:none}
+  button.soft{background:var(--soft);border:1px solid var(--line);color:var(--accent);box-shadow:none}
+  @media (prefers-color-scheme:dark){button.soft{color:var(--accent2)}}
 
-  /* סרטון */
-  .video{position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;background:#000}
+  .video{position:relative;padding-top:56.25%;border-radius:16px;overflow:hidden;background:#000}
   .video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
-  .steps{display:flex;gap:6px;margin-bottom:12px}
-  .steps i{flex:1;height:6px;border-radius:99px;background:var(--line)}
+  .steps{display:flex;gap:5px;margin-bottom:14px}
+  .steps i{flex:1;height:5px;border-radius:99px;background:var(--line)}
   .steps i.on{background:var(--grad)}
   .progress{display:none}
-  .count{display:inline-block;font-size:13px;font-weight:700;color:var(--accent2);
-         background:color-mix(in srgb,var(--accent2) 12%,transparent);padding:3px 10px;border-radius:99px}
+  .count{display:inline-block;font-size:12.5px;font-weight:700;color:var(--accent);
+         background:color-mix(in srgb,var(--accent2) 14%,transparent);padding:5px 12px;border-radius:99px}
+  @media (prefers-color-scheme:dark){.count{color:var(--accent2)}}
 
-  /* תשובות */
-  label.opt{display:flex;gap:12px;align-items:center;padding:14px;border:1.5px solid var(--line);
-            border-radius:14px;margin-top:10px;cursor:pointer;transition:border-color .15s,background .15s}
-  label.opt:has(input:checked){border-color:var(--accent2);background:color-mix(in srgb,var(--accent2) 8%,transparent)}
-  label.opt input{accent-color:var(--accent2);width:20px;height:20px;margin:0;flex:none}
+  label.opt{display:flex;gap:12px;align-items:center;padding:15px;border:1.5px solid var(--line);
+            border-radius:14px;margin-top:9px;cursor:pointer;background:var(--soft)}
+  label.opt:has(input:checked){border-color:var(--accent2);font-weight:700;
+            background:color-mix(in srgb,var(--accent2) 10%,transparent)}
+  label.opt input{accent-color:var(--accent2);width:21px;height:21px;margin:0;flex:none}
 
-  .q{margin-bottom:26px}
+  .qh{display:flex;align-items:center;gap:9px;margin:26px 0 12px;font-size:17px;font-weight:800}
+  .qh span{width:26px;height:26px;border-radius:9px;background:var(--grad);color:#fff;
+           display:grid;place-items:center;font-size:13px;flex:none}
+  .q{margin-bottom:24px}
+  .q p{font-weight:700;margin:0 0 2px}
   .q.missing{outline:2px solid var(--bad);outline-offset:8px;border-radius:8px}
   .err{color:var(--bad);font-weight:700;margin-top:10px}
 
-  /* סיום */
   .done{text-align:center;padding:34px 20px}
-  .tick{width:74px;height:74px;margin:0 auto 14px;border-radius:50%;background:var(--grad);
-        display:grid;place-items:center;color:#fff;font-size:36px;animation:pop .45s cubic-bezier(.2,1.4,.5,1) both}
+  .tick{width:80px;height:80px;margin:0 auto 16px;border-radius:50%;background:var(--grad);
+        display:grid;place-items:center;color:#fff;font-size:40px;
+        box-shadow:0 16px 34px -18px var(--accent);animation:pop .45s cubic-bezier(.2,1.4,.5,1) both}
   @keyframes pop{from{transform:scale(.4);opacity:0}}
+
   @media (min-width:900px){
-    main{max-width:760px}
-    header{padding:32px 20px 52px}
-    header h1{font-size:27px}
-    header .logo{width:170px}
+    main{max-width:780px}
+    header{padding:28px 24px 60px}
+    .chip-logo img{width:110px}
+    .htxt h1{font-size:26px}
   }
   .hidden{display:none}
 </style>
 </head>
 <body>
 <header>
-  <img class="logo" src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי">
-  <h1 id="title">מבחן עובדים</h1>
-  <p>הדרכה וידע — מילוי אישי</p>
+  <div class="hrow">
+    <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
+    <div class="htxt"><h1 id="title">מבחן עובדים</h1><p>הדרכת עובדים · מילוי אישי</p></div>
+  </div>
 </header>
 <main>
   <!-- 1. שם -->
@@ -334,10 +342,11 @@ $('confirm').onclick = () => { buildQuiz(); show('s-quiz'); };
 
 // ---------- מבחן ----------
 function buildQuiz() {
-  let html = '', n = 0;
+  let html = '', n = 0, tn = 0;
   CONFIG.topics.forEach((t, ti) => {
     if (!t.questions.length) return;
-    if (t.name) html += '<h2 style="margin:22px 0 10px">' + esc(t.name) + '</h2>';
+    tn++;
+    if (t.name) html += '<div class="qh"><span>' + tn + '</span>' + esc(t.name) + '</div>';
     t.questions.forEach((q, qi) => {
       const key = ti + '_' + qi;
       n++;
