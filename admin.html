@@ -97,6 +97,10 @@
   details ol{padding-inline-start:20px;margin:10px 0}
 
   .row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .item > .row{flex-wrap:nowrap}
+  .item > .row .mini{flex:1 1 0;min-width:0;justify-content:center;padding:9px 6px;white-space:nowrap}
+  .item > .row .mini[data-list="more"]{flex:0 0 40px;font-size:18px;line-height:1;padding:7px 0}
+  @media (max-width:370px){ .item > .row .mini svg{display:none} .item > .row .mini{font-size:13px;padding:9px 4px} }
   .topbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--card) 92%,transparent);
           backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:11px 16px;margin-bottom:18px}
   .topbar > div{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:8px}
@@ -121,6 +125,21 @@
   .libitem .mid{flex:1;min-width:0}
   .libitem b{display:block;font-size:15px;line-height:1.35}
   .src{font-size:12px;color:var(--muted);margin-top:3px}
+  .sect{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+  .emailrow{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);
+            background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 14px}
+  .emailrow > span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .emailrow bdi{color:var(--text);font-weight:600}
+  .more{position:relative}
+  .menu{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+  .linkrow{display:flex;align-items:center;flex-wrap:wrap;gap:8px;border:1px solid var(--line);
+           border-radius:12px;padding:8px 10px;margin-top:8px;background:var(--card)}
+  @media (max-width:560px){ .linkrow input[data-forkey]{flex:1 1 100%} }
+  .linkrow input{flex:1;min-width:0;padding:8px 10px;border-radius:9px;font-size:14px}
+  .linkrow .code{font-size:12px;color:var(--muted);font-weight:700;flex:none}
+  .linkrow .acts{display:flex;gap:4px;flex:none}
+  .linkrow .acts button{padding:7px 8px;font-size:13px}
+  .linkrow.used{opacity:.7}
   .chips{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 16px}
   .chip{font-size:13.5px;font-weight:700;color:var(--muted);background:var(--soft);
         border:1px solid var(--line);border-radius:99px;padding:7px 13px;cursor:pointer;box-shadow:none}
@@ -151,7 +170,7 @@
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
     <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 28</span></p></div>
+    <p>מבנים<span class="ver">· גרסה 30</span></p></div>
     <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
@@ -165,22 +184,20 @@
     <p id="loginErr" class="err"></p>
   </section>
 
-  <!-- הגדרות כלליות -->
-  <section id="s-global" class="card hidden">
-    <h2>הגדרה כללית</h2>
-    <label class="f">לאיזה מייל נשלחות כל התוצאות</label>
-    <input id="globalEmail" type="email" placeholder="name@example.com">
-    <p class="muted" id="emailMsg" style="margin:8px 0 0"></p>
-  </section>
-
   <!-- רשימת מבחנים -->
   <section id="s-list" class="card hidden">
-    <h2>המבחנים שלי</h2>
+    <div class="sect"><h2>המבחנים שלי</h2>
+      <button class="mini" id="openLib">📚 מאגר</button></div>
+    <div class="emailrow"><span>📧 תוצאות ל־<bdi id="emailText" dir="ltr"></bdi></span>
+      <button class="mini" id="emailEdit">שינוי</button></div>
+    <div id="emailBox" class="hidden" style="margin:-6px 0 14px">
+      <input id="globalEmail" type="email" placeholder="name@example.com">
+      <p class="muted" id="emailMsg" style="margin:8px 0 0"></p>
+    </div>
     <p class="muted">סמן כמה מבחנים כדי לשלוח אותם יחד בהודעה אחת.</p>
     <div id="chips" class="chips"></div>
     <div id="list"></div>
     <button class="full" id="newQuiz">+ מבחן חדש</button>
-    <button class="full ghost" id="openLib">📚 מאגר שאלות וסרטונים</button>
   </section>
 
   <!-- מאגר -->
@@ -243,8 +260,8 @@
 
 <input type="file" id="pick" accept="video/*" multiple hidden>
 
-<script src="settings.js?v=28"></script>
-<script src="demo.js?v=28"></script>
+<script src="settings.js?v=30"></script>
+<script src="demo.js?v=30"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -331,6 +348,7 @@ async function load() {
     if (any) { globalEmail = any.resultsEmail; saveGlobalEmail(true); }
   }
   $('globalEmail').value = globalEmail;
+  showEmailRow();
   showList();
 }
 async function saveGlobalEmail(quiet) {
@@ -339,13 +357,18 @@ async function saveGlobalEmail(quiet) {
   try {
     await authedUrl('PUT', SETTINGS.databaseURL + '/settings/resultsEmail', v);
     globalEmail = v;
-    if (!quiet) { $('emailMsg').textContent = 'נשמר ✅'; setTimeout(() => { $('emailMsg').textContent = ''; }, 2500); }
+    showEmailRow();
+    if (!quiet) { $('emailMsg').textContent = 'נשמר ✅'; setTimeout(() => { $('emailMsg').textContent = ''; $('emailBox').classList.add('hidden'); }, 1500); }
   } catch (e) { $('emailMsg').textContent = 'השמירה נכשלה. נסה שוב.'; }
 }
 $('globalEmail').addEventListener('change', () => saveGlobalEmail(false));
+function showEmailRow() {
+  $('emailText').textContent = globalEmail || '— עוד לא הוגדר —';
+  $('emailBox').classList.toggle('hidden', !!globalEmail);
+}
+$('emailEdit').onclick = () => $('emailBox').classList.toggle('hidden');
 function screen(id) {
   ['s-login', 's-list', 'editor', 's-lib'].forEach(x => $(x).classList.toggle('hidden', x !== id));
-  $('s-global').classList.toggle('hidden', id !== 's-list');
   $('logout').classList.toggle('hidden', id === 's-login');
   $('bar').classList.toggle('hidden', id !== 'editor');
   $('selbar').classList.toggle('hidden', id !== 's-list' || !selected.size);
@@ -418,8 +441,10 @@ function quizCard(id) {
     '<button class="mini key" data-list="edit" data-id="' + id + '">' + ICON.edit + 'עריכה</button>' +
     '<button class="mini" data-list="links" data-id="' + id + '">' + ICON.link + 'קישורים</button>' +
     '<button class="mini" data-list="who" data-id="' + id + '">' + ICON.users + 'מי הגיש</button>' +
-    '<button class="mini" data-list="dup" data-id="' + id + '">' + ICON.copy + 'שכפול</button>' +
-    '<button class="mini del" data-list="del" data-id="' + id + '" title="מחיקה">' + ICON.trash + '</button></div>' +
+    '<button class="mini" data-list="more" data-id="' + id + '" title="עוד">⋯</button></div>' +
+    '<div class="menu hidden" id="menu-' + id + '">' +
+      '<button class="mini" data-list="dup" data-id="' + id + '">' + ICON.copy + 'שכפול</button>' +
+      '<button class="mini del" data-list="del" data-id="' + id + '">' + ICON.trash + 'מחיקה</button></div>' +
     '<div id="who-' + id + '"></div></div>';
 }
 function showList() {
@@ -492,6 +517,7 @@ function openQuiz(id, data) {
 $('list').addEventListener('click', async e => {
   const d = e.target.dataset, id = d.id;
   if (!d.list) return;
+  if (d.list === 'more') { $('menu-' + id).classList.toggle('hidden'); return; }
   if (d.list === 'edit') openQuiz(id, quizzes[id]);
   else if (d.list === 'who') showWho(id);
   else if (d.list === 'links') showLinks(id);
@@ -557,24 +583,29 @@ async function showLinks(id) {
   try { inv = (await (await fetch(INV('/' + id), { cache: 'no-store' })).json()) || {}; }
   catch (e) { box.innerHTML = '<p class="err">לא הצלחתי לטעון. נסה שוב.</p>'; return; }
   const codes = Object.keys(inv).sort((a, b) => (inv[a].used ? 1 : 0) - (inv[b].used ? 1 : 0));
-  const free = codes.filter(c => !inv[c].used).length;
   const unsent = codes.filter(c => !inv[c].used && !inv[c].sent).length;
+  const used = codes.filter(c => inv[c].used), freeCodes = codes.filter(c => !inv[c].used);
+  const freeRow = c =>
+    '<div class="linkrow" id="row-' + esc(c) + '" data-sent="' + (inv[c].sent ? '1' : '') + '">' +
+      '<input placeholder="שם העובד (לא חובה)" data-forid="' + id + '" data-forkey="' + esc(c) + '" value="' + esc(inv[c].for || '') + '">' +
+      '<span class="code" dir="ltr">' + esc(c) + '<span class="sent"> ✓</span></span>' +
+      '<span class="acts">' +
+        '<button class="mini" data-list="walink" data-id="' + id + '" data-key="' + esc(c) + '" title="וואטסאפ">💬</button>' +
+        '<button class="mini" data-list="copylink" data-id="' + id + '" data-key="' + esc(c) + '" title="העתקה">' + ICON.copy + '</button>' +
+        '<button class="mini del" data-list="dellink" data-id="' + id + '" data-key="' + esc(c) + '" title="מחיקה">' + ICON.trash + '</button>' +
+      '</span></div>';
+  const usedRow = c =>
+    '<div class="linkrow used"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🔒 ' +
+      (inv[c].for ? esc(inv[c].for) + ' <span class="muted">(' + esc(inv[c].name || '—') + ')</span>' : esc(inv[c].name || '')) +
+      '</span><span class="code">' + new Date(inv[c].used).toLocaleDateString('he-IL') + '</span>' +
+      '<button class="mini del" data-list="dellink" data-id="' + id + '" data-key="' + esc(c) + '" title="מחיקה">' + ICON.trash + '</button></div>';
   box.innerHTML = '<div class="item" style="margin-top:12px"><b>קישורים אישיים — כל קישור להגשה אחת</b>' +
-    '<p class="muted">פנויים: ' + free + ' (מתוכם ' + unsent + ' עוד לא נשלחו) · נוצלו: ' + (codes.length - free) + '</p>' +
-    '<div class="opt"><input id="cnt-' + id + '" type="number" min="1" max="50" value="5" style="flex:none;width:90px">' +
-    '<button class="mini" data-list="mklinks" data-id="' + id + '">צור קישורים</button></div>' +
-    codes.map(c => inv[c].used
-      ? '<div class="opt" style="justify-content:space-between;opacity:.65"><span>🔒 ' +
-        (inv[c].for ? esc(inv[c].for) + ' <span class="muted">(הגיש: ' + esc(inv[c].name || '—') + ')</span>' : esc(inv[c].name || '')) +
-        '<span class="muted"> · ' + new Date(inv[c].used).toLocaleString('he-IL') + '</span></span>' +
-        '<button class="mini del" data-list="dellink" data-id="' + id + '" data-key="' + esc(c) + '">מחיקה</button></div>'
-      : '<div class="opt" id="row-' + esc(c) + '" data-sent="' + (inv[c].sent ? '1' : '') + '" style="justify-content:space-between;flex-wrap:wrap">' +
-        '<input placeholder="שם העובד (לא חובה)" data-forid="' + id + '" data-forkey="' + esc(c) + '" value="' + esc(inv[c].for || '') + '">' +
-        '<span dir="ltr" class="muted" style="font-size:13px">' + esc(c) + '<span class="sent"> · נשלח</span></span>' +
-        '<span class="row" style="margin:0">' +
-        '<button class="mini" data-list="walink" data-id="' + id + '" data-key="' + esc(c) + '">וואטסאפ</button>' +
-        '<button class="mini" data-list="copylink" data-id="' + id + '" data-key="' + esc(c) + '">העתקה</button>' +
-        '<button class="mini del" data-list="dellink" data-id="' + id + '" data-key="' + esc(c) + '">מחיקה</button></span></div>').join('') +
+    '<p class="muted">פנויים: ' + freeCodes.length + ' (מתוכם ' + unsent + ' עוד לא נשלחו) · נוצלו: ' + used.length + '</p>' +
+    '<div class="linkrow"><input id="cnt-' + id + '" type="number" min="1" max="50" value="5" style="flex:none;width:80px">' +
+      '<button class="mini" data-list="mklinks" data-id="' + id + '">צור קישורים</button></div>' +
+    freeCodes.map(freeRow).join('') +
+    (used.length ? '<details style="margin-top:10px"><summary>נוצלו (' + used.length + ')</summary>' +
+       used.map(usedRow).join('') + '</details>' : '') +
     '</div>';
 }
 
@@ -663,7 +694,7 @@ function questionBlock(q, ti, i, n) {
 }
 function render() {
   $('topics').innerHTML = quiz.topics.map((t, ti) =>
-    '<div class="topic"><div class="item-head"><span class="num">' + (ti + 1) + '</span><b>' + esc(t.name || 'נושא חדש') + '</b>' +
+    '<div class="topic"><div class="item-head"><span class="num">' + (ti + 1) + '</span><b>נושא</b>' +
       '<button class="mini" data-act="tup" data-ti="' + ti + '"' + (ti === 0 ? ' disabled' : '') + '>▲</button>' +
       '<button class="mini" data-act="tdown" data-ti="' + ti + '"' + (ti === quiz.topics.length - 1 ? ' disabled' : '') + '>▼</button>' +
       '<button class="mini del" data-act="tdel" data-ti="' + ti + '">מחיקת הנושא</button></div>' +
