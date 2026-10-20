@@ -163,7 +163,7 @@
     .chip-logo img{width:110px}
     .htxt h1{font-size:26px}
   }
-  .hidden{display:none}
+  .hidden{display:none !important}   /* button.mini מגדיר display ובלי !important גובר על זה */
 </style>
 </head>
 <body>
@@ -171,7 +171,7 @@
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
     <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 31</span></p></div>
+    <p>מבנים<span class="ver">· גרסה 32</span></p></div>
     <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
@@ -188,7 +188,8 @@
   <!-- רשימת מבחנים -->
   <section id="s-list" class="card hidden">
     <div class="sect"><h2>המבחנים שלי</h2>
-      <span class="row" style="flex:none;gap:6px"><button class="mini" id="backup" title="הורדת גיבוי">💾 גיבוי</button>
+      <span class="row" style="flex:none;gap:6px"><button class="mini" id="openImp" title="ייבוא מבחנים">⬆️ ייבוא</button>
+      <button class="mini" id="backup" title="הורדת גיבוי">💾 גיבוי</button>
       <button class="mini" id="openLib">📚 מאגר</button></span></div>
     <div class="emailrow"><span>📧 תוצאות ל־<bdi id="emailText" dir="ltr"></bdi></span>
       <button class="mini" id="emailEdit">שינוי</button></div>
@@ -212,6 +213,43 @@
       <p class="muted" style="margin:10px 0 14px">כל מה שהעלית אי פעם, עם המבחנים שמשתמשים בכל פריט.
       סמן פריטים וצור מהם מבחן חדש. פריט שלא צריך — "לארכיון", וכך לא שוברים תוכן קיים.</p>
       <div id="libList"></div>
+    </section>
+  </div>
+
+  <!-- ייבוא -->
+  <div id="s-imp" class="hidden">
+    <div class="topbar"><div><button id="impBack"></button><b>ייבוא מבחנים</b></div></div>
+    <section class="card">
+      <p class="muted">מדביקים טקסט בפורמט שלמטה (או בוחרים קובץ גיבוי JSON), לוחצים "בדיקה",
+      ורק אם הכול תקין — "ייבוא". המבחנים נוצרים חדשים; שום מבחן קיים לא נדרס.</p>
+      <details style="margin-bottom:12px"><summary>הפורמט — דוגמה להעתקה</summary>
+<pre style="white-space:pre-wrap;font-size:13px;background:var(--soft);padding:10px;border-radius:10px"># בטיחות באתר
+קטגוריה: בטיחות
+שאלות: אחרי כל נושא
+
+## עבודה בגובה
+סרטון: https://drive.google.com/file/d/XXXX/view | הסבר רתמות
+? ממתי חובה רתמת בטיחות?
+* מגובה 2 מטר
+- מגובה 5 מטר
+- רק בגג
+?? תאר מקרה שבו עצרת עבודה מסיבת בטיחות.
+
+## כלי עבודה
+? מה בודקים לפני הפעלת דיסק?
+* שהמגן במקומו
+- שהכבל ארוך</pre>
+        <p class="muted"><b>#</b> מבחן חדש · <b>##</b> נושא · <b>?</b> שאלה אמריקאית ·
+        <b>*</b> התשובה הנכונה · <b>-</b> תשובה שגויה · <b>??</b> שאלה פתוחה ·
+        <b>סרטון:</b> קישור Drive, ואחרי | שם הסרטון.</p>
+      </details>
+      <input type="file" id="impFile" accept=".json,.txt,text/plain,application/json">
+      <textarea id="impText" rows="12" placeholder="הדבק כאן..." style="margin-top:10px"></textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="mini" id="impCheck">בדיקה</button>
+        <button class="mini key hidden" id="impGo">ייבוא</button>
+      </div>
+      <div id="impOut" style="margin-top:12px"></div>
     </section>
   </div>
 
@@ -264,8 +302,8 @@
 
 <input type="file" id="pick" accept="video/*" multiple hidden>
 
-<script src="settings.js?v=31"></script>
-<script src="demo.js?v=31"></script>
+<script src="settings.js?v=32"></script>
+<script src="demo.js?v=32"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -471,7 +509,7 @@ function showEmailRow() {
 }
 $('emailEdit').onclick = () => $('emailBox').classList.toggle('hidden');
 function screen(id) {
-  ['s-login', 's-list', 'editor', 's-lib'].forEach(x => $(x).classList.toggle('hidden', x !== id));
+  ['s-login', 's-list', 'editor', 's-lib', 's-imp'].forEach(x => $(x).classList.toggle('hidden', x !== id));
   $('logout').classList.toggle('hidden', id === 's-login');
   $('bar').classList.toggle('hidden', id !== 'editor');
   $('selbar').classList.toggle('hidden', id !== 's-list' || !selected.size);
@@ -1113,6 +1151,146 @@ document.addEventListener('click', async e => {
   try { await saveToLibrary(pendingLib); pendingLib = null; status('נכנס למאגר ✅', 'ok'); }
   catch (err) { e.target.disabled = false; e.target.textContent = 'נסה שוב'; }
 });
+
+// ---------- ייבוא מבחנים ----------
+// פורמט טקסט פשוט, כדי שאפשר יהיה להכין 500 שאלות בחוץ ולהכניס אותן בלחיצה אחת.
+function parseImport(text) {
+  const out = [], errors = [];
+  const t = text.trim();
+  if (!t) { errors.push('אין תוכן.'); return { quizzes: out, errors: errors }; }
+
+  // קובץ גיבוי או JSON של מבחנים
+  if (t[0] === '{' || t[0] === '[') {
+    let data;
+    try { data = JSON.parse(t); } catch (e) { errors.push('הקובץ לא JSON תקין.'); return { quizzes: out, errors: errors }; }
+    const src = Array.isArray(data) ? data : (data.quizzes || data);
+    const list = Array.isArray(src) ? src : Object.values(src || {});
+    list.forEach(q => {
+      if (!q || !q.title) return;
+      const n = normalize(JSON.parse(JSON.stringify(q)));
+      out.push({ title: String(q.title), category: String(q.category || '').trim(),
+        qMode: q.qMode === 'topic' ? 'topic' : 'end', topics: n.topics });
+    });
+    if (!out.length) errors.push('לא נמצאו מבחנים בקובץ.');
+    return { quizzes: out, errors: errors };
+  }
+
+  let quiz = null, topic = null, q = null;
+  const newTopic = name => { topic = { name: name, videos: [], questions: [] }; quiz.topics.push(topic); return topic; };
+  const needTopic = () => topic || newTopic('');
+  text.split(/\r?\n/).forEach((raw, i) => {
+    const line = raw.trim(), ln = 'שורה ' + (i + 1) + ': ';
+    if (!line) return;
+    if (line.startsWith('##')) {
+      if (!quiz) return errors.push(ln + 'נושא לפני שהתחיל מבחן (חסרה שורת # עם שם המבחן).');
+      newTopic(line.replace(/^##\s*(נושא:)?\s*/, '').trim()); q = null;
+    } else if (line.startsWith('#')) {
+      quiz = { title: line.replace(/^#\s*(מבחן:)?\s*/, '').trim(), category: '', qMode: 'end', topics: [] };
+      topic = null; q = null;
+      if (!quiz.title) errors.push(ln + 'למבחן אין שם.');
+      out.push(quiz);
+    } else if (/^קטגוריה\s*:/.test(line)) {
+      if (quiz) quiz.category = line.split(':').slice(1).join(':').trim();
+    } else if (/^שאלות\s*:/.test(line)) {
+      if (quiz) quiz.qMode = /נושא/.test(line) ? 'topic' : 'end';
+    } else if (/^(סרטון|וידאו)\s*:/.test(line)) {
+      if (!quiz) return errors.push(ln + 'סרטון לפני שהתחיל מבחן.');
+      const rest = line.split(':').slice(1).join(':').trim();
+      const [url, title] = rest.split('|').map(x => (x || '').trim());
+      if (!/drive\.google\.com\/(file\/d\/|open\?id=)[\w-]+/.test(url)) return errors.push(ln + 'קישור Drive לא תקין.');
+      needTopic().videos.push({ kind: 'drive', title: title || 'סרטון', url: url, minSeconds: DEFAULT_SECONDS });
+      q = null;
+    } else if (line.startsWith('??')) {
+      if (!quiz) return errors.push(ln + 'שאלה לפני שהתחיל מבחן.');
+      q = { type: 'open', text: line.slice(2).trim() };
+      if (!q.text) errors.push(ln + 'שאלה פתוחה בלי נוסח.');
+      needTopic().questions.push(q); q = null;
+    } else if (line.startsWith('?')) {
+      if (!quiz) return errors.push(ln + 'שאלה לפני שהתחיל מבחן.');
+      q = { type: 'choice', text: line.slice(1).trim(), options: [], correct: 0 };
+      if (!q.text) errors.push(ln + 'שאלה בלי נוסח.');
+      needTopic().questions.push(q);
+    } else if (line[0] === '*' || line[0] === '-') {
+      if (!q || q.type !== 'choice') return errors.push(ln + 'תשובה בלי שאלה אמריקאית לפניה.');
+      q.options.push(line.slice(1).trim());
+      if (line[0] === '*') {
+        if (q.correct) errors.push(ln + 'יש יותר מתשובה נכונה אחת (*) באותה שאלה.');
+        q.correct = q.options.length;
+      }
+    } else {
+      errors.push(ln + 'לא הבנתי את השורה. התחל ב- # ## ? ?? * - או "סרטון:".');
+    }
+  });
+
+  out.forEach(z => {
+    if (!z.topics.length) errors.push('במבחן "' + z.title + '" אין נושאים או שאלות.');
+    let n = 0;
+    z.topics.forEach(tp => tp.questions.forEach((x, i) => {
+      n++;
+      if (x.type !== 'choice') return;
+      if (x.options.length < 2) errors.push('במבחן "' + z.title + '", שאלה ' + n + ': פחות משתי תשובות.');
+      if (x.options.some(o => !o)) errors.push('במבחן "' + z.title + '", שאלה ' + n + ': יש תשובה ריקה.');
+      if (!x.correct) errors.push('במבחן "' + z.title + '", שאלה ' + n + ': לא סומנה תשובה נכונה (*).');
+    }));
+    if (!n) errors.push('במבחן "' + z.title + '" אין אף שאלה.');
+    if (z.topics.length > 1 && z.topics.some(tp => !tp.name)) errors.push('במבחן "' + z.title + '" יש נושא בלי שם.');
+  });
+  return { quizzes: out, errors: errors };
+}
+
+let impReady = null;
+$('impBack').innerHTML = ICON.back + 'חזרה';
+$('impBack').onclick = () => showList();
+$('openImp').onclick = () => { impReady = null; $('impGo').classList.add('hidden'); $('impOut').innerHTML = ''; screen('s-imp'); };
+$('impFile').onchange = async () => {
+  const f = $('impFile').files[0];
+  if (!f) return;
+  $('impText').value = await f.text();
+  $('impCheck').click();
+};
+$('impCheck').onclick = () => {
+  const r = parseImport($('impText').value);
+  impReady = r.errors.length ? null : r.quizzes;
+  $('impGo').classList.toggle('hidden', !impReady);
+  $('impOut').innerHTML = r.errors.length
+    ? '<div class="item"><b class="err">צריך לתקן ' + r.errors.length + ' דברים:</b>' +
+      r.errors.slice(0, 20).map(x => '<div class="muted">· ' + esc(x) + '</div>').join('') +
+      (r.errors.length > 20 ? '<div class="muted">· ועוד ' + (r.errors.length - 20) + '...</div>' : '') + '</div>'
+    : '<div class="item"><b>מוכן לייבוא: ' + r.quizzes.length + (r.quizzes.length === 1 ? ' מבחן' : ' מבחנים') + '</b>' +
+      r.quizzes.map(z => '<div class="muted">· ' + esc(z.title) + (z.category ? ' [' + esc(z.category) + ']' : '') +
+        ' — ' + z.topics.length + ' נושאים, ' +
+        z.topics.reduce((a, t) => a + t.questions.length, 0) + ' שאלות, ' +
+        z.topics.reduce((a, t) => a + t.videos.length, 0) + ' סרטונים</div>').join('') + '</div>';
+};
+$('impGo').onclick = async () => {
+  if (!impReady) return;
+  $('impGo').disabled = true; $('impGo').textContent = 'מייבא...';
+  const made = [];
+  try {
+    for (const z of impReady) {
+      const clean = { title: z.title, category: z.category, qMode: z.qMode, updated: Date.now(),
+        topics: z.topics.map(t => ({ name: t.name,
+          videos: t.videos.map(v => ({ kind: 'drive', title: v.title, url: v.url,
+            minSeconds: v.minSeconds == null ? DEFAULT_SECONDS : v.minSeconds })),
+          questions: t.questions.map(x => {
+            const o = { qid: hash(String(x.text).trim()), type: x.type, text: x.text };
+            if (x.type === 'choice') { o.options = x.options; o.correct = x.correct; }
+            return o;
+          }) })) };
+      const nid = newId();
+      await authedUrl('PUT', DB('/' + nid), clean);
+      quizzes[nid] = clean; made.push(clean);
+      await saveToLibrary(clean).catch(() => {});
+    }
+    $('impText').value = ''; $('impFile').value = ''; impReady = null;
+    showList();
+    alert('יובאו ' + made.length + (made.length === 1 ? ' מבחן.' : ' מבחנים.') + ' צור להם קישורים כשתרצה לשלוח.');
+  } catch (e) {
+    $('impOut').innerHTML = '<div class="item"><b class="err">הייבוא נעצר אחרי ' + made.length +
+      ' מבחנים. בדוק אינטרנט ולחץ שוב — מה שנוצר כבר נמצא ברשימה.</b></div>';
+  }
+  $('impGo').disabled = false; $('impGo').textContent = 'ייבוא';
+};
 
 // ---------- מסך המאגר ----------
 $('libBack').innerHTML = ICON.back + 'חזרה';
