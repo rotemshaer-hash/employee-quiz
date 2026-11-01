@@ -11,6 +11,14 @@ service firebase.storage {
       // בדיקה כזאת מכשילה כל מחיקה בשקט.
       allow delete: if request.auth != null;
     }
+    match /images/{file} {
+      allow read: if true;                                   // עובדים צופים בלי להתחבר
+      // העלאה/החלפה: רק מנהל מחובר, רק תמונה, עד 10MB
+      allow create, update: if request.auth != null
+                   && request.resource.size < 10 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+      allow delete: if request.auth != null;
+    }
     match /{allPaths=**} { allow read, write: if false; }
   }
 }

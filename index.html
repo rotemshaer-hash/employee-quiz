@@ -167,8 +167,8 @@
   </section>
 </main>
 
-<script src="settings.js?v=33"></script>
-<script src="demo.js?v=33"></script>
+<script src="settings.js?v=34"></script>
+<script src="demo.js?v=34"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
@@ -180,6 +180,7 @@ let PKG = [];            // המבחנים שבקישור: אחד, או כמה �
 let qIndex = 0;          // המבחן הנוכחי
 let code = null, bundleId = null, resultsEmail = '';
 const results = [];      // תוצאות לכל מבחן
+let startedAt = null;    // שעת התחלת המבחן הראשון
 
 const lockUrl = () => bundleId ? DB('/bundles/' + encodeURIComponent(bundleId))
                                : DB('/invites/' + PKG[0].id + '/' + encodeURIComponent(code));
@@ -272,6 +273,7 @@ $('start').onclick = async () => {
     }
   }
   $('start').disabled = false; $('start').textContent = 'התחלה';
+  startedAt = Date.now();
   qIndex = 0; runQuiz(0);
 };
 
@@ -301,12 +303,22 @@ function embedUrl(url) {
   return { src: url };
 }
 
+function announceTopic(name) {
+  try {
+    if (!name || !window.speechSynthesis) return;
+    const u = new SpeechSynthesisUtterance(name);
+    u.lang = 'he-IL';
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
 async function playTopic(ti, vi) {
   tIndex = ti; vIndex = vi;
   const t = tList[ti], v = t.videos[vi];
   const lastTopic = ti === tList.length - 1;
   const hasMore = vi < t.videos.length - 1;
   seen[t.name || ti] = vi + 1;
+  if (vi === 0) announceTopic(t.name);
 
   $('steps').innerHTML = tList.map((_, j) => '<i class="' + (j <= ti ? 'on' : '') + '"></i>').join('');
   $('vcount').textContent = (t.name ? t.name + ' · ' : '') + 'נושא ' + (ti + 1) + ' מתוך ' + tList.length +
@@ -395,6 +407,12 @@ $('confirm').onclick = () => goQuestions(cur.topics.map((_, k) => k));
 
 // ---------- שאלות ----------
 let step = [];            // אינדקסים של הנושאים שמוצגים כרגע
+// סדר תצוגה אקראי לתשובות, כדי שמקום התשובה הנכונה לא יהיה קבוע
+function shuffledIdx(n) {
+  const a = Array.from({ length: n }, (_, i) => i);
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
 function remainingTopics(afterTi) {
   return tList.findIndex(t => cur.topics.indexOf(t) === afterTi) < tList.length - 1;
 }
@@ -414,9 +432,10 @@ function goQuestions(tis) {
     t.questions.forEach((q, qi) => {
       const key = ti + '_' + qi;
       const body = q.type === 'choice'
-        ? q.options.map((o, j) => '<label class="opt"><input type="radio" name="q' + key + '" value="' + j + '"> <span>' + esc(o) + '</span></label>').join('')
+        ? shuffledIdx(q.options.length).map(j => '<label class="opt"><input type="radio" name="q' + key + '" value="' + j + '"> <span>' + esc(q.options[j]) + '</span></label>').join('')
         : '<textarea name="q' + key + '" placeholder="התשובה שלך"></textarea>';
-      html += '<div class="q" id="qq' + key + '"><p><b>' + esc(q.text) + '</b></p>' + body + '</div>';
+      const img = q.image && q.image.url ? '<img src="' + esc(q.image.url) + '" style="max-width:100%;border-radius:14px;margin:0 0 10px;display:block">' : '';
+      html += '<div class="q" id="qq' + key + '"><p><b>' + esc(q.text) + '</b></p>' + img + body + '</div>';
     });
   });
   $('quiz').innerHTML = html;
@@ -533,7 +552,7 @@ async function putJSON(url, body) {
 function subRecord(r, name, mail) {
   const rt = r.perTopic.reduce((a, p) => ({ right: a.right + p.right, choices: a.choices + p.choices }), { right: 0, choices: 0 });
   return {
-    name: name, at: Date.now(), right: rt.right, total: rt.choices,
+    name: name, at: Date.now(), startedAt: startedAt || Date.now(), right: rt.right, total: rt.choices,
     pct: rt.choices ? Math.round(rt.right / rt.choices * 100) : 0, mail: mail,
     topics: r.topics.filter(t => t.name).map(t => {
       const ti = r.topics.indexOf(t);

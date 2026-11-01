@@ -66,11 +66,27 @@
   button:disabled{opacity:.4;cursor:default}
 
   .item{border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;background:var(--card)}
+  .qtable{width:100%;border-collapse:collapse;margin-bottom:14px}
+  .qtable td{border:1px solid var(--line);padding:12px 14px;background:var(--soft)}
+  .ghead-row{cursor:pointer}
+  .ghead-row td{background:var(--soft);font-size:16px;font-weight:800;display:flex;align-items:center;gap:10px}
+  .ghead-row .tag{margin-inline-start:auto}
+  .gchev{color:var(--muted);font-size:13px;flex:none}
+  .qrow-row.chk td{background:color-mix(in srgb,var(--accent2) 8%,transparent)}
+  .qsel{width:20px;height:20px;flex:none;margin-inline-end:4px;accent-color:var(--accent2);display:none}
+  .sel-mode .qsel{display:inline-block}
+  .qname-cell{padding:0;display:flex;align-items:center}
+  .qopen{flex:1;min-width:0;display:flex;align-items:center;gap:12px;background:none;box-shadow:none;
+         border:0;padding:12px 14px;text-align:start;font:inherit;color:inherit;cursor:pointer}
+  .qedit{flex:none;width:30px;height:30px;border-radius:10px;background:var(--soft);
+         border:1px solid var(--line);display:grid;place-items:center;font-size:14px}
+  .qname{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .qname b{font-size:16px}
   .item-head{display:flex;gap:6px;align-items:center;justify-content:space-between;margin-bottom:2px}
   .item-head b{flex:1;font-size:15px}
   .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
   .tag{font-size:12px;font-weight:600;color:var(--muted);background:var(--soft);
-       border:1px solid var(--line);border-radius:99px;padding:3px 9px}
+       border:1px solid var(--line);border-radius:8px;padding:3px 9px}
   .tag.warn{color:#9a3412;background:#fff7ed;border-color:#fdba74}
   .opt{display:flex;gap:10px;align-items:center;margin-top:9px}
   .opt input[type=radio]{width:22px;height:22px;flex:none;accent-color:var(--accent2)}
@@ -109,7 +125,6 @@
   .row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
   .item > .row{flex-wrap:nowrap}
   .item > .row .mini{flex:1 1 0;min-width:0;justify-content:center;padding:9px 6px;white-space:nowrap}
-  .item > .row .mini[data-list="more"]{flex:0 0 40px;font-size:18px;line-height:1;padding:7px 0}
   @media (max-width:370px){ .item > .row .mini svg{display:none} .item > .row .mini{font-size:13px;padding:9px 4px} }
   .topbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--card) 92%,transparent);
           backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:11px 16px;margin-bottom:18px}
@@ -117,9 +132,6 @@
   .topbar button{background:none;color:var(--accent);padding:6px 8px;font-size:15px;box-shadow:none}
   .topbar b{font-size:15.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  .pick{display:flex;align-items:flex-start;gap:12px}
-  .pick > input{width:22px;height:22px;flex:none;accent-color:var(--accent2);margin:3px 0 0}
-  .item.chk{border-color:var(--accent2);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent2) 16%,transparent)}
   .selbar{position:fixed;bottom:0;inset-inline:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
           background:color-mix(in srgb,var(--card) 90%,transparent);backdrop-filter:blur(16px);border-top:1px solid var(--line)}
   .selbar .in{max-width:640px;margin:0 auto}
@@ -152,11 +164,8 @@
   .linkrow.used{opacity:.7}
   .chips{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 16px}
   .chip{font-size:13.5px;font-weight:700;color:var(--muted);background:var(--soft);
-        border:1px solid var(--line);border-radius:99px;padding:7px 13px;cursor:pointer;box-shadow:none}
+        border:1px solid var(--line);border-radius:10px;padding:7px 13px;cursor:pointer;box-shadow:none}
   .chip.on{background:var(--accent);color:#fff;border-color:transparent}
-  .ghead{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;margin:20px 0 10px}
-  .ghead::after{content:"";flex:1;height:1px;background:var(--line)}
-  .grp:first-child .ghead{margin-top:4px}
   .seg{display:flex;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:4px;margin:0 0 12px}
   .seg button{flex:1;background:none;color:var(--muted);box-shadow:none;padding:9px;border-radius:9px;font-size:14.5px;font-weight:700}
   .seg button.on{background:var(--card);color:var(--accent)}
@@ -166,8 +175,6 @@
   @media (min-width:900px){
     main{max-width:1000px}
     .topbar > div,.bar div,.selbar .in{max-width:1000px}
-    .gitems{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
-    .gitems > .item{margin:0}
     header{padding:28px 24px 60px}
     .chip-logo img{width:110px}
     .htxt h1{font-size:26px}
@@ -180,7 +187,7 @@
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
     <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 33</span></p></div>
+    <p>מבנים<span class="ver">· גרסה 34</span></p></div>
     <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
@@ -197,16 +204,19 @@
   <!-- רשימת מבחנים -->
   <section id="s-list" class="card hidden">
     <div class="sect"><h2>המבחנים שלי</h2>
-      <span class="row" style="flex:none;gap:6px"><button class="mini" id="openImp" title="ייבוא מבחנים">⬆️ ייבוא</button>
-      <button class="mini" id="backup" title="הורדת גיבוי">💾 גיבוי</button>
-      <button class="mini" id="openLib">📚 מאגר</button></span></div>
-    <div class="emailrow"><span>📧 תוצאות ל־<bdi id="emailText" dir="ltr"></bdi></span>
-      <button class="mini" id="emailEdit">שינוי</button></div>
-    <div id="emailBox" class="hidden" style="margin:-6px 0 14px">
-      <input id="globalEmail" type="email" placeholder="name@example.com">
-      <p class="muted" id="emailMsg" style="margin:8px 0 0"></p>
+      <button class="mini" id="listMore" title="עוד">⋯</button></div>
+    <div class="menu hidden" id="listMenu">
+      <button class="mini" id="openImp">⬆️ ייבוא</button>
+      <button class="mini" id="backup">💾 גיבוי</button>
+      <button class="mini" id="openLib">📚 מאגר</button>
+      <button class="mini" id="selectModeBtn">✓ בחירה מרובה לשליחה</button>
+      <div class="emailrow" style="margin-top:8px"><span>📧 תוצאות ל־<bdi id="emailText" dir="ltr"></bdi></span>
+        <button class="mini" id="emailEdit">שינוי</button></div>
+      <div id="emailBox" class="hidden" style="margin:6px 0 0">
+        <input id="globalEmail" type="email" placeholder="name@example.com">
+        <p class="muted" id="emailMsg" style="margin:8px 0 0"></p>
+      </div>
     </div>
-    <p class="muted">סמן כמה מבחנים כדי לשלוח אותם יחד בהודעה אחת.</p>
     <div id="chips" class="chips"></div>
     <div id="list"></div>
     <button class="full" id="newQuiz">+ מבחן חדש</button>
@@ -265,6 +275,17 @@
   <!-- עורך -->
   <div id="editor" class="hidden">
     <div class="topbar"><div><button id="back"></button><b id="crumb"></b></div></div>
+    <div class="row" style="margin:0 0 14px">
+      <button class="mini" id="editorLinks">קישורים</button>
+      <button class="mini" id="editorWho">מי הגיש</button>
+      <button class="mini" id="editorMore">⋯</button>
+    </div>
+    <div class="menu hidden" id="editorMenu">
+      <button class="mini" id="editorReady">✅ בדיקת מוכנות</button>
+      <button class="mini" id="editorDup">שכפול</button>
+      <button class="mini del" id="editorDel">מחיקה</button>
+    </div>
+    <div id="editorPanel"></div>
 
     <section class="card">
       <h2>הגדרות</h2>
@@ -277,6 +298,7 @@
         <option value="end">בסוף — אחרי כל הסרטונים</option>
         <option value="topic">אחרי כל נושא</option>
       </select>
+      <label class="opt" style="margin-top:12px"><input type="checkbox" id="master"> <span>מבחן מאסטר — מאגר שאלות לבניית מבחנים אחרים</span></label>
     </section>
 
     <section class="card">
@@ -310,9 +332,10 @@
 </div><div id="status"></div></div>
 
 <input type="file" id="pick" accept="video/*" multiple hidden>
+<input type="file" id="pickImg" accept="image/*" hidden>
 
-<script src="settings.js?v=33"></script>
-<script src="demo.js?v=33"></script>
+<script src="settings.js?v=34"></script>
+<script src="demo.js?v=34"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -352,6 +375,8 @@ let pendingLib = null;                      // מבחן שנשמר אבל לא �
 const libSel = new Set();                   // פריטים שסומנו במאגר: 'v:<key>' או 'q:<key>'
 let libTab = 'questions';
 let catFilter = '';                         // '' = כל הקטגוריות
+const openCats = new Set();                 // אילו קטגוריות פתוחות ברשימה הראשית
+let selectMode = false;                     // האם תיבות הסימון מוצגות (לבחירה מרובה לשליחה)
 const NOCAT = 'ללא קטגוריה';
 const catOf = q => (q.category || '').trim() || NOCAT;
 const files = new Map();
@@ -540,9 +565,17 @@ document.addEventListener('change', e => {
 });
 $('selClear').onclick = () => {
   selected.clear();
-  document.querySelectorAll('[data-sel]').forEach(c => { c.checked = false; c.closest('.item').classList.remove('chk'); });
+  document.querySelectorAll('[data-sel]').forEach(c => { c.checked = false; c.closest('.qrow-row').classList.remove('chk'); });
   updateSel();
 };
+$('selectModeBtn').onclick = () => {
+  selectMode = !selectMode;
+  $('list').classList.toggle('sel-mode', selectMode);
+  $('selectModeBtn').textContent = selectMode ? '✕ סיום בחירה' : '✓ בחירה מרובה לשליחה';
+  $('selectModeBtn').classList.toggle('key', selectMode);
+  if (!selectMode) $('selClear').click();
+};
+$('listMore').onclick = () => $('listMenu').classList.toggle('hidden');
 // קישור אחד לכל המבחנים שסומנו: העובד ממלא שם פעם אחת ועובר את כולם ברצף
 async function buildMessage() {
   const ids = [...selected];
@@ -615,34 +648,13 @@ function countOf(q) {
            questions: t.topics.reduce((a, x) => a + x.questions.length, 0) };
 }
 function quizCard(id) {
-  const c = countOf(quizzes[id]);
-  return '<div class="item' + (selected.has(id) ? ' chk' : '') + '" id="card-' + id + '">' +
-    '<label class="pick"><input type="checkbox" data-sel="' + id + '"' + (selected.has(id) ? ' checked' : '') + '>' +
-    '<span style="flex:1"><b style="font-size:17px">' + esc(quizzes[id].title) + '</b><div class="tags">' +
-    '<span class="tag">' + c.topics + ' נושאים</span><span class="tag">' + c.videos + ' סרטונים</span>' +
-    '<span class="tag">' + c.questions + ' שאלות</span>' + statTags(id) + '</div></span></label><div class="row">' +
-    '<button class="mini key" data-list="edit" data-id="' + id + '">' + ICON.edit + 'עריכה</button>' +
-    '<button class="mini" data-list="links" data-id="' + id + '">' + ICON.link + 'קישורים</button>' +
-    '<button class="mini" data-list="who" data-id="' + id + '">' + ICON.users + 'מי הגיש</button>' +
-    '<button class="mini" data-list="more" data-id="' + id + '" title="עוד">⋯</button></div>' +
-    '<div class="menu hidden" id="menu-' + id + '">' +
-      '<button class="mini" data-list="ready" data-id="' + id + '">✅ בדיקת מוכנות</button>' +
-      '<button class="mini" data-list="dup" data-id="' + id + '">' + ICON.copy + 'שכפול</button>' +
-      '<button class="mini del" data-list="del" data-id="' + id + '">' + ICON.trash + 'מחיקה</button></div>' +
-    '<div id="who-' + id + '"></div></div>';
-}
-// שורת מצב: כמה קישורים נשלחו, כמה הוגשו, כמה ממתינים
-function statTags(id) {
-  const inv = invAll[id] || {};
-  const codes = Object.keys(inv);
-  const sent = codes.filter(c => inv[c].sent).length;
-  const done = subCount[id] || 0;
-  const waiting = codes.filter(c => inv[c].sent && !inv[c].used).length;
-  const bad = readiness(id).length;
-  return (sent ? '<span class="tag">נשלחו ' + sent + '</span>' : '') +
-         (done ? '<span class="tag">הוגשו ' + done + '</span>' : '') +
-         (waiting ? '<span class="tag">ממתינים ' + waiting + '</span>' : '') +
-         (bad ? '<span class="tag warn">דורש טיפול</span>' : '');
+  return '<tr class="qrow-row' + (selected.has(id) ? ' chk' : '') + '" id="card-' + id + '">' +
+    '<td class="qname-cell"><input type="checkbox" class="qsel" data-sel="' + id + '"' + (selected.has(id) ? ' checked' : '') + '>' +
+    '<button class="qopen" data-list="edit" data-id="' + id + '">' +
+      '<span class="qedit">✎</span>' +
+      '<span class="qname"><b>' + esc(quizzes[id].title) + '</b>' +
+        (quizzes[id].master ? ' <span class="tag">מאסטר</span>' : '') + '</span>' +
+    '</button></td></tr>';
 }
 function showList() {
   const ids = Object.keys(quizzes).sort((a, b) => (quizzes[b].updated || 0) - (quizzes[a].updated || 0));
@@ -658,11 +670,15 @@ function showList() {
     : '';
 
   const shown = cats.filter(c => !catFilter || c === catFilter);
-  $('list').innerHTML = ids.length ? shown.map(c => {
+  const rows = shown.map(c => {
     const inCat = ids.filter(id => catOf(quizzes[id]) === c);
-    const head = cats.length > 1 ? '<div class="ghead">' + esc(c) + '<span class="tag">' + inCat.length + '</span></div>' : '';
-    return '<div class="grp">' + head + '<div class="gitems">' + inCat.map(quizCard).join('') + '</div></div>';
-  }).join('') : '<p class="muted">עוד אין מבחנים. לחץ "+ מבחן חדש".</p>';
+    const open = openCats.has(c);
+    const head = '<tr class="ghead-row" data-togglecat="' + esc(c) + '"><td>' +
+      '<span class="gchev">' + (open ? '︿' : '﹀') + '</span>' + esc(c) +
+      '<span class="tag">' + inCat.length + '</span></td></tr>';
+    return head + (open ? inCat.map(quizCard).join('') : '');
+  }).join('');
+  $('list').innerHTML = ids.length ? '<table class="qtable">' + rows + '</table>' : '<p class="muted">עוד אין מבחנים. לחץ "+ מבחן חדש".</p>';
 
   [...selected].forEach(id => { if (!quizzes[id]) selected.delete(id); });
   updateSel();
@@ -672,6 +688,13 @@ $('chips').addEventListener('click', e => {
   const c = e.target.dataset.cat;
   if (c === undefined) return;
   catFilter = c; showList();
+});
+$('list').addEventListener('click', e => {
+  const btn = e.target.closest('[data-togglecat]');
+  if (!btn) return;
+  const c = btn.dataset.togglecat;
+  openCats.has(c) ? openCats.delete(c) : openCats.add(c);
+  showList();
 });
 
 
@@ -705,22 +728,50 @@ function openQuiz(id, data) {
   $('crumb').textContent = quiz.title;
   $('category').value = quiz.category;
   $('qMode').value = quiz.qMode;
+  $('master').checked = !!quiz.master;
   $('catlist').innerHTML = [...new Set(Object.values(quizzes).map(q => (q.category || '').trim()).filter(Boolean))]
     .sort().map(c => '<option value="' + esc(c) + '">').join('');
+  $('editorPanel').innerHTML = '<div id="who-' + id + '"></div>';
+  $('editorMenu').classList.add('hidden');
   dirty = !data;
   render();
   screen('editor');
 }
+$('editorLinks').onclick = () => showLinks(quizId);
+$('editorWho').onclick = () => showWho(quizId);
+$('editorMore').onclick = () => $('editorMenu').classList.toggle('hidden');
+$('editorReady').onclick = () => readyReport(quizId);
+$('editorDup').onclick = async () => {
+  const id = quizId;
+  const copy = JSON.parse(JSON.stringify(quizzes[id]));
+  copy.title += ' (עותק)'; copy.updated = Date.now();
+  const nid = newId();
+  try { await authedUrl('PUT', DB('/' + nid), copy); } catch (err) { alert('השכפול נכשל. נסה שוב.'); return; }
+  quizzes[nid] = copy; showList();
+  alert('נוצר עותק: "' + copy.title + '". צור לו קישורים חדשים.');
+};
+$('editorDel').onclick = async () => {
+  const id = quizId;
+  if (!confirm('למחוק את "' + quizzes[id].title + '"? הקישורים שלו יפסיקו לעבוד, וההגשות שלו יימחקו.')) return;
+  if (confirm('להוריד קודם גיבוי? (מומלץ)')) await exportBackup();
+  try {
+    const paths = [];
+    (quizzes[id].topics || []).forEach(t => (t.videos || []).forEach(v => v.path && paths.push(v.path)));
+    (quizzes[id].videos || []).forEach(v => v.path && paths.push(v.path));
+    await authedUrl('DELETE', DB('/' + id)); delete quizzes[id];
+    authedUrl('DELETE', SUBS('/' + id)).catch(() => {});
+    authedUrl('DELETE', INV('/' + id)).catch(() => {});
+    authedUrl('DELETE', DONE('/' + id)).catch(() => {});
+    deleteUnused(paths);
+    showList();
+  } catch (err) { alert('המחיקה נכשלה. נסה שוב.'); }
+};
 
-$('list').addEventListener('click', async e => {
+document.querySelector('main').addEventListener('click', async e => {
   const btn = e.target.closest('[data-list]');
   if (!btn) return;
   const d = btn.dataset, id = d.id;
-  if (d.list === 'more') { $('menu-' + id).classList.toggle('hidden'); return; }
   if (d.list === 'edit') openQuiz(id, quizzes[id]);
-  else if (d.list === 'who') showWho(id);
-  else if (d.list === 'links') showLinks(id);
-  else if (d.list === 'ready') readyReport(id);
   else if (d.list === 'resend') resendMail(id, d.key, e.target);
   else if (d.list === 'mklinks') {
     const bad = readiness(id);
@@ -757,29 +808,6 @@ $('list').addEventListener('click', async e => {
     await authedUrl('DELETE', SUBS('/' + id));
     authedUrl('DELETE', DONE('/' + id)).catch(() => {});
     $('who-' + id).dataset.open = ''; showWho(id); loadStats().catch(() => {});
-  }
-  else if (d.list === 'dup') {
-    const copy = JSON.parse(JSON.stringify(quizzes[id]));
-    copy.title += ' (עותק)'; copy.updated = Date.now();
-    const nid = newId();
-    try { await authedUrl('PUT', DB('/' + nid), copy); } catch (err) { alert('השכפול נכשל. נסה שוב.'); return; }
-    quizzes[nid] = copy; showList();
-    alert('נוצר עותק: "' + copy.title + '". צור לו קישורים חדשים.');
-  }
-  else if (d.list === 'del') {
-    if (!confirm('למחוק את "' + quizzes[id].title + '"? הקישורים שלו יפסיקו לעבוד, וההגשות שלו יימחקו.')) return;
-    if (confirm('להוריד קודם גיבוי? (מומלץ)')) await exportBackup();
-    try {
-      const paths = [];
-      (quizzes[id].topics || []).forEach(t => (t.videos || []).forEach(v => v.path && paths.push(v.path)));
-      (quizzes[id].videos || []).forEach(v => v.path && paths.push(v.path));
-      await authedUrl('DELETE', DB('/' + id)); delete quizzes[id];
-      authedUrl('DELETE', SUBS('/' + id)).catch(() => {});
-      authedUrl('DELETE', INV('/' + id)).catch(() => {});
-      authedUrl('DELETE', DONE('/' + id)).catch(() => {});
-      deleteUnused(paths);
-      showList();
-    } catch (err) { alert('המחיקה נכשלה. נסה שוב.'); }
   }
 });
 
@@ -818,6 +846,14 @@ async function showLinks(id) {
     '</div>';
 }
 
+// שעת התחלה וסיום של הגשה; מבחנים ישנים בלי startedAt מציגים רק את שעת הסיום
+function timeSummary(r) {
+  const end = new Date(r.at || 0).toLocaleString('he-IL');
+  if (!r.startedAt) return end;
+  const mins = Math.max(0, Math.round((r.at - r.startedAt) / 60000));
+  return new Date(r.startedAt).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) +
+    ' – ' + end + ' (' + mins + ' דק\')';
+}
 async function showWho(id) {
   const box = $('who-' + id);
   if (box.dataset.open === 'who') { box.dataset.open = ''; box.innerHTML = ''; return; }
@@ -840,7 +876,7 @@ async function showWho(id) {
           ? '<span class="tag">המייל נשלח ✓</span>'
           : '<span class="tag warn">המייל לא נשלח</span>' +
             '<button class="mini" data-list="resend" data-id="' + id + '" data-key="' + esc(k) + '">📧 שלח שוב</button>') + '</div>' +
-        '<details><summary class="muted" style="font-weight:500">פרטים · ' + new Date(r.at || 0).toLocaleString('he-IL') + '</summary>' +
+        '<details><summary class="muted" style="font-weight:500">פרטים · ' + timeSummary(r) + '</summary>' +
         (r.topics || []).map(t => '<div class="muted">· <b>' + esc(t.name) + '</b>: ' +
           (t.choices ? 'ציון ' + t.right + '/' + t.choices : 'בלי שאלות') +
           (t.watched ? ' · ' + (t.watched === 1 ? 'הבין אחרי סרטון אחד' : 'נזקק ל-' + t.watched + ' סרטונים') : '') + '</div>').join('') +
@@ -892,10 +928,20 @@ function videoBlock(v, ti, i, n) {
   }
   return h + '</div>';
 }
+function imageBlock(img, ti, i) {
+  if (!img) return '<button class="mini" style="margin-top:8px" data-act="addimg" data-ti="' + ti + '" data-i="' + i + '">🖼️ הוספת תמונה</button>';
+  if (img.uploading) return '<div class="prog"><div id="pi-' + img._key + '" style="width:' + (img.progress || 0) + '%"></div></div>' +
+    '<div class="muted" id="ti-' + img._key + '">מעלה... ' + (img.progress || 0) + '%</div>';
+  if (img.error) return '<p class="err">העלאת התמונה נכשלה.</p><button class="mini" data-act="retryimg" data-ti="' + ti + '" data-i="' + i + '">נסה שוב</button>' +
+    '<button class="mini del" data-act="delimg" data-ti="' + ti + '" data-i="' + i + '">מחיקה</button>';
+  return '<img src="' + esc(img.url) + '" style="max-width:100%;border-radius:12px;margin-top:8px;display:block">' +
+    '<button class="mini del" style="margin-top:8px" data-act="delimg" data-ti="' + ti + '" data-i="' + i + '">מחיקת תמונה</button>';
+}
 function questionBlock(q, ti, i, n) {
   let h = '<div class="item"><div class="item-head"><b>שאלה ' + (i + 1) + ' · ' + (q.type === 'choice' ? 'אמריקאית' : 'פתוחה') + '</b>' +
     moveBtns('questions', ti, i, n) + '</div>' +
     '<textarea data-kind="questions" data-ti="' + ti + '" data-i="' + i + '" data-f="text" placeholder="נוסח השאלה">' + esc(q.text) + '</textarea>';
+  h += imageBlock(q.image, ti, i);
   if (q.type === 'choice') {
     h += '<p class="muted" style="margin:8px 0 0">סמן את התשובה הנכונה בעיגול:</p>';
     h += q.options.map((o, j) =>
@@ -952,6 +998,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => {
   if (e.target.id === 'qMode') { quiz.qMode = e.target.value; dirty = true; status('יש שינויים שלא נשמרו'); return; }
+  if (e.target.id === 'master') { quiz.master = e.target.checked; dirty = true; status('יש שינויים שלא נשמרו'); return; }
   const d = e.target.dataset;
   if (!d.forid) return;
   authedUrl('PATCH', INV('/' + d.forid + '/' + encodeURIComponent(d.forkey)), { for: e.target.value.trim() })
@@ -993,6 +1040,13 @@ document.addEventListener('click', e => {
   else if (d.act === 'addchoice') T.questions.push({ type: 'choice', text: '', options: ['', '', '', ''], correct: 0 });
   else if (d.act === 'addopen') T.questions.push({ type: 'open', text: '' });
   else if (d.act === 'addfiles') { $('pick').dataset.ti = ti; $('pick').click(); return; }
+  else if (d.act === 'addimg') { $('pickImg').dataset.ti = ti; $('pickImg').dataset.i = i; $('pickImg').click(); return; }
+  else if (d.act === 'retryimg') { uploadImage(T.questions[i]); return; }
+  else if (d.act === 'delimg') {
+    const img = T.questions[i].image;
+    if (img && img.path) { if (img.uploading) img.cancelled = true; else pendingDeletes.push(img.path); }
+    delete T.questions[i].image;
+  }
   dirty = true; status('יש שינויים שלא נשמרו'); render();
 });
 $('addTopic').onclick = () => { quiz.topics.push({ name: '', videos: [], questions: [] }); openTopicIdx = quiz.topics.length - 1; dirty = true; render(); };
@@ -1018,6 +1072,52 @@ $('pick').onchange = async () => {
   dirty = true; render();
   for (const v of items) await uploadVideo(v);
 };
+
+// ---------- תמונות בשאלות ----------
+$('pickImg').onchange = async () => {
+  const ti = +$('pickImg').dataset.ti, i = +$('pickImg').dataset.i;
+  const f = $('pickImg').files[0];
+  $('pickImg').value = '';
+  if (!f) return;
+  const img = { _key: newId(), url: '', path: 'images/' + Date.now() + '-' + newId() + (f.name.match(/\.[\w]+$/) || ['.jpg'])[0].toLowerCase() };
+  files.set(img._key, f);
+  quiz.topics[ti].questions[i].image = img;
+  dirty = true; render();
+  await uploadImage(quiz.topics[ti].questions[i]);
+};
+async function uploadImage(q) {
+  const img = q.image;
+  const file = files.get(img._key);
+  if (!file) return;
+  img.uploading = true; img.error = false; img.progress = 10; render();
+  try {
+    const type = file.type || 'image/jpeg';
+    const start = await storageFetch(STORAGE + '?name=' + encodeURIComponent(img.path), {
+      method: 'POST',
+      headers: { 'X-Goog-Upload-Protocol': 'resumable', 'X-Goog-Upload-Command': 'start',
+                 'X-Goog-Upload-Header-Content-Length': String(file.size), 'X-Goog-Upload-Header-Content-Type': type,
+                 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ name: img.path, contentType: type }),
+    });
+    const uploadUrl = start.headers.get('X-Goog-Upload-URL');
+    if (!start.ok || !uploadUrl) throw new Error('start ' + start.status);
+    img.progress = 60; render();
+    const res = await storageFetch(uploadUrl, {
+      method: 'POST',
+      headers: { 'X-Goog-Upload-Command': 'upload, finalize', 'X-Goog-Upload-Offset': '0' },
+      body: file,
+    });
+    if (!res.ok) throw new Error('upload ' + res.status);
+    const result = await res.json();
+    if (img.cancelled) { files.delete(img._key); deleteFile(img.path); return; }
+    img.url = STORAGE + '/' + encodeURIComponent(img.path) + '?alt=media&token=' + result.downloadTokens;
+    img.uploading = false; img.progress = 100; files.delete(img._key);
+  } catch (e) {
+    img.uploading = false; img.error = true;
+  }
+  render();
+  if (!img.uploading && !img.error) status('התמונה הועלתה — לחץ שמירה', 'ok');
+}
 function showProgress(v) {
   const bar = $('p-' + v._key), txt = $('t-' + v._key);
   if (bar) bar.style.width = v.progress + '%';
@@ -1119,6 +1219,8 @@ function validate() {
       const q = t.questions[i];
       questions++;
       if (!q.text.trim()) return 'לשאלה ' + (i + 1) + ' ' + where + ' חסר נוסח.';
+      if (q.image && q.image.uploading) return 'חכה שהעלאת התמונה לשאלה ' + (i + 1) + ' ' + where + ' תסתיים.';
+      if (q.image && q.image.error) return 'העלאת התמונה לשאלה ' + (i + 1) + ' ' + where + ' נכשלה — נסה שוב או מחק אותה.';
       if (q.type === 'choice') {
         if (q.options.some(o => !o.trim())) return 'בשאלה ' + (i + 1) + ' ' + where + ' יש תשובה ריקה.';
         if (!(q.correct >= 1 && q.correct <= q.options.length)) return 'בשאלה ' + (i + 1) + ' ' + where + ' לא סומנה תשובה נכונה.';
@@ -1133,7 +1235,7 @@ $('save').onclick = async () => {
   if (problem) { status(problem, 'err'); return; }
   $('save').disabled = true; status('שומר...');
   try {
-    const clean = { title: quiz.title, category: quiz.category.trim(), qMode: quiz.qMode, updated: Date.now(),
+    const clean = { title: quiz.title, category: quiz.category.trim(), qMode: quiz.qMode, master: !!quiz.master, updated: Date.now(),
       topics: quiz.topics.map(t => ({
         name: t.name,
         videos: t.videos.map(v => {
