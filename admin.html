@@ -187,7 +187,7 @@
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
     <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 35</span></p></div>
+    <p>מבנים<span class="ver">· גרסה 36</span></p></div>
     <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
@@ -276,6 +276,7 @@
   <div id="editor" class="hidden">
     <div class="topbar"><div><button id="back"></button><b id="crumb"></b></div></div>
     <div class="row" style="margin:0 0 14px">
+      <button class="mini key" id="editorSend">📤 שליחה</button>
       <button class="mini" id="editorLinks">קישורים</button>
       <button class="mini" id="editorWho">מי הגיש</button>
       <button class="mini" id="editorMore">⋯</button>
@@ -334,8 +335,8 @@
 <input type="file" id="pick" accept="video/*" multiple hidden>
 <input type="file" id="pickImg" accept="image/*" hidden>
 
-<script src="settings.js?v=35"></script>
-<script src="demo.js?v=35"></script>
+<script src="settings.js?v=36"></script>
+<script src="demo.js?v=36"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -750,6 +751,18 @@ function openQuiz(id, data) {
 }
 $('editorLinks').onclick = () => showLinks(quizId);
 $('editorWho').onclick = () => showWho(quizId);
+// שליחה בלחיצה אחת: יוצר קישור חדש ופותח וואטסאפ איתו, בלי מסכים באמצע
+$('editorSend').onclick = async () => {
+  if (dirty) { alert('יש שינויים שלא נשמרו. תלחץ קודם "שמירה".'); return; }
+  const id = quizId;
+  const bad = readiness(id);
+  if (bad.length && !confirm('המבחן עוד לא מוכן:\n\n· ' + bad.join('\n· ') + '\n\nלשלוח בכל זאת?')) return;
+  const code = newCode();
+  try { await authedUrl('PATCH', INV('/' + id), { [code]: { created: Date.now(), sent: Date.now() } }); }
+  catch (err) { alert('היצירה נכשלה. בדוק אינטרנט ונסה שוב.'); return; }
+  loadStats().catch(() => {});
+  open('https://wa.me/?text=' + encodeURIComponent(quizzes[id].title + '\n' + inviteLink(id, code)), '_blank');
+};
 $('editorMore').onclick = () => $('editorMenu').classList.toggle('hidden');
 $('editorReady').onclick = () => readyReport(quizId);
 $('editorDup').onclick = async () => {
