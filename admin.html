@@ -5,21 +5,17 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>ניהול המבחן</title>
-<meta name="theme-color" content="#0b63c4">
+<meta name="theme-color" content="#141c30">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#eef3f8; --card:#fff; --soft:#f3f7fb; --line:#e3eaf2;
-    --text:#0c1a26; --muted:#64788a;
-    --accent:#0a5fc4; --accent2:#2fa8ef; --bad:#d9372b;
+    --bg:#141c30; --card:#1c2640; --soft:#182032; --line:#2a4258;
+    --text:#eaf2f8; --muted:#7a93a8;
+    --accent:#0a5fc4; --accent2:#2fa8ef; --bad:#ef4444;
     --grad:linear-gradient(135deg,#0a5fc4 0%,#2fa8ef 100%);
-    --r:20px; --sh:0 1px 2px rgba(12,26,38,.05), 0 14px 32px -24px rgba(12,26,38,.45);
-  }
-  @media (prefers-color-scheme:dark){
-    :root{--bg:#0a1016;--card:#121b23;--soft:#162230;--line:#1f2d3a;--text:#e8eff5;--muted:#8da0b1;
-          --sh:0 1px 2px rgba(0,0,0,.4), 0 14px 32px -24px #000}
+    --r:20px; --sh:0 1px 2px rgba(0,0,0,.4), 0 14px 32px -20px rgba(47,168,239,.3);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 Heebo,system-ui,-apple-system,Arial,sans-serif}
@@ -67,10 +63,11 @@
 
   .item{border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;background:var(--card)}
   .qtable{width:100%;border-collapse:collapse;margin-bottom:14px}
-  .qtable td{border:1px solid var(--line);padding:12px 14px;background:var(--soft)}
+  .qtable td{border:1px solid color-mix(in srgb,var(--accent2) 30%,var(--line));padding:12px 14px;background:var(--soft)}
   .ghead-row{cursor:pointer}
   .ghead-row td{background:var(--soft);font-size:16px;font-weight:800;display:flex;align-items:center;gap:10px}
   .ghead-row .tag{margin-inline-start:auto}
+  .gicon{font-size:20px;flex:none}
   .gchev{color:var(--muted);font-size:13px;flex:none}
   .qrow-row.chk td{background:color-mix(in srgb,var(--accent2) 8%,transparent)}
   .qsel{width:20px;height:20px;flex:none;margin-inline-end:4px;accent-color:var(--accent2);display:none}
@@ -118,8 +115,7 @@
   .prog div{height:100%;width:0;background:var(--grad)}
 
   details{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:14.5px}
-  summary{font-weight:700;cursor:pointer;color:var(--accent)}
-  @media (prefers-color-scheme:dark){summary{color:var(--accent2)}}
+  summary{font-weight:700;cursor:pointer;color:var(--accent2)}
   details ol{padding-inline-start:20px;margin:10px 0}
 
   .row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
@@ -187,7 +183,7 @@
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
     <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 36</span></p></div>
+    <p>מבנים<span class="ver">· גרסה 37</span></p></div>
     <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
@@ -203,7 +199,7 @@
 
   <!-- רשימת מבחנים -->
   <section id="s-list" class="card hidden">
-    <div class="sect"><h2>המבחנים שלי</h2>
+    <div class="sect"><h2>המבחנים שלי <span class="tag" id="listCount"></span></h2>
       <button class="mini" id="listMore" title="עוד">⋯</button></div>
     <div class="menu hidden" id="listMenu">
       <button class="mini" id="openImp">⬆️ ייבוא</button>
@@ -335,8 +331,8 @@
 <input type="file" id="pick" accept="video/*" multiple hidden>
 <input type="file" id="pickImg" accept="image/*" hidden>
 
-<script src="settings.js?v=36"></script>
-<script src="demo.js?v=36"></script>
+<script src="settings.js?v=37"></script>
+<script src="demo.js?v=37"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -380,6 +376,13 @@ const openCats = new Set();                 // אילו קטגוריות פתו�
 let selectMode = false;                     // האם תיבות הסימון מוצגות (לבחירה מרובה לשליחה)
 const NOCAT = 'ללא קטגוריה';
 const catOf = q => (q.category || '').trim() || NOCAT;
+// אייקון לפי מילת מפתח בשם הקטגוריה, בלי רשימה קבועה של שמות
+const CAT_ICONS = [
+  [/צבע|טיח|שפכטל|גוון/, '🎨'], [/חלונ|אלומיניום|דלת/, '🏢'], [/ריצוף|חיפוי|אריח/, '🧱'],
+  [/חשמל/, '💡'], [/אינסטלציה|צנרת|מים/, '🔧'], [/בניה|בנייה/, '🏗️'], [/כביסה/, '🧺'],
+  [/סניטר/, '🚿'], [/קיר/, '🧰'],
+];
+const categoryIcon = name => (CAT_ICONS.find(([re]) => re.test(name || '')) || [0, '🏷️'])[1];
 const files = new Map();
 let pendingDeletes = [];
 let openTopicIdx = null;                    // null = רשימת נושאים, מספר = נושא פתוח לעריכה
@@ -657,6 +660,7 @@ function quizCard(id) {
 }
 function showList() {
   const ids = Object.keys(quizzes).sort((a, b) => (quizzes[b].updated || 0) - (quizzes[a].updated || 0));
+  $('listCount').textContent = '(' + ids.length + ')';
 
   // קטגוריות: מסודרות לפי א-ב, "ללא קטגוריה" אחרון
   const cats = [...new Set(ids.map(id => catOf(quizzes[id])))]
@@ -674,7 +678,8 @@ function showList() {
     const open = openCats.has(c);
     const head = '<tr class="ghead-row" data-togglecat="' + esc(c) + '"><td>' +
       '<span class="gchev">' + (open ? '︿' : '﹀') + '</span>' + esc(c) +
-      '<span class="tag">' + inCat.length + '</span></td></tr>';
+      '<span class="tag">' + inCat.length + '</span>' +
+      '<span class="gicon">' + categoryIcon(c) + '</span></td></tr>';
     return head + (open ? inCat.map(quizCard).join('') : '');
   }).join('');
   $('list').innerHTML = ids.length ? '<table class="qtable">' + rows + '</table>' : '<p class="muted">עוד אין מבחנים. לחץ "+ מבחן חדש".</p>';

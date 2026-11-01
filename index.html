@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>מבחן עובדים</title>
-<meta name="theme-color" content="#0b63c4">
+<meta name="theme-color" content="#141c30">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://drive.usercontent.google.com" crossorigin>
@@ -12,15 +12,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#eef3f8; --card:#fff; --soft:#f3f7fb; --line:#e3eaf2;
-    --text:#0c1a26; --muted:#64788a;
-    --accent:#0a5fc4; --accent2:#2fa8ef; --bad:#d9372b;
+    --bg:#141c30; --card:#1c2640; --soft:#182032; --line:#2a4258;
+    --text:#eaf2f8; --muted:#7a93a8;
+    --accent:#0a5fc4; --accent2:#2fa8ef; --bad:#ef4444;
     --grad:linear-gradient(135deg,#0a5fc4 0%,#2fa8ef 100%);
-    --r:20px; --sh:0 1px 2px rgba(12,26,38,.05), 0 14px 32px -24px rgba(12,26,38,.45);
-  }
-  @media (prefers-color-scheme:dark){
-    :root{--bg:#0a1016;--card:#121b23;--soft:#162230;--line:#1f2d3a;--text:#e8eff5;--muted:#8da0b1;
-          --sh:0 1px 2px rgba(0,0,0,.4), 0 14px 32px -24px #000}
+    --r:20px; --sh:0 1px 2px rgba(0,0,0,.4), 0 14px 32px -20px rgba(47,168,239,.3);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 Heebo,system-ui,-apple-system,Arial,sans-serif}
@@ -54,8 +50,7 @@
          box-shadow:0 10px 22px -14px var(--accent)}
   button:active:not(:disabled){transform:scale(.985)}
   button:disabled{background:var(--line);color:var(--muted);box-shadow:none;cursor:default}
-  button.soft{background:var(--soft);border:1px solid var(--line);color:var(--accent);box-shadow:none}
-  @media (prefers-color-scheme:dark){button.soft{color:var(--accent2)}}
+  button.soft{background:var(--soft);border:1px solid var(--line);color:var(--accent2);box-shadow:none}
 
   .video{position:relative;padding-top:56.25%;border-radius:16px;overflow:hidden;background:#000}
   .video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
@@ -63,9 +58,8 @@
   .steps i{flex:1;height:5px;border-radius:99px;background:var(--line)}
   .steps i.on{background:var(--grad)}
   .progress{display:none}
-  .count{display:inline-block;font-size:12.5px;font-weight:700;color:var(--accent);
+  .count{display:inline-block;font-size:12.5px;font-weight:700;color:var(--accent2);
          background:color-mix(in srgb,var(--accent2) 14%,transparent);padding:5px 12px;border-radius:99px}
-  @media (prefers-color-scheme:dark){.count{color:var(--accent2)}}
 
   label.opt{display:flex;gap:12px;align-items:center;padding:15px;border:1.5px solid var(--line);
             border-radius:14px;margin-top:9px;cursor:pointer;background:var(--soft)}
@@ -167,8 +161,8 @@
   </section>
 </main>
 
-<script src="settings.js?v=36"></script>
-<script src="demo.js?v=36"></script>
+<script src="settings.js?v=37"></script>
+<script src="demo.js?v=37"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
@@ -523,13 +517,16 @@ function buildEmailData(name) {
   const pct = totals.choices ? Math.round(totals.right / totals.choices * 100) : 0;
   const title = results.length > 1 ? results.length + ' מבחנים' : results[0].title;
 
+  const endedAt = Date.now();
+  const mins = startedAt ? Math.max(0, Math.round((endedAt - startedAt) / 60000)) : null;
   const data = {
     _subject: title + ': ' + name + (totals.choices ? ' — ' + pct + '%' : ''),
     _template: 'box',
     _captcha: 'false',
     'שם': name,
     'ציון כולל': totals.right + '/' + totals.choices + ' (' + pct + '%)',
-    'זמן הגשה': new Date().toLocaleString('he-IL'),
+    'זמן התחלה': new Date(startedAt || endedAt).toLocaleString('he-IL'),
+    'זמן סיום': new Date(endedAt).toLocaleString('he-IL') + (mins != null ? ' (' + mins + ' דק\')' : ''),
   };
   let n = 0;
   results.forEach(r => {
@@ -541,13 +538,14 @@ function buildEmailData(name) {
       const bits = [];
       if (r.perTopic[ti].choices) bits.push('ציון ' + r.perTopic[ti].right + '/' + r.perTopic[ti].choices);
       if (watched) bits.push(watched === 1 ? 'הבין אחרי סרטון אחד' : 'נזקק ל-' + watched + ' סרטונים');
-      const suffix = results.length > 1 && t.name !== r.title ? ' (' + r.title + ')' : '';
-      if (bits.length) data['נושא: ' + t.name + suffix] = bits.join(' · ');
+      // הקטגוריה (שם המבחן) מופיעה לפני שם הנושא, גם כשזה מבחן בודד
+      const label = t.name !== r.title ? r.title + ' — ' + t.name : t.name;
+      if (bits.length) data['נושא: ' + label] = bits.join(' · ');
     });
     r.rows.forEach(row => {
       n++;
       const topic = r.topics[row.ti].name;
-      const tags = [results.length > 1 ? r.title : '', topic && topic !== r.title ? topic : '']
+      const tags = [r.title, topic && topic !== r.title ? topic : '']
         .filter(Boolean).map(x => '[' + x + '] ').join('');
       data[n + '. ' + tags + row.q.text] =
         row.answer + (row.ok === true ? '  ✅' : row.ok === false ? '  ❌' : '  (פתוחה — לבדיקה)');
