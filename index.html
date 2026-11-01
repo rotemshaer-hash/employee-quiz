@@ -167,8 +167,8 @@
   </section>
 </main>
 
-<script src="settings.js?v=34"></script>
-<script src="demo.js?v=34"></script>
+<script src="settings.js?v=35"></script>
+<script src="demo.js?v=35"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
@@ -223,6 +223,18 @@ const countQ = q => q.topics.reduce((a, t) => a + t.questions.length, 0);
       const q = await (await fetch(DB('/quizzes/' + id), { cache: 'no-store' })).json();
       if (!q) continue;
       normalize(q); q.id = id;
+      // מבחן מאסטר: בלי תוכן משלו — הנושאים מחושבים מכל המבחנים (הלא-מאסטר) באותה קטגוריה, ברגע ההגשה
+      if (q.master) {
+        const all = (await (await fetch(DB('/quizzes'), { cache: 'no-store' })).json()) || {};
+        q.topics = [];
+        Object.keys(all).forEach(oid => {
+          if (oid === id) return;
+          const sib = all[oid];
+          if (!sib || sib.master) return;
+          if ((sib.category || '').trim() !== (q.category || '').trim()) return;
+          normalize(sib).topics.forEach(t => q.topics.push(t));
+        });
+      }
       if (countQ(q)) loaded.push(q);
     }
     if (!loaded.length) throw 0;

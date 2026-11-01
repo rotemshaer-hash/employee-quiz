@@ -187,7 +187,7 @@
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
     <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 34</span></p></div>
+    <p>מבנים<span class="ver">· גרסה 35</span></p></div>
     <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
@@ -298,7 +298,7 @@
         <option value="end">בסוף — אחרי כל הסרטונים</option>
         <option value="topic">אחרי כל נושא</option>
       </select>
-      <label class="opt" style="margin-top:12px"><input type="checkbox" id="master"> <span>מבחן מאסטר — מאגר שאלות לבניית מבחנים אחרים</span></label>
+      <label class="opt" style="margin-top:12px"><input type="checkbox" id="master"> <span>מבחן מאסטר — כולל אוטומטית את כל הנושאים מכל המבחנים בקטגוריה הזאת</span></label>
     </section>
 
     <section class="card">
@@ -334,8 +334,8 @@
 <input type="file" id="pick" accept="video/*" multiple hidden>
 <input type="file" id="pickImg" accept="image/*" hidden>
 
-<script src="settings.js?v=34"></script>
-<script src="demo.js?v=34"></script>
+<script src="settings.js?v=35"></script>
+<script src="demo.js?v=35"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -613,7 +613,11 @@ $('selWa').onclick = () => bulk('wa');
 $('selCopy').onclick = () => bulk('copy');
 // בדיקת מוכנות: מה שימנע ממבחן לעבוד אצל העובד, בפעולה אחת
 function readiness(id) {
-  const q = normalize(JSON.parse(JSON.stringify(quizzes[id])));
+  // מבחן חדש שעוד לא נשמר קיים רק ב-quiz, לא עדיין ב-quizzes
+  const src = quizzes[id] || (quizId === id ? quiz : null);
+  if (!src) return ['המבחן עוד לא נשמר.'];
+  const q = normalize(JSON.parse(JSON.stringify(src)));
+  if (q.master) q.topics = computeMasterTopics(q.category, id);
   const bad = [];
   let questions = 0, choices = 0;
   q.topics.forEach((t, ti) => {
@@ -640,12 +644,6 @@ function readyReport(id) {
   const bad = readiness(id);
   if (!bad.length) return alert('מוכן לשליחה ✅\n\nיש שאלות, סומנו תשובות נכונות, ההעלאות הסתיימו, ומוגדר מייל לתוצאות.\n\nשים לב: אישור הכתובת אצל FormSubmit עדיין דורש הגשת ניסיון אחת שלך.');
   alert('צריך לתקן לפני שליחה:\n\n· ' + bad.join('\n· '));
-}
-function countOf(q) {
-  const t = normalize(JSON.parse(JSON.stringify(q)));
-  return { topics: t.topics.length,
-           videos: t.topics.reduce((a, x) => a + x.videos.length, 0),
-           questions: t.topics.reduce((a, x) => a + x.questions.length, 0) };
 }
 function quizCard(id) {
   return '<tr class="qrow-row' + (selected.has(id) ? ' chk' : '') + '" id="card-' + id + '">' +
@@ -719,9 +717,22 @@ function normalize(q) {
   }));
   return q;
 }
+// מבחן מאסטר: אין לו תוכן משלו — הנושאים שלו מחושבים בכל פתיחה מכל המבחנים (הלא-מאסטר) באותה קטגוריה
+function computeMasterTopics(category, excludeId) {
+  const topics = [];
+  Object.keys(quizzes).forEach(id => {
+    if (id === excludeId) return;
+    const q = quizzes[id];
+    if (q.master) return;
+    if ((q.category || '').trim() !== (category || '').trim()) return;
+    normalize(JSON.parse(JSON.stringify(q))).topics.forEach(t => topics.push(Object.assign({}, t, { _src: q.title })));
+  });
+  return topics;
+}
 function openQuiz(id, data) {
   quizId = id;
   quiz = normalize(JSON.parse(JSON.stringify(data || {})));
+  if (quiz.master) quiz.topics = computeMasterTopics(quiz.category, id);
   pendingDeletes = [];
   openTopicIdx = null;
   $('title').value = quiz.title;
@@ -953,7 +964,20 @@ function questionBlock(q, ti, i, n) {
   return h + '</div>';
 }
 function render() {
-  $('addTopic').classList.toggle('hidden', openTopicIdx !== null);
+  $('addTopic').classList.toggle('hidden', openTopicIdx !== null || quiz.master);
+  if (quiz.master) {
+    $('topics').innerHTML = '<p class="muted">מחושב אוטומטית מכל המבחנים בקטגוריה "' + esc(quiz.category || 'ללא קטגוריה') +
+      '" — לעריכת תוכן, היכנס למבחן המקורי שלו.</p>' +
+      (quiz.topics.length
+        ? quiz.topics.map(t =>
+            '<div class="topicrow" style="cursor:default">' +
+              '<span class="topicrow-edit">✎</span>' +
+              '<span class="topicrow-name">' + (esc(t.name) || 'נושא') + '</span>' +
+              '<span class="topicrow-meta">' + esc(t._src) + '</span>' +
+            '</div>').join('')
+        : '<p class="muted">אין עדיין שום נושא בקטגוריה הזאת באף מבחן אחר.</p>');
+    return;
+  }
   if (openTopicIdx === null) {
     $('topics').innerHTML = quiz.topics.length
       ? quiz.topics.map((t, ti) =>
@@ -998,7 +1022,12 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => {
   if (e.target.id === 'qMode') { quiz.qMode = e.target.value; dirty = true; status('יש שינויים שלא נשמרו'); return; }
-  if (e.target.id === 'master') { quiz.master = e.target.checked; dirty = true; status('יש שינויים שלא נשמרו'); return; }
+  if (e.target.id === 'master') {
+    quiz.master = e.target.checked;
+    if (quiz.master) quiz.topics = computeMasterTopics(quiz.category, quizId);
+    openTopicIdx = null;
+    dirty = true; status('יש שינויים שלא נשמרו'); render(); return;
+  }
   const d = e.target.dataset;
   if (!d.forid) return;
   authedUrl('PATCH', INV('/' + d.forid + '/' + encodeURIComponent(d.forkey)), { for: e.target.value.trim() })
@@ -1203,6 +1232,7 @@ function deleteUnused(paths) {
 
 // ---------- בדיקה ושמירה ----------
 function validate() {
+  if (quiz.master) return null;   // אין לו תוכן משלו לבדוק — הוא מחושב מהמבחנים בקטגוריה
   let questions = 0;
   for (let ti = 0; ti < quiz.topics.length; ti++) {
     const t = quiz.topics[ti], where = 'בנושא ' + (ti + 1) + (t.name ? ' (' + t.name + ')' : '');
@@ -1235,8 +1265,9 @@ $('save').onclick = async () => {
   if (problem) { status(problem, 'err'); return; }
   $('save').disabled = true; status('שומר...');
   try {
+    // מבחן מאסטר לא שומר תוכן משלו — הנושאים שלו מחושבים מחדש בכל פתיחה ובכל שליחה לעובד
     const clean = { title: quiz.title, category: quiz.category.trim(), qMode: quiz.qMode, master: !!quiz.master, updated: Date.now(),
-      topics: quiz.topics.map(t => ({
+      topics: quiz.master ? [] : quiz.topics.map(t => ({
         name: t.name,
         videos: t.videos.map(v => {
           const o = { kind: v.kind, title: v.title, url: v.url };
