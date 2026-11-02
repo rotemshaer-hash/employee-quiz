@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>ניהול המבחן</title>
-<meta name="theme-color" content="#141c30">
+<meta name="theme-color" content="#bbc8d4">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
@@ -18,8 +18,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#141c30; --card:#1c2640; --soft:#182032; --line:#2a4258;
-    --text:#eaf2f8; --muted:#7a93a8;
+    --bg:#bbc8d4; --card:#ebf0f4; --soft:#d6dde4; --line:#a3b4c4;
+    --text:#0e1216; --muted:#2d465e;
     --accent:#0a5fc4; --accent2:#2fa8ef; --bad:#ef4444;
     --grad:linear-gradient(135deg,#0a5fc4 0%,#2fa8ef 100%);
     --r:20px; --sh:0 1px 2px rgba(0,0,0,.4), 0 14px 32px -20px rgba(47,168,239,.3);
@@ -172,10 +172,6 @@
   .linkrow .acts{display:flex;gap:4px;flex:none}
   .linkrow .acts button{padding:7px 8px;font-size:13px}
   .linkrow.used{opacity:.7}
-  .chips{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 16px}
-  .chip{font-size:13.5px;font-weight:700;color:var(--muted);background:var(--soft);
-        border:1px solid var(--line);border-radius:10px;padding:7px 13px;cursor:pointer;box-shadow:none}
-  .chip.on{background:var(--accent);color:#fff;border-color:transparent}
   .seg{display:flex;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:4px;margin:0 0 12px}
   .seg button{flex:1;background:none;color:var(--muted);box-shadow:none;padding:9px;border-radius:9px;font-size:14.5px;font-weight:700}
   .seg button.on{background:var(--card);color:var(--accent)}
@@ -197,7 +193,7 @@
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
     <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 39</span></p></div>
+    <p>מבנים<span class="ver">· גרסה 40</span></p></div>
     <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
@@ -227,7 +223,6 @@
         <p class="muted" id="emailMsg" style="margin:8px 0 0"></p>
       </div>
     </div>
-    <div id="chips" class="chips"></div>
     <div id="list"></div>
     <button class="full" id="newQuiz">+ מבחן חדש</button>
   </section>
@@ -287,7 +282,6 @@
     <div class="topbar"><div><button id="back"></button><b id="crumb"></b></div></div>
     <div class="row" style="margin:0 0 14px">
       <button class="mini key" id="editorSend">📤 שליחה</button>
-      <button class="mini" id="editorLinks">קישורים</button>
       <button class="mini" id="editorWho">מי הגיש</button>
       <button class="mini" id="editorMore">⋯</button>
     </div>
@@ -345,8 +339,8 @@
 <input type="file" id="pick" accept="video/*" multiple hidden>
 <input type="file" id="pickImg" accept="image/*" hidden>
 
-<script src="settings.js?v=39"></script>
-<script src="demo.js?v=39"></script>
+<script src="settings.js?v=40"></script>
+<script src="demo.js?v=40"></script>
 <script>
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
@@ -388,7 +382,6 @@ let libArch = false;                        // האם מציגים פריטים 
 let pendingLib = null;                      // מבחן שנשמר אבל לא נכנס למאגר
 const libSel = new Set();                   // פריטים שסומנו במאגר: 'v:<key>' או 'q:<key>'
 let libTab = 'questions';
-let catFilter = '';                         // '' = כל הקטגוריות
 const openCats = new Set();                 // אילו קטגוריות פתוחות ברשימה הראשית
 let selectMode = false;                     // האם תיבות הסימון מוצגות (לבחירה מרובה לשליחה)
 const NOCAT = 'ללא קטגוריה';
@@ -682,15 +675,7 @@ function showList() {
   // קטגוריות: מסודרות לפי א-ב, "ללא קטגוריה" אחרון
   const cats = [...new Set(ids.map(id => catOf(quizzes[id])))]
     .sort((a, b) => a === NOCAT ? 1 : b === NOCAT ? -1 : a.localeCompare(b, 'he'));
-  if (catFilter && !cats.includes(catFilter)) catFilter = '';
-  $('chips').innerHTML = cats.length > 1
-    ? '<button class="chip' + (catFilter ? '' : ' on') + '" data-cat="">הכול (' + ids.length + ')</button>' +
-      cats.map(c => '<button class="chip' + (catFilter === c ? ' on' : '') + '" data-cat="' + esc(c) + '">' +
-        esc(c) + ' (' + ids.filter(id => catOf(quizzes[id]) === c).length + ')</button>').join('')
-    : '';
-
-  const shown = cats.filter(c => !catFilter || c === catFilter);
-  const rows = shown.map(c => {
+  const rows = cats.map(c => {
     const inCat = ids.filter(id => catOf(quizzes[id]) === c);
     const open = openCats.has(c);
     const head = '<tr class="ghead-row" data-togglecat="' + esc(c) + '"><td>' +
@@ -705,11 +690,6 @@ function showList() {
   updateSel();
   screen('s-list');
 }
-$('chips').addEventListener('click', e => {
-  const c = e.target.dataset.cat;
-  if (c === undefined) return;
-  catFilter = c; showList();
-});
 $('list').addEventListener('click', e => {
   const btn = e.target.closest('[data-togglecat]');
   if (!btn) return;
@@ -771,7 +751,6 @@ function openQuiz(id, data) {
   render();
   screen('editor');
 }
-$('editorLinks').onclick = () => showLinks(quizId);
 $('editorWho').onclick = () => showWho(quizId);
 // שליחה בלחיצה אחת: יוצר קישור חדש ופותח וואטסאפ איתו, בלי מסכים באמצע
 $('editorSend').onclick = async () => {
