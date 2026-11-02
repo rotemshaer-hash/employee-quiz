@@ -35,9 +35,9 @@
     background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;
     border-radius:11px;padding:7px 11px;font-size:13px;font-weight:600;box-shadow:none}
 
-  main{max-width:640px;margin:-26px auto 0;padding:0 16px 150px;position:relative;z-index:1}
+  main{max-width:640px;margin:-26px auto 0;padding:0 12px 150px;position:relative;z-index:1}
   h2{font-size:20px;font-weight:800;margin:0 0 4px;letter-spacing:-.02em}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-bottom:18px;box-shadow:var(--sh)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:18px;box-shadow:var(--sh)}
   .muted{color:var(--muted);font-size:14.5px}
 
   label.f{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin:16px 0 6px}
@@ -88,6 +88,9 @@
   .opt{display:flex;gap:10px;align-items:center;margin-top:9px}
   .opt input[type=radio]{width:22px;height:22px;flex:none;accent-color:var(--accent2)}
   .opt input[type=text]{flex:1}
+  .masteropt{display:flex;gap:10px;align-items:flex-start;margin-top:12px}
+  .masteropt input[type=checkbox]{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--accent2)}
+  .masteropt span{flex:1;min-width:0;font-size:14px;color:var(--muted);line-height:1.45}
 
   .topic{border:1px solid var(--line);border-radius:18px;background:var(--soft);padding:16px;margin-bottom:14px}
   .topicrow{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:16px;
@@ -134,15 +137,19 @@
   .selbar .t{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;font-weight:800}
   .selbar .b{display:flex;gap:10px}
   .selbar .b button{flex:1}
-  .libitem{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;background:var(--card);
-           display:flex;gap:11px;align-items:flex-start}
+  .libitem{border:1px solid var(--line);border-radius:14px;padding:10px;margin-bottom:10px;background:var(--card);
+           display:flex;flex-direction:column;gap:8px}
   .libitem.chk{border-color:var(--accent2);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent2) 16%,transparent)}
-  .libitem > input[type=checkbox]{width:22px;height:22px;flex:none;margin:3px 0 0;accent-color:var(--accent2)}
-  .libitem .ico{width:38px;height:38px;border-radius:11px;flex:none;display:grid;place-items:center;font-size:17px;
+  .libitem-top{display:flex;gap:8px;align-items:flex-start}
+  .libitem .ico{width:32px;height:32px;border-radius:10px;flex:none;display:grid;place-items:center;font-size:15px;
                 background:color-mix(in srgb,var(--accent2) 14%,transparent)}
   .libitem .mid{flex:1;min-width:0}
-  .libitem b{display:block;font-size:15px;line-height:1.35}
-  .src{font-size:12px;color:var(--muted);margin-top:3px}
+  .libitem b{display:block;font-size:15px;line-height:1.4}
+  .libitem-foot{display:flex;align-items:center;gap:8px}
+  .libitem-foot > input[type=checkbox]{width:20px;height:20px;flex:none;accent-color:var(--accent2)}
+  .libitem-foot .src{flex:1;min-width:0}
+  .libitem-actions{display:flex;gap:6px;flex:none}
+  .src{font-size:12px;color:var(--muted)}
   .sect{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
   .emailrow{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);
             background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 14px}
@@ -183,7 +190,7 @@
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
     <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 37</span></p></div>
+    <p>מבנים<span class="ver">· גרסה 38</span></p></div>
     <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
@@ -295,7 +302,7 @@
         <option value="end">בסוף — אחרי כל הסרטונים</option>
         <option value="topic">אחרי כל נושא</option>
       </select>
-      <label class="opt" style="margin-top:12px"><input type="checkbox" id="master"> <span>מבחן מאסטר — כולל אוטומטית את כל הנושאים מכל המבחנים בקטגוריה הזאת</span></label>
+      <label class="masteropt"><input type="checkbox" id="master"> <span>מבחן מאסטר — כולל אוטומטית את כל נושאי הקטגוריה</span></label>
     </section>
 
     <section class="card">
@@ -331,8 +338,8 @@
 <input type="file" id="pick" accept="video/*" multiple hidden>
 <input type="file" id="pickImg" accept="image/*" hidden>
 
-<script src="settings.js?v=37"></script>
-<script src="demo.js?v=37"></script>
+<script src="settings.js?v=38"></script>
+<script src="demo.js?v=38"></script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1525,11 +1532,16 @@ function renderLib() {
   $('libList').innerHTML = keys.length ? keys.map(k => {
     const it = src[k], id = (isV ? 'v:' : 'q:') + k, on = libSel.has(id);
     return '<div class="libitem' + (on ? ' chk' : '') + '">' +
-      '<input type="checkbox" data-lib="' + esc(id) + '"' + (on ? ' checked' : '') + '>' +
+      '<div class="libitem-top">' +
       '<div class="ico">' + (isV ? '🎬' : '❓') + '</div>' +
-      '<div class="mid"><b>' + esc(isV ? it.title : it.text) + '</b><div class="src">' + esc(libLine(it, isV, k)) + '</div></div>' +
+      '<div class="mid"><b>' + esc(isV ? it.title : it.text) + '</b></div></div>' +
+      '<div class="libitem-foot">' +
+      '<input type="checkbox" data-lib="' + esc(id) + '"' + (on ? ' checked' : '') + '>' +
+      '<div class="src">' + esc(libLine(it, isV, k)) + '</div>' +
+      '<div class="libitem-actions">' +
       '<button class="mini" data-libarch="' + esc(id) + '" title="' + (libArch ? 'החזרה מהארכיון' : 'לארכיון') + '">' + (libArch ? '↩' : '📦') + '</button>' +
-      '<button class="mini del" data-libdel="' + esc(id) + '" title="מחיקה מהמאגר">' + ICON.trash + '</button></div>';
+      '<button class="mini del" data-libdel="' + esc(id) + '" title="מחיקה מהמאגר">' + ICON.trash + '</button>' +
+      '</div></div></div>';
   }).join('') : '<p class="muted">' + (term ? 'אין תוצאות לחיפוש.'
       : libArch ? 'הארכיון ריק.' : 'המאגר ריק. הוא מתמלא מעצמו בכל שמירה של מבחן.') + '</p>';
 }

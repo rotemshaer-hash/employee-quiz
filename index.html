@@ -32,9 +32,9 @@
   .htxt h1{margin:0;font-size:clamp(17px,5vw,22px);font-weight:800;letter-spacing:-.02em;line-height:1.25}
   .htxt p{margin:2px 0 0;font-size:12.5px;opacity:.85}
 
-  main{max-width:640px;margin:-26px auto 0;padding:0 16px 48px;position:relative;z-index:1}
+  main{max-width:640px;margin:-26px auto 0;padding:0 12px 48px;position:relative;z-index:1}
   h2{font-size:20px;font-weight:800;margin:0 0 6px;letter-spacing:-.02em}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;margin-bottom:18px;
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:18px;
         box-shadow:var(--sh);animation:rise .3s ease both}
   @keyframes rise{from{opacity:0;transform:translateY(8px)}}
   .muted{color:var(--muted);font-size:14.5px}
@@ -161,8 +161,8 @@
   </section>
 </main>
 
-<script src="settings.js?v=37"></script>
-<script src="demo.js?v=37"></script>
+<script src="settings.js?v=38"></script>
+<script src="demo.js?v=38"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
