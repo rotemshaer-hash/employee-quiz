@@ -6,6 +6,13 @@
 <meta name="robots" content="noindex">
 <title>ניהול המבחן</title>
 <meta name="theme-color" content="#141c30">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ניהול מבחנים">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -190,7 +197,7 @@
   <div class="hrow">
     <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
     <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 38</span></p></div>
+    <p>מבנים<span class="ver">· גרסה 39</span></p></div>
     <button id="logout" class="hidden">יציאה</button>
   </div>
 </header>
@@ -338,8 +345,11 @@
 <input type="file" id="pick" accept="video/*" multiple hidden>
 <input type="file" id="pickImg" accept="image/*" hidden>
 
-<script src="settings.js?v=38"></script>
-<script src="demo.js?v=38"></script>
+<script src="settings.js?v=39"></script>
+<script src="demo.js?v=39"></script>
+<script>
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
