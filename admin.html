@@ -52,6 +52,9 @@
   .group{font-weight:700;margin:18px 0 8px;font-size:17px}
   .count{color:var(--purple);font-weight:700}
   .opts{margin:6px 0 0;padding:0 18px 0 0;font-size:15px;color:#444}
+  .box.item{flex-wrap:wrap;cursor:pointer}
+  .box > .preview{flex:0 0 100%;cursor:default}
+  .preview video{display:block;width:100%;max-height:60vh;border-radius:6px;background:#000;margin-top:6px}
   .opts li.ok{font-weight:700;color:var(--purple)}
 
   .btn{display:block;width:100%;background:var(--purple);color:#fff;border:3px solid var(--purple);border-radius:9px;
@@ -74,7 +77,6 @@
   <symbol id="i-pen" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></symbol>
   <symbol id="i-del" viewBox="0 0 24 24"><path d="M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></symbol>
-  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4 0-9 2-9 5v3h18v-3c0-3-5-5-9-5z"/></symbol>
 </svg>
 
@@ -102,6 +104,7 @@ const newId = () => Math.random().toString(36).slice(2, 8);
 const inviteLink = (id, c) => new URL('index.html?q=' + id + '-' + c, location.href).href;
 const validEmail = s => /^\S+@\S+\.\S+$/.test(s || '');
 const icon = (name, act, data) => '<button class="ic" data-act="' + act + '"' + (data || '') + '><svg><use href="#i-' + name + '"/></svg></button>';
+const keepScroll = fn => { const y = scrollY; fn(); scrollTo(0, y); };
 const fmtDur = s => s ? Math.floor(s / 60) + ':' + String(Math.round(s % 60)).padStart(2, '0') : '';
 
 let token = null, quizzes = {}, globalEmail = '';
@@ -257,13 +260,20 @@ function renderSubs() {
 }
 
 // ---------- דף 3א: הסרטונים והשאלות של תת־קטגוריה ----------
-function itemRow(key, tag, text, extra, playUrl) {
+// לחיצה על המסגרת פותחת תצוגה מקדימה (סרטון מתנגן / תשובות); הריבוע משמאל מסמן למבחן.
+function itemRow(key, tag, text, extra, preview) {
   const on = draft && draft.items.includes(key);
-  const side = (draft ? '<span class="chk' + (on ? ' on' : '') + '"></span>' : '') +
-               (playUrl ? '<a class="ic" href="' + esc(playUrl) + '" target="_blank" rel="noopener"><svg><use href="#i-play"/></svg></a>' : '');
+  const side = draft ? '<button class="chk' + (on ? ' on' : '') + '" data-act="pick" data-key="' + key + '" aria-label="סימון למבחן"></button>' : '';
+  const open = expanded.has(key);
   return '<div class="row"><div class="side">' + side + '</div>' +
-    '<button class="box' + (on ? ' on' : '') + '" data-act="item" data-key="' + key + '"><span class="tag">' + tag + '</span><div>' +
-    esc(text) + (extra || '') + '</div></button></div>';
+    '<div class="box item' + (on ? ' on' : '') + '" data-act="item" data-key="' + key + '" role="button" tabindex="0" aria-expanded="' + open + '">' +
+    '<span class="tag">' + tag + '</span><div>' + esc(text) + (extra || '') + '</div>' +
+    (open ? '<div class="preview">' + preview + '</div>' : '') + '</div></div>';
+}
+function questionPreview(q) {
+  return q.type === 'choice'
+    ? '<ol class="opts">' + q.options.map((o, i) => '<li' + (i === q.correct - 1 ? ' class="ok"' : '') + '>' + esc(o) + (i === q.correct - 1 ? ' ✓' : '') + '</li>').join('') + '</ol>'
+    : '<p class="opts muted">שאלה פתוחה — העובד כותב תשובה חופשית.</p>';
 }
 function renderItems() {
   topbar(draftSub(), 'לכל המבחנים', 'toTests');
@@ -271,17 +281,12 @@ function renderItems() {
   $('panel').innerHTML = '<h1><a data-act="toCats">קטגוריות</a> <span class="ch">‹</span> <a data-act="toSubs">' +
     esc(catName(curCat)) + '</a> <span class="ch">‹</span> ' + esc(subName(curCat, curSub)) + '</h1>' + selSummary() +
     (vids.length ? '' : '<p class="muted">אין עדיין סרטונים בתת־קטגוריה הזו.</p>') +
+    (vids.length ? '<p class="muted">לחיצה על פריט מציגה אותו' + (draft ? ' · הריבוע משמאל מסמן אותו למבחן' : '') + '</p>' : '') +
     vids.map(([vid, v]) => '<div class="group">' + esc(v.title) + '</div>' +
-      itemRow('v:' + vid, 'סרטון', v.title, v.duration ? '<small>' + fmtDur(v.duration) + ' דקות</small>' : '', v.url) +
-      questionsOf(vid).map(([qid, q]) => {
-        const key = 'q:' + qid;
-        const opts = !draft && expanded.has(key)
-          ? (q.type === 'choice'
-              ? '<ol class="opts">' + q.options.map((o, i) => '<li' + (i === q.correct - 1 ? ' class="ok"' : '') + '>' + esc(o) + (i === q.correct - 1 ? ' ✓' : '') + '</li>').join('') + '</ol>'
-              : '<p class="opts muted">שאלה פתוחה — העובד כותב תשובה חופשית.</p>')
-          : '';
-        return itemRow(key, q.type === 'choice' ? 'אמריקאית' : 'פתוחה', q.text, opts);
-      }).join('')).join('') +
+      itemRow('v:' + vid, 'סרטון', v.title, v.duration ? '<small>' + fmtDur(v.duration) + ' דקות</small>' : '',
+              '<video controls playsinline preload="metadata" src="' + esc(v.url) + '"></video>') +
+      questionsOf(vid).map(([qid, q]) =>
+        itemRow('q:' + qid, q.type === 'choice' ? 'אמריקאית' : 'פתוחה', q.text, '', questionPreview(q))).join('')).join('') +
     (draft && vids.length ? '<button class="btn ghost" data-act="pickAll">סמן את כל מה שבתת־קטגוריה</button>' : '') +
     buildButtons() +
     (draft ? '<button class="btn ghost" data-act="toCats">הוסף שאלות מקטגוריה אחרת</button>' : '');
@@ -449,10 +454,11 @@ document.addEventListener('click', async e => {
     case 'save': save(); break;
     case 'seed': seed(); break;
     case 'item':
-      if (draft) toggleItem(d.key);
-      else if (d.key[0] === 'q') expanded.has(d.key) ? expanded.delete(d.key) : expanded.add(d.key);
-      else return;
-      renderItems(); break;
+      if (e.target.closest('.preview')) return;   // לחיצה בתוך הנגן/התשובות לא סוגרת
+      expanded.has(d.key) ? expanded.delete(d.key) : expanded.add(d.key);
+      keepScroll(renderItems); break;
+    case 'pick':
+      toggleItem(d.key); keepScroll(renderItems); break;
     case 'pickAll':
       videosIn(curCat, curSub).forEach(([vid]) => {
         ['v:' + vid].concat(questionsOf(vid).map(([qid]) => 'q:' + qid))
@@ -481,7 +487,10 @@ document.addEventListener('click', async e => {
     }
   }
 });
-document.addEventListener('keydown', e => { if (e.key === 'Enter' && view === 'login') document.querySelector('[data-act="login"]').click(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && view === 'login') document.querySelector('[data-act="login"]').click();
+  else if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.box.item')) { e.preventDefault(); e.target.click(); }
+});
 addEventListener('beforeunload', e => { if (draft && draft.items.length) { e.preventDefault(); e.returnValue = ''; } });
 
 go('login');
