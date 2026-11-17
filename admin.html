@@ -3,405 +3,117 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex">
-<title>ניהול המבחן</title>
-<meta name="theme-color" content="#bbc8d4">
+<title>ניהול המבחנים — מבנים</title>
+<meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="ניהול מבחנים">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
   :root{
-    --bg:#bbc8d4; --card:#ebf0f4; --soft:#d6dde4; --line:#a3b4c4;
-    --text:#0e1216; --muted:#2d465e;
-    --accent:#0a5fc4; --accent2:#2fa8ef; --bad:#ef4444;
-    --grad:linear-gradient(135deg,#0a5fc4 0%,#2fa8ef 100%);
-    --r:20px; --sh:0 1px 2px rgba(0,0,0,.4), 0 14px 32px -20px rgba(47,168,239,.3);
+    --bg:#f0f0f6; --top:#ffffff; --ink:#111; --muted:#777; --box:#7a7a7a;
+    --purple:#7458c4; --soft:#ece8f8; --icon:#9a9a9a; --line:#d4d4da; --bad:#d23c3c;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 Heebo,system-ui,-apple-system,Arial,sans-serif}
+  body{margin:0;background:var(--bg);font:16px/1.4 Arial,Helvetica,sans-serif;color:var(--ink)}
+  button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 
-  header{background:var(--grad);color:#fff;padding:22px 20px 56px;position:relative;overflow:hidden}
-  header::before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;
-    background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%);top:-160px;inset-inline-start:-80px}
-  header::after{content:"";position:absolute;inset-inline:0;bottom:-1px;height:30px;background:var(--bg);border-radius:30px 30px 0 0}
-  .hrow{display:flex;align-items:center;gap:12px;position:relative;z-index:1}
-  .chip-logo{background:#fff;border-radius:14px;padding:6px 8px;box-shadow:0 8px 22px -12px rgba(0,0,0,.6);flex:none}
-  .chip-logo img{display:block;width:clamp(58px,17vw,92px)}
-  .htxt{min-width:0;flex:1}
-  .htxt h1{margin:0;font-size:clamp(17px,5vw,22px);font-weight:800;letter-spacing:-.02em;line-height:1.25}
-  .htxt p{margin:2px 0 0;font-size:12.5px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ver{opacity:.75;margin-inline-start:6px}
-  header #logout{flex:none;align-self:center;width:auto;
-    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;
-    border-radius:11px;padding:7px 11px;font-size:13px;font-weight:600;box-shadow:none}
+  .topbar{position:sticky;top:0;z-index:5;background:var(--top);display:flex;align-items:center;gap:10px;
+          padding:12px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+  .avatar{width:40px;height:40px;border-radius:50%;background:var(--soft);display:grid;place-items:center;flex:none}
+  .avatar svg{width:22px;height:22px;fill:var(--purple)}
+  .brand{font-weight:700;font-size:20px;color:#666;flex:none}
+  .sep{width:1px;height:28px;background:#ddd;flex:none}
+  .sub{color:#999;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+  .link{font-weight:700;font-size:17px;white-space:nowrap;flex:none}
+  .link::after{content:" ‹";font-size:22px}
 
-  main{max-width:640px;margin:-26px auto 0;padding:0 12px 150px;position:relative;z-index:1}
-  h2{font-size:20px;font-weight:800;margin:0 0 4px;letter-spacing:-.02em}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:18px;box-shadow:var(--sh)}
-  .muted{color:var(--muted);font-size:14.5px}
+  main{max-width:720px;margin:0 auto}
+  .panel{margin:0 12px;border-inline:1px solid var(--line);min-height:calc(100vh - 64px);padding:20px 10px 40px}
+  h1{font-size:24px;margin:0 0 18px;line-height:1.5}
+  h1 a{color:var(--ink);text-decoration:underline;font-weight:400;cursor:pointer}
+  h1 .ch{font-weight:400;margin:0 6px}
 
-  label.f{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin:16px 0 6px}
-  input,textarea,select{width:100%;font:inherit;padding:14px;border:1.5px solid var(--line);border-radius:14px;background:var(--soft);color:inherit}
-  input:focus,textarea:focus{outline:0;border-color:var(--accent2);background:var(--card);
-    box-shadow:0 0 0 4px color-mix(in srgb,var(--accent2) 16%,transparent)}
-  textarea{min-height:76px;resize:vertical}
+  .row{display:flex;flex-direction:row-reverse;align-items:center;gap:8px;margin-bottom:10px}
+  .box{flex:1;min-width:0;border:3px solid var(--box);border-radius:9px;padding:11px 12px;font-size:18px;min-height:50px;
+       display:flex;align-items:center;gap:10px;background:var(--bg);text-align:right;width:100%}
+  .box > div{min-width:0;flex:1}
+  .box.on{border-color:var(--purple)}
+  .box small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+  .box small.ltr{direction:ltr;text-align:right}
+  .side{display:flex;gap:4px;flex:none;align-items:center}
+  .ic{width:34px;height:34px;display:grid;place-items:center}
+  .ic svg{width:20px;height:20px;fill:var(--icon)}
+  .chk{width:26px;height:26px;border:3px solid var(--box);border-radius:5px;display:grid;place-items:center;flex:none}
+  .chk.on{background:var(--purple);border-color:var(--purple)}
+  .chk.on::after{content:"✓";color:#fff;font-size:15px;font-weight:700}
+  .drag{color:var(--icon);font-size:24px;width:34px;height:40px;display:grid;place-items:center;touch-action:none;cursor:grab}
+  .row.dragging .box{border-color:var(--purple);box-shadow:0 6px 18px rgba(0,0,0,.15)}
+  .tag{font-size:12px;color:var(--muted);border:1.5px solid var(--box);border-radius:5px;padding:0 6px;flex:none}
+  .group{font-weight:700;margin:18px 0 8px;font-size:17px}
+  .count{color:var(--purple);font-weight:700}
+  .opts{margin:6px 0 0;padding:0 18px 0 0;font-size:15px;color:#444}
+  .opts li.ok{font-weight:700;color:var(--purple)}
 
-  button{font:inherit;font-weight:700;border:0;cursor:pointer;border-radius:14px;padding:13px 16px;
-         background:var(--grad);color:#fff;box-shadow:0 10px 22px -14px var(--accent)}
-  button:active:not(:disabled){transform:scale(.985)}
-  button.full{width:100%;margin-top:14px}
-  button.ghost{background:none;border:1.5px dashed var(--line);color:var(--accent2);box-shadow:none}
-  button.mini{padding:8px 11px;font-size:13.5px;border-radius:11px;background:var(--soft);
-              border:1px solid var(--line);color:var(--text);box-shadow:none;
-              display:inline-flex;align-items:center;gap:5px}
-  button.mini svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
-  button.key{background:var(--accent);color:#fff;border-color:transparent;box-shadow:none}
-  button.key svg{opacity:1}
-  button.del{color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,transparent);
-             border-color:color-mix(in srgb,var(--bad) 22%,transparent)}
-  button:disabled{opacity:.4;cursor:default}
-
-  .item{border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;background:var(--card)}
-  .qtable{width:100%;border-collapse:collapse;margin-bottom:14px}
-  .qtable td{border:1px solid color-mix(in srgb,var(--accent2) 30%,var(--line));padding:12px 14px;background:var(--soft)}
-  .ghead-row{cursor:pointer}
-  .ghead-row td{background:var(--soft);font-size:16px;font-weight:800;display:flex;align-items:center;gap:10px}
-  .ghead-row .tag{margin-inline-start:auto}
-  .gicon{font-size:20px;flex:none}
-  .gchev{color:var(--muted);font-size:13px;flex:none}
-  .qrow-row.chk td{background:color-mix(in srgb,var(--accent2) 8%,transparent)}
-  .qsel{width:20px;height:20px;flex:none;margin-inline-end:4px;accent-color:var(--accent2);display:none}
-  .sel-mode .qsel{display:inline-block}
-  .qname-cell{padding:0;display:flex;align-items:center}
-  .qopen{flex:1;min-width:0;display:flex;align-items:center;gap:12px;background:none;box-shadow:none;
-         border:0;padding:12px 14px;text-align:start;font:inherit;color:inherit;cursor:pointer}
-  .qedit{flex:none;width:30px;height:30px;border-radius:10px;background:var(--soft);
-         border:1px solid var(--line);display:grid;place-items:center;font-size:14px}
-  .qname{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .qname b{font-size:16px}
-  .item-head{display:flex;gap:6px;align-items:center;justify-content:space-between;margin-bottom:2px}
-  .item-head b{flex:1;font-size:15px}
-  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
-  .tag{font-size:12px;font-weight:600;color:var(--muted);background:var(--soft);
-       border:1px solid var(--line);border-radius:8px;padding:3px 9px}
-  .tag.warn{color:#9a3412;background:#fff7ed;border-color:#fdba74}
-  .opt{display:flex;gap:10px;align-items:center;margin-top:9px}
-  .opt input[type=radio]{width:22px;height:22px;flex:none;accent-color:var(--accent2)}
-  .opt input[type=text]{flex:1}
-  .masteropt{display:flex;gap:10px;align-items:flex-start;margin-top:12px}
-  .masteropt input[type=checkbox]{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--accent2)}
-  .masteropt span{flex:1;min-width:0;font-size:14px;color:var(--muted);line-height:1.45}
-
-  .topic{border:1px solid var(--line);border-radius:18px;background:var(--soft);padding:16px;margin-bottom:14px}
-  .topicrow{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:16px;
-            background:var(--soft);padding:14px 16px;margin-bottom:10px;cursor:pointer}
-  .topicrow:active{transform:scale(.99)}
-  .topicrow-edit{flex:none;width:30px;height:30px;border-radius:10px;background:var(--card);
-                 border:1px solid var(--line);display:grid;place-items:center;font-size:14px}
-  .topicrow-name{flex:1;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .topicrow-meta{flex:none;font-size:12.5px;color:var(--muted);white-space:nowrap}
-  .crumb2{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-  .crumb2 b{font-size:15px}
-  .num{width:30px;height:30px;border-radius:10px;background:var(--grad);color:#fff;
-       display:grid;place-items:center;font-weight:800;font-size:15px;flex:none}
-  .sub{font-size:12.5px;font-weight:700;color:var(--muted);margin:18px 0 8px;display:flex;align-items:center;gap:8px}
-  .sub::after{content:"";flex:1;height:1px;background:var(--line)}
-
-  .bar{position:fixed;bottom:0;inset-inline:0;z-index:20;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
-       background:color-mix(in srgb,var(--card) 90%,transparent);backdrop-filter:blur(16px);border-top:1px solid var(--line)}
-  .bar div{max-width:640px;margin:0 auto;display:flex;gap:10px}
-  .bar button{flex:1}
-  #status{font-size:14px;font-weight:600;min-height:1.3em;text-align:center;margin-top:7px}
-  .ok{color:var(--accent)} .err{color:var(--bad)}
-
-  .prog{height:9px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:12px}
-  .prog div{height:100%;width:0;background:var(--grad)}
-
-  details{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:14.5px}
-  summary{font-weight:700;cursor:pointer;color:var(--accent2)}
-  details ol{padding-inline-start:20px;margin:10px 0}
-
-  .row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-  .item > .row{flex-wrap:nowrap}
-  .item > .row .mini{flex:1 1 0;min-width:0;justify-content:center;padding:9px 6px;white-space:nowrap}
-  @media (max-width:370px){ .item > .row .mini svg{display:none} .item > .row .mini{font-size:13px;padding:9px 4px} }
-  .topbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--card) 92%,transparent);
-          backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:11px 16px;margin-bottom:18px}
-  .topbar > div{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:8px}
-  .topbar button{background:none;color:var(--accent);padding:6px 8px;font-size:15px;box-shadow:none}
-  .topbar b{font-size:15.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-  .selbar{position:fixed;bottom:0;inset-inline:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
-          background:color-mix(in srgb,var(--card) 90%,transparent);backdrop-filter:blur(16px);border-top:1px solid var(--line)}
-  .selbar .in{max-width:640px;margin:0 auto}
-  .selbar .t{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;font-weight:800}
-  .selbar .b{display:flex;gap:10px}
-  .selbar .b button{flex:1}
-  .libitem{border:1px solid var(--line);border-radius:14px;padding:10px;margin-bottom:10px;background:var(--card);
-           display:flex;flex-direction:column;gap:8px}
-  .libitem.chk{border-color:var(--accent2);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent2) 16%,transparent)}
-  .libitem-top{display:flex;gap:8px;align-items:flex-start}
-  .libitem .ico{width:32px;height:32px;border-radius:10px;flex:none;display:grid;place-items:center;font-size:15px;
-                background:color-mix(in srgb,var(--accent2) 14%,transparent)}
-  .libitem .mid{flex:1;min-width:0}
-  .libitem b{display:block;font-size:15px;line-height:1.4}
-  .libitem-foot{display:flex;align-items:center;gap:8px}
-  .libitem-foot > input[type=checkbox]{width:20px;height:20px;flex:none;accent-color:var(--accent2)}
-  .libitem-foot .src{flex:1;min-width:0}
-  .libitem-actions{display:flex;gap:6px;flex:none}
-  .src{font-size:12px;color:var(--muted)}
-  .sect{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
-  .emailrow{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);
-            background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 14px}
-  .emailrow > span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .emailrow bdi{color:var(--text);font-weight:600}
-  .more{position:relative}
-  .menu{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
-  .linkrow{display:flex;align-items:center;flex-wrap:wrap;gap:8px;border:1px solid var(--line);
-           border-radius:12px;padding:8px 10px;margin-top:8px;background:var(--card)}
-  @media (max-width:560px){ .linkrow input[data-forkey]{flex:1 1 100%} }
-  .linkrow input{flex:1;min-width:0;padding:8px 10px;border-radius:9px;font-size:14px}
-  .linkrow .code{font-size:12px;color:var(--muted);font-weight:700;flex:none}
-  .linkrow .acts{display:flex;gap:4px;flex:none}
-  .linkrow .acts button{padding:7px 8px;font-size:13px}
-  .linkrow.used{opacity:.7}
-  .seg{display:flex;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:4px;margin:0 0 12px}
-  .seg button{flex:1;background:none;color:var(--muted);box-shadow:none;padding:9px;border-radius:9px;font-size:14.5px;font-weight:700}
-  .seg button.on{background:var(--card);color:var(--accent)}
-  .sent{display:none;font-size:13px;font-weight:700;color:var(--accent2)}
-  [data-sent="1"] .sent{display:inline}
-
-  @media (min-width:900px){
-    main{max-width:1000px}
-    .topbar > div,.bar div,.selbar .in{max-width:1000px}
-    header{padding:28px 24px 60px}
-    .chip-logo img{width:110px}
-    .htxt h1{font-size:26px}
-  }
-  .hidden{display:none !important}   /* button.mini מגדיר display ובלי !important גובר על זה */
+  .btn{display:block;width:100%;background:var(--purple);color:#fff;border:3px solid var(--purple);border-radius:9px;
+       padding:11px;font-size:18px;font-weight:700;text-align:center;margin-top:8px}
+  .btn.ghost{background:transparent;color:var(--purple)}
+  .btn:disabled{opacity:.5}
+  .field{width:100%;font:inherit;font-size:18px;border:3px solid var(--box);border-radius:9px;padding:11px 12px;background:#fff;color:var(--ink)}
+  .field:focus{outline:0;border-color:var(--purple)}
+  .field.ltr{direction:ltr;text-align:right}
+  label.f{display:block;font-weight:700;margin:14px 0 6px}
+  .muted{color:var(--muted);font-size:14px}
+  .err{color:var(--bad);font-weight:700;margin:10px 0 0}
+  .foot{margin-top:28px;text-align:center}
+  .foot button{color:var(--muted);text-decoration:underline;font-size:14px}
+  .hidden{display:none!important}
 </style>
 </head>
 <body>
-<header>
-  <div class="hrow">
-    <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
-    <div class="htxt"><h1>ניהול המבחנים</h1>
-    <p>מבנים<span class="ver">· גרסה 40</span></p></div>
-    <button id="logout" class="hidden">יציאה</button>
-  </div>
-</header>
-<main>
-  <!-- כניסה -->
-  <section id="s-login" class="card">
-    <h2>כניסת מנהל</h2>
-    <label class="f">אימייל</label><input id="email" type="email" autocomplete="username">
-    <label class="f">סיסמה</label><input id="pass" type="password" autocomplete="current-password">
-    <button class="full" id="login">כניסה</button>
-    <p id="loginErr" class="err"></p>
-  </section>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></symbol>
+  <symbol id="i-del" viewBox="0 0 24 24"><path d="M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4 0-9 2-9 5v3h18v-3c0-3-5-5-9-5z"/></symbol>
+</svg>
 
-  <!-- רשימת מבחנים -->
-  <section id="s-list" class="card hidden">
-    <div class="sect"><h2>המבחנים שלי <span class="tag" id="listCount"></span></h2>
-      <button class="mini" id="listMore" title="עוד">⋯</button></div>
-    <div class="menu hidden" id="listMenu">
-      <button class="mini" id="openImp">⬆️ ייבוא</button>
-      <button class="mini" id="backup">💾 גיבוי</button>
-      <button class="mini" id="openLib">📚 מאגר</button>
-      <button class="mini" id="selectModeBtn">✓ בחירה מרובה לשליחה</button>
-      <div class="emailrow" style="margin-top:8px"><span>📧 תוצאות ל־<bdi id="emailText" dir="ltr"></bdi></span>
-        <button class="mini" id="emailEdit">שינוי</button></div>
-      <div id="emailBox" class="hidden" style="margin:6px 0 0">
-        <input id="globalEmail" type="email" placeholder="name@example.com">
-        <p class="muted" id="emailMsg" style="margin:8px 0 0"></p>
-      </div>
-    </div>
-    <div id="list"></div>
-    <button class="full" id="newQuiz">+ מבחן חדש</button>
-  </section>
+<div class="topbar">
+  <div class="avatar"><svg><use href="#i-user"/></svg></div>
+  <div class="brand">מבנים</div>
+  <div class="sep" id="tbSep"></div>
+  <div class="sub" id="tbSub"></div>
+  <button class="link" id="tbLink"></button>
+</div>
+<main><div class="panel" id="panel"></div></main>
 
-  <!-- מאגר -->
-  <div id="s-lib" class="hidden">
-    <div class="topbar"><div><button id="libBack"></button><b>מאגר שאלות וסרטונים</b></div></div>
-    <section class="card">
-      <div class="seg"><button id="tabQ" class="on">שאלות</button><button id="tabV">סרטונים</button></div>
-      <input id="libSearch" type="text" placeholder="חיפוש חופשי...">
-      <div class="row" style="margin-top:10px"><button class="mini" id="libArch">📦 ארכיון</button></div>
-      <p class="muted" style="margin:10px 0 14px">כל מה שהעלית אי פעם, עם המבחנים שמשתמשים בכל פריט.
-      סמן פריטים וצור מהם מבחן חדש. פריט שלא צריך — "לארכיון", וכך לא שוברים תוכן קיים.</p>
-      <div id="libList"></div>
-    </section>
-  </div>
-
-  <!-- ייבוא -->
-  <div id="s-imp" class="hidden">
-    <div class="topbar"><div><button id="impBack"></button><b>ייבוא מבחנים</b></div></div>
-    <section class="card">
-      <p class="muted">מדביקים טקסט בפורמט שלמטה (או בוחרים קובץ גיבוי JSON), לוחצים "בדיקה",
-      ורק אם הכול תקין — "ייבוא". המבחנים נוצרים חדשים; שום מבחן קיים לא נדרס.</p>
-      <details style="margin-bottom:12px"><summary>הפורמט — דוגמה להעתקה</summary>
-<pre style="white-space:pre-wrap;font-size:13px;background:var(--soft);padding:10px;border-radius:10px"># בטיחות באתר
-קטגוריה: בטיחות
-שאלות: אחרי כל נושא
-
-## עבודה בגובה
-סרטון: https://drive.google.com/file/d/XXXX/view | הסבר רתמות
-? ממתי חובה רתמת בטיחות?
-* מגובה 2 מטר
-- מגובה 5 מטר
-- רק בגג
-?? תאר מקרה שבו עצרת עבודה מסיבת בטיחות.
-
-## כלי עבודה
-? מה בודקים לפני הפעלת דיסק?
-* שהמגן במקומו
-- שהכבל ארוך</pre>
-        <p class="muted"><b>#</b> מבחן חדש · <b>##</b> נושא · <b>?</b> שאלה אמריקאית ·
-        <b>*</b> התשובה הנכונה · <b>-</b> תשובה שגויה · <b>??</b> שאלה פתוחה ·
-        <b>סרטון:</b> קישור Drive, ואחרי | שם הסרטון.</p>
-      </details>
-      <input type="file" id="impFile" accept=".json,.txt,text/plain,application/json">
-      <textarea id="impText" rows="12" placeholder="הדבק כאן..." style="margin-top:10px"></textarea>
-      <div class="row" style="margin-top:10px">
-        <button class="mini" id="impCheck">בדיקה</button>
-        <button class="mini key hidden" id="impGo">ייבוא</button>
-      </div>
-      <div id="impOut" style="margin-top:12px"></div>
-    </section>
-  </div>
-
-  <!-- עורך -->
-  <div id="editor" class="hidden">
-    <div class="topbar"><div><button id="back"></button><b id="crumb"></b></div></div>
-    <div class="row" style="margin:0 0 14px">
-      <button class="mini key" id="editorSend">📤 שליחה</button>
-      <button class="mini" id="editorWho">מי הגיש</button>
-      <button class="mini" id="editorMore">⋯</button>
-    </div>
-    <div class="menu hidden" id="editorMenu">
-      <button class="mini" id="editorReady">✅ בדיקת מוכנות</button>
-      <button class="mini" id="editorDup">שכפול</button>
-      <button class="mini del" id="editorDel">מחיקה</button>
-    </div>
-    <div id="editorPanel"></div>
-
-    <section class="card">
-      <h2>הגדרות</h2>
-      <label class="f">כותרת המבחן</label><input id="title">
-      <label class="f">קטגוריה (למשל: אינסטלציה, צבע)</label>
-      <input id="category" list="catlist" placeholder="ללא קטגוריה">
-      <datalist id="catlist"></datalist>
-      <label class="f">מתי מציגים את השאלות</label>
-      <select id="qMode">
-        <option value="end">בסוף — אחרי כל הסרטונים</option>
-        <option value="topic">אחרי כל נושא</option>
-      </select>
-      <label class="masteropt"><input type="checkbox" id="master"> <span>מבחן מאסטר — כולל אוטומטית את כל נושאי הקטגוריה</span></label>
-    </section>
-
-    <section class="card">
-      <h2>נושאים</h2>
-      <details>
-        <summary>איך זה עובד?</summary>
-        <p>כל נושא (למשל "ריצוף") מכיל סרטונים ושאלות. העובד רואה את הסרטון הראשון, ואז נשאל אם הבין.
-        אם כן — הוא עובר לנושא הבא. אם לא — הוא מקבל את הסרטון הבא <b>באותו נושא</b>.</p>
-        <p>לכן: הסרטון הראשון הוא ההסבר הראשי, ושאר הסרטונים הם הסברים נוספים לאותו נושא.</p>
-      </details>
-      <div id="topics"></div>
-      <button class="full ghost" id="addTopic">+ נושא חדש</button>
-    </section>
-  </div>
-</main>
-
-<div class="selbar hidden" id="libbar"><div class="in">
-  <div class="t"><span id="libCount"></span><button class="mini" id="libClear">ניקוי</button></div>
-  <div class="b"><button id="libNew">צור מבחן חדש</button><button class="ghost" id="libAdd">הוסף למבחן קיים</button></div>
-  <div id="libPick" class="row hidden"></div>
-</div></div>
-
-<div class="selbar hidden" id="selbar"><div class="in">
-  <div class="t"><span id="selCount"></span><button class="mini" id="selClear">ניקוי</button></div>
-  <div class="b"><button id="selWa">שליחה בוואטסאפ</button><button class="ghost" id="selCopy">העתקת הקישורים</button></div>
-</div></div>
-
-<div class="bar hidden" id="bar"><div>
-  <button class="ghost" id="preview">תצוגה מקדימה</button>
-  <button id="save">שמירה</button>
-</div><div id="status"></div></div>
-
-<input type="file" id="pick" accept="video/*" multiple hidden>
-<input type="file" id="pickImg" accept="image/*" hidden>
-
-<script src="settings.js?v=40"></script>
-<script src="demo.js?v=40"></script>
+<script src="settings.js?v=41"></script>
+<script src="demo.js?v=41"></script>
 <script>
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 <script>
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const DEFAULT_SECONDS = 180;            // זמן המתנה לסרטון Drive שלא ניתן לנגן ישירות
-const CHUNK = 2 * 1024 * 1024;
-const STORAGE = 'https://firebasestorage.googleapis.com/v0/b/' + SETTINGS.storageBucket + '/o';
-const DB = path => SETTINGS.databaseURL + '/quizzes' + path + '.json';
-const SUBS = path => SETTINGS.databaseURL + '/submissions' + path + '.json';
-const INV = path => SETTINGS.databaseURL + '/invites' + path + '.json';
-const BUN = path => SETTINGS.databaseURL + '/bundles' + path + '.json';
-const LIB = path => SETTINGS.databaseURL + '/library' + path + '.json';
-const SET = path => SETTINGS.databaseURL + '/settings' + path + '.json';
-const DONE = path => SETTINGS.databaseURL + '/done' + path + '.json';
-const hash = str => { let h = 0; for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
-                      return Math.abs(h).toString(36) + str.length.toString(36); };
+const U = path => SETTINGS.databaseURL + path + '.json';
 const CODE_CHARS = 'abcdefghjkmnpqrstuvwxyz23456789';
 const newCode = () => Array.from({ length: 6 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join('');
 const newId = () => Math.random().toString(36).slice(2, 8);
-const quizLink = id => new URL('index.html?t=' + id, location.href).href;
-const ICON = {
-  edit: '<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
-  link: '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>',
-  users: '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/></svg>',
-  copy: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
-  trash: '<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>',
-  back: '<svg viewBox="0 0 24 24" style="width:17px;height:17px"><path d="M9 18l6-6-6-6"/></svg>',
-};
 const inviteLink = (id, c) => new URL('index.html?q=' + id + '-' + c, location.href).href;
-const bundleLink = b => new URL('index.html?b=' + b, location.href).href;
+const validEmail = s => /^\S+@\S+\.\S+$/.test(s || '');
+const icon = (name, act, data) => '<button class="ic" data-act="' + act + '"' + (data || '') + '><svg><use href="#i-' + name + '"/></svg></button>';
+const fmtDur = s => s ? Math.floor(s / 60) + ':' + String(Math.round(s % 60)).padStart(2, '0') : '';
 
-let token = null, quizzes = {}, quizId = null, quiz = null, dirty = false, globalEmail = '';
-const selected = new Set();                 // מבחנים שסומנו לשליחה מרוכזת
-let library = { videos: {}, questions: {} };
-let invAll = {}, subCount = {};             // לשורת המצב בכל מבחן
-let libArch = false;                        // האם מציגים פריטים בארכיון
-let pendingLib = null;                      // מבחן שנשמר אבל לא נכנס למאגר
-const libSel = new Set();                   // פריטים שסומנו במאגר: 'v:<key>' או 'q:<key>'
-let libTab = 'questions';
-const openCats = new Set();                 // אילו קטגוריות פתוחות ברשימה הראשית
-let selectMode = false;                     // האם תיבות הסימון מוצגות (לבחירה מרובה לשליחה)
-const NOCAT = 'ללא קטגוריה';
-const catOf = q => (q.category || '').trim() || NOCAT;
-// אייקון לפי מילת מפתח בשם הקטגוריה, בלי רשימה קבועה של שמות
-const CAT_ICONS = [
-  [/צבע|טיח|שפכטל|גוון/, '🎨'], [/חלונ|אלומיניום|דלת/, '🏢'], [/ריצוף|חיפוי|אריח/, '🧱'],
-  [/חשמל/, '💡'], [/אינסטלציה|צנרת|מים/, '🔧'], [/בניה|בנייה/, '🏗️'], [/כביסה/, '🧺'],
-  [/סניטר/, '🚿'], [/קיר/, '🧰'],
-];
-const categoryIcon = name => (CAT_ICONS.find(([re]) => re.test(name || '')) || [0, '🏷️'])[1];
-const files = new Map();
-let pendingDeletes = [];
-let openTopicIdx = null;                    // null = רשימת נושאים, מספר = נושא פתוח לעריכה
+let token = null, quizzes = {}, globalEmail = '';
+let catalog = { cats: {}, videos: {}, questions: {} };
+let draft = null;                 // מבחן בבנייה: { id, title, email, items: ['v:..'|'q:..'], snap: {key: item} }
+let view = 'login', curCat = null, curSub = null;
+const expanded = new Set();       // שאלות שפתוחות לצפייה בתשובות (מצב ניהול)
 
-function status(msg, cls) { $('status').textContent = msg; $('status').className = cls || ''; }
 function sessionSet(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
 function sessionGet(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
 
-// ---------- כניסה ----------
+// ---------- כניסה (הסיסמה לא נשמרת; נשמר רק refresh token של פיירבייס ללשונית הזו) ----------
 async function login(email, password) {
   const res = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + SETTINGS.apiKey, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -412,7 +124,6 @@ async function login(email, password) {
   if (j.refreshToken) sessionSet('rt', j.refreshToken);
   return j.idToken;
 }
-// חידוש ההתחברות דרך refresh token של פיירבייס. הסיסמה לא נשמרת בדפדפן.
 async function relogin() {
   const rt = sessionGet('rt');
   if (!rt) throw new Error('auth');
@@ -425,17 +136,8 @@ async function relogin() {
   token = j.id_token || j.idToken;
   return token;
 }
-$('login').onclick = async () => {
-  $('loginErr').textContent = ''; $('login').disabled = true;
-  try {
-    token = await login($('email').value.trim(), $('pass').value);
-    $('pass').value = '';
-    await load();
-  } catch (e) { $('loginErr').textContent = 'אימייל או סיסמה לא נכונים.'; }
-  $('login').disabled = false;
-};
-async function authedUrl(method, url, body) {
-  const go = () => fetch(url + '?auth=' + encodeURIComponent(token), {
+async function api(method, path, body) {
+  const go = () => fetch(U(path) + '?auth=' + encodeURIComponent(token), {
     method, headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body),
   });
   let res = await go();
@@ -443,1203 +145,346 @@ async function authedUrl(method, url, body) {
   if (!res.ok) throw new Error(res.status);
   return res;
 }
+const pub = async path => (await (await fetch(U(path), { cache: 'no-store' })).json()) || null;
 
-// קריאה מאומתת. מאז הידוק הכללים, הגשות נקראות רק עם טוקן.
-async function authedGet(url) {
-  const go = () => fetch(url + (url.includes('?') ? '&' : '?') + 'auth=' + encodeURIComponent(token), { cache: 'no-store' });
-  let res = await go();
-  if (res.status === 401) { await relogin(); res = await go(); }
-  if (!res.ok) throw new Error(res.status);
-  return (await res.json()) || null;
-}
-
-// ---------- רשימת המבחנים ----------
 async function load() {
-  quizzes = (await (await fetch(DB(''), { cache: 'no-store' })).json()) || {};
-  globalEmail = (await (await fetch(SET('/resultsEmail'), { cache: 'no-store' })).json()) || '';
-  if (!globalEmail) {                      // העברה חד־פעמית מהמייל שהוגדר במבחן קיים
-    const any = Object.values(quizzes).find(q => q.resultsEmail);
-    if (any) { globalEmail = any.resultsEmail; saveGlobalEmail(true); }
-  }
-  $('globalEmail').value = globalEmail;
-  showEmailRow();
-  showList();
-  loadLibrary().catch(() => {});
-  loadStats().catch(() => {});
-}
-// המאגר נטען גם ברשימה, כי ניקוי סרטונים חייב לדעת מה המאגר עוד מציע
-async function loadLibrary() {
-  const lib = (await (await fetch(LIB(''), { cache: 'no-store' })).json()) || {};
-  library = { videos: lib.videos || {}, questions: lib.questions || {} };
-  return library;
-}
-// כמה קישורים נשלחו, כמה הוגשו, כמה ממתינים
-async function loadStats() {
-  invAll = (await authedGet(SETTINGS.databaseURL + '/invites.json')) || {};
-  const ids = Object.keys(quizzes);
-  const counts = await Promise.all(ids.map(id =>
-    authedGet(SUBS('/' + id) + '?shallow=true').then(o => Object.keys(o || {}).length).catch(() => 0)));
-  subCount = {}; ids.forEach((id, i) => { subCount[id] = counts[i]; });
-  const open = [...document.querySelectorAll('[id^="who-"]')].some(x => x.dataset.open);
-  if (!$('s-list').classList.contains('hidden') && !open) showList();
+  const [q, c, e] = await Promise.all([pub('/quizzes'), pub('/library/catalog'), pub('/settings/resultsEmail')]);
+  quizzes = q || {};
+  catalog = Object.assign({ cats: {}, videos: {}, questions: {} }, c || {});
+  globalEmail = e || '';
+  go('tests');
 }
 
-// ---------- גיבוי וייצוא ----------
-async function exportBackup() {
-  try {
-    const data = {
-      exported: new Date().toISOString(), app: 'employee-quiz',
-      settings: { resultsEmail: globalEmail },
-      quizzes: quizzes,
-      submissions: (await authedGet(SETTINGS.databaseURL + '/submissions.json')) || {},
-      invites: (await authedGet(SETTINGS.databaseURL + '/invites.json')) || {},
-      bundles: (await authedGet(SETTINGS.databaseURL + '/bundles.json')) || {},
-      library: library,
-    };
-    const name = 'quiz-backup-' + new Date().toISOString().slice(0, 10) + '.json';
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
-    a.download = name; document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-    return true;
-  } catch (e) { alert('הגיבוי נכשל. בדוק אינטרנט ונסה שוב.'); return false; }
+// ---------- הקטלוג: קטגוריה ‹ תת־קטגוריה ‹ סרטון ‹ שאלות ----------
+const byOrder = (a, b) => (a[1].order || 0) - (b[1].order || 0) || String(a[1].name || a[1].title).localeCompare(String(b[1].name || b[1].title), 'he');
+const cats = () => Object.entries(catalog.cats || {}).sort(byOrder);
+const subs = cid => Object.entries((catalog.cats[cid] || {}).subs || {}).sort(byOrder);
+const videosIn = (cid, sid) => Object.entries(catalog.videos || {}).filter(([, v]) => v.cat === cid && v.sub === sid).sort(byOrder);
+const questionsOf = vid => Object.entries(catalog.questions || {}).filter(([, q]) => q.video === vid).sort(byOrder);
+const catName = cid => (catalog.cats[cid] || {}).name || '';
+const subName = (cid, sid) => (((catalog.cats[cid] || {}).subs || {})[sid] || {}).name || '';
+function countIn(cid, sid) {
+  const vs = Object.entries(catalog.videos || {}).filter(([, v]) => v.cat === cid && (!sid || v.sub === sid)).map(([k]) => k);
+  const qs = Object.values(catalog.questions || {}).filter(q => vs.includes(q.video)).length;
+  return vs.length + ' סרטונים · ' + qs + ' שאלות';
 }
-$('backup').onclick = () => exportBackup();
+// פריט מלא לפי מפתח. אם נמחק מהקטלוג — העותק שנשמר במבחן.
+function itemOf(key) {
+  const [k, id] = [key[0], key.slice(2)];
+  if (k === 'v' && catalog.videos[id]) {
+    const v = catalog.videos[id];
+    return { key, k: 'v', title: v.title, url: v.url, duration: v.duration || 0, cat: catName(v.cat), sub: subName(v.cat, v.sub) };
+  }
+  if (k === 'q' && catalog.questions[id]) {
+    const q = catalog.questions[id], v = catalog.videos[q.video] || {};
+    const o = { key, k: 'q', type: q.type, text: q.text, cat: catName(v.cat), sub: subName(v.cat, v.sub) };
+    if (q.type === 'choice') { o.options = q.options; o.correct = q.correct; }
+    return o;
+  }
+  return draft && draft.snap[key] || null;
+}
 
-// שליחה חוזרת של מייל להגשה שנשמרה אבל המייל שלה נפל
-async function resendMail(id, key, btn) {
-  const r = await authedGet(SUBS('/' + id + '/' + encodeURIComponent(key))).catch(() => null);
-  if (!r) return alert('לא מצאתי את ההגשה.');
-  if (!/^\S+@\S+\.\S+$/.test(globalEmail)) return alert('קודם הגדר מייל לקבלת תוצאות.');
-  const data = {
-    _subject: (quizzes[id] ? quizzes[id].title : 'מבחן') + ': ' + (r.name || key) + (r.total ? ' — ' + r.pct + '%' : ''),
-    _template: 'box', _captcha: 'false',
-    'שם': r.name || key,
-    'ציון כולל': (r.right || 0) + '/' + (r.total || 0) + ' (' + (r.pct || 0) + '%)',
-    'זמן הגשה': new Date(r.at || 0).toLocaleString('he-IL'),
-  };
-  (r.topics || []).forEach(t => {
-    data['נושא: ' + t.name] = (t.choices ? 'ציון ' + t.right + '/' + t.choices : 'בלי שאלות') +
-      (t.watched ? ' · ' + (t.watched === 1 ? 'הבין אחרי סרטון אחד' : 'נזקק ל-' + t.watched + ' סרטונים') : '');
-  });
-  (r.answers || []).forEach((a, i) => {
-    data[(i + 1) + '. ' + (a.topic ? '[' + a.topic + '] ' : '') + a.q] =
-      a.a + (a.ok === 'yes' ? '  ✅' : a.ok === 'no' ? '  ❌' : '  (פתוחה — לבדיקה)');
-  });
-  if (btn) { btn.disabled = true; btn.textContent = 'שולח...'; }
-  try {
-    const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(globalEmail), {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(data),
-    });
-    const j = await res.json().catch(() => ({}));
-    if (!res.ok || String(j.success) !== 'true') throw new Error(j.message || res.status);
-    await authedUrl('PATCH', SUBS('/' + id + '/' + encodeURIComponent(key)), { mail: 'sent' });
-    $('who-' + id).dataset.open = ''; showWho(id);
-  } catch (e) {
-    alert('השליחה נכשלה. אם זו כתובת חדשה — חפש מייל אישור מ-FormSubmit, ואז נסה שוב.');
-    if (btn) { btn.disabled = false; btn.textContent = '📧 שלח שוב'; }
-  }
+// ---------- מבנה המסך ----------
+function topbar(sub, linkText, linkAct) {
+  $('tbSub').textContent = sub || '';
+  $('tbSep').classList.toggle('hidden', !sub);
+  $('tbLink').textContent = linkText || '';
+  $('tbLink').classList.toggle('hidden', !linkText);
+  $('tbLink').dataset.act = linkAct || '';
 }
-async function saveGlobalEmail(quiet) {
-  const v = $('globalEmail').value.trim();
-  if (!/^\S+@\S+\.\S+$/.test(v)) { if (!quiet) $('emailMsg').textContent = 'צריך מייל תקין.'; return; }
-  try {
-    await authedUrl('PUT', SET('/resultsEmail'), v);
-    globalEmail = v;
-    showEmailRow();
-    if (!quiet) { $('emailMsg').textContent = 'נשמר ✅'; setTimeout(() => { $('emailMsg').textContent = ''; $('emailBox').classList.add('hidden'); }, 1500); }
-  } catch (e) { $('emailMsg').textContent = 'השמירה נכשלה. נסה שוב.'; }
+function go(v) {
+  view = v;
+  ({ login: renderLogin, tests: renderTests, cats: renderCats, subs: renderSubs, items: renderItems, order: renderOrder })[v]();
+  scrollTo(0, 0);
 }
-$('globalEmail').addEventListener('change', () => saveGlobalEmail(false));
-function showEmailRow() {
-  $('emailText').textContent = globalEmail || '— עוד לא הוגדר —';
-  $('emailBox').classList.toggle('hidden', !!globalEmail);
+const draftSub = () => draft ? (draft.title || (draft.id ? 'מבחן' : 'מבחן חדש')) : 'הגדרות';
+function selSummary() {
+  if (!draft) return '';
+  const v = draft.items.filter(k => k[0] === 'v').length, q = draft.items.length - v;
+  return '<div class="row"><div class="box" style="font-size:16px">נבחרו עד עכשיו:&nbsp;<span class="count">' +
+         v + ' סרטונים · ' + q + ' שאלות</span></div></div>';
 }
-$('emailEdit').onclick = () => $('emailBox').classList.toggle('hidden');
-function screen(id) {
-  ['s-login', 's-list', 'editor', 's-lib', 's-imp'].forEach(x => $(x).classList.toggle('hidden', x !== id));
-  $('logout').classList.toggle('hidden', id === 's-login');
-  $('bar').classList.toggle('hidden', id !== 'editor');
-  $('selbar').classList.toggle('hidden', id !== 's-list' || !selected.size);
-  $('libbar').classList.toggle('hidden', id !== 's-lib' || !libSel.size);
-  status(''); scrollTo(0, 0);
+const buildButtons = () => draft
+  ? '<button class="btn" data-act="toOrder"' + (draft.items.length ? '' : ' disabled') + '>צור מבחן</button>' : '';
+
+function renderLogin() {
+  topbar('', '', '');
+  $('panel').innerHTML =
+    '<h1>כניסת מנהל</h1>' +
+    '<label class="f">אימייל</label><input class="field ltr" id="email" type="email" autocomplete="username">' +
+    '<label class="f">סיסמה</label><input class="field ltr" id="pass" type="password" autocomplete="current-password">' +
+    '<button class="btn" data-act="login" style="margin-top:18px">כניסה</button><p class="err" id="loginErr"></p>';
 }
-function updateSel() {
-  $('selCount').textContent = 'נבחרו ' + selected.size + (selected.size === 1 ? ' מבחן' : ' מבחנים');
-  $('selbar').classList.toggle('hidden', !selected.size || $('s-list').classList.contains('hidden'));
-}
-document.addEventListener('change', e => {
-  const id = e.target.dataset.sel;
-  if (!id) return;
-  e.target.checked ? selected.add(id) : selected.delete(id);
-  const card = $('card-' + id);
-  if (card) card.classList.toggle('chk', e.target.checked);
-  updateSel();
-});
-$('selClear').onclick = () => {
-  selected.clear();
-  document.querySelectorAll('[data-sel]').forEach(c => { c.checked = false; c.closest('.qrow-row').classList.remove('chk'); });
-  updateSel();
-};
-$('selectModeBtn').onclick = () => {
-  selectMode = !selectMode;
-  $('list').classList.toggle('sel-mode', selectMode);
-  $('selectModeBtn').textContent = selectMode ? '✕ סיום בחירה' : '✓ בחירה מרובה לשליחה';
-  $('selectModeBtn').classList.toggle('key', selectMode);
-  if (!selectMode) $('selClear').click();
-};
-$('listMore').onclick = () => $('listMenu').classList.toggle('hidden');
-// קישור אחד לכל המבחנים שסומנו: העובד ממלא שם פעם אחת ועובר את כולם ברצף
-async function buildMessage() {
-  const ids = [...selected];
-  if (ids.length === 1) {
-    const c = newCode();
-    await authedUrl('PATCH', INV('/' + ids[0]), { [c]: { created: Date.now(), sent: Date.now() } });
-    return ['שלום, זה המבחן שלך:', '', quizzes[ids[0]].title, inviteLink(ids[0], c), '', 'בהצלחה!'].join('\n');
-  }
-  const bid = newId() + newId();
-  await authedUrl('PUT', BUN('/' + bid), { quizzes: ids, created: Date.now(), sent: Date.now() });
-  const lines = ['שלום, אלה המבחנים שלך בקישור אחד:', ''];
-  ids.forEach((id, n) => lines.push((n + 1) + ') ' + quizzes[id].title));
-  lines.push('', bundleLink(bid), '', 'ממלאים שם פעם אחת ועוברים אותם ברצף.', 'בהצלחה!');
-  return lines.join('\n');
-}
-async function bulk(action) {
-  const btn = action === 'wa' ? $('selWa') : $('selCopy');
-  const label = btn.textContent;
-  btn.disabled = true; btn.textContent = 'מכין קישורים...';
-  try {
-    if (!/^\S+@\S+\.\S+$/.test(globalEmail)) { alert('קודם הגדר מייל לקבלת תוצאות במסך הראשי.'); throw 0; }
-    const bad = [...selected].flatMap(id => readiness(id).map(x => quizzes[id].title + ' — ' + x));
-    if (bad.length && !confirm('יש מבחנים שעוד לא מוכנים:\n\n· ' + bad.join('\n· ') + '\n\nלשלוח בכל זאת?')) throw 0;
-    const msg = await buildMessage();
-    if (action === 'wa') open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
-    else {
-      try { await navigator.clipboard.writeText(msg); btn.textContent = 'הועתק ✅'; setTimeout(() => { btn.textContent = label; }, 2000); }
-      catch (err) { prompt('העתק את ההודעה:', msg); }
-    }
-  } catch (e) { alert('יצירת הקישורים נכשלה. בדוק אינטרנט ונסה שוב.'); }
-  btn.disabled = false;
-  if (btn.textContent === 'מכין קישורים...') btn.textContent = label;
-}
-$('selWa').onclick = () => bulk('wa');
-$('selCopy').onclick = () => bulk('copy');
-// בדיקת מוכנות: מה שימנע ממבחן לעבוד אצל העובד, בפעולה אחת
-function readiness(id) {
-  // מבחן חדש שעוד לא נשמר קיים רק ב-quiz, לא עדיין ב-quizzes
-  const src = quizzes[id] || (quizId === id ? quiz : null);
-  if (!src) return ['המבחן עוד לא נשמר.'];
-  const q = normalize(JSON.parse(JSON.stringify(src)));
-  if (q.master) q.topics = computeMasterTopics(q.category, id);
-  const bad = [];
-  let questions = 0, choices = 0;
-  q.topics.forEach((t, ti) => {
-    const where = t.name ? '"' + t.name + '"' : 'נושא ' + (ti + 1);
-    t.videos.forEach((v, i) => {
-      if (v.kind === 'file' && !v.path) bad.push('בנושא ' + where + ': סרטון ' + (i + 1) + ' לא סיים להיעלות.');
-      if (!v.url) bad.push('בנושא ' + where + ': לסרטון ' + (i + 1) + ' אין קובץ או קישור.');
-    });
-    t.questions.forEach((x, i) => {
-      questions++;
-      if (!String(x.text || '').trim()) bad.push('בנושא ' + where + ': לשאלה ' + (i + 1) + ' אין נוסח.');
-      if (x.type === 'choice') {
-        choices++;
-        if (!((x.options || []).length >= 2)) bad.push('בנושא ' + where + ': לשאלה ' + (i + 1) + ' אין מספיק תשובות.');
-        if (!(x.correct >= 1 && x.correct <= (x.options || []).length)) bad.push('בנושא ' + where + ': בשאלה ' + (i + 1) + ' לא סומנה תשובה נכונה.');
-      }
-    });
-  });
-  if (!questions) bad.push('אין אף שאלה במבחן.');
-  if (!/^\S+@\S+\.\S+$/.test(globalEmail)) bad.push('לא הוגדר מייל לקבלת תוצאות (במסך הראשי).');
-  return bad;
-}
-function readyReport(id) {
-  const bad = readiness(id);
-  if (!bad.length) return alert('מוכן לשליחה ✅\n\nיש שאלות, סומנו תשובות נכונות, ההעלאות הסתיימו, ומוגדר מייל לתוצאות.\n\nשים לב: אישור הכתובת אצל FormSubmit עדיין דורש הגשת ניסיון אחת שלך.');
-  alert('צריך לתקן לפני שליחה:\n\n· ' + bad.join('\n· '));
-}
-function quizCard(id) {
-  return '<tr class="qrow-row' + (selected.has(id) ? ' chk' : '') + '" id="card-' + id + '">' +
-    '<td class="qname-cell"><input type="checkbox" class="qsel" data-sel="' + id + '"' + (selected.has(id) ? ' checked' : '') + '>' +
-    '<button class="qopen" data-list="edit" data-id="' + id + '">' +
-      '<span class="qedit">✎</span>' +
-      '<span class="qname"><b>' + esc(quizzes[id].title) + '</b>' +
-        (quizzes[id].master ? ' <span class="tag">מאסטר</span>' : '') + '</span>' +
-    '</button></td></tr>';
-}
-function showList() {
+
+// ---------- דף 1: מבחנים ----------
+function renderTests() {
+  topbar('', 'הגדרות', 'settings');
   const ids = Object.keys(quizzes).sort((a, b) => (quizzes[b].updated || 0) - (quizzes[a].updated || 0));
-  $('listCount').textContent = '(' + ids.length + ')';
-
-  // קטגוריות: מסודרות לפי א-ב, "ללא קטגוריה" אחרון
-  const cats = [...new Set(ids.map(id => catOf(quizzes[id])))]
-    .sort((a, b) => a === NOCAT ? 1 : b === NOCAT ? -1 : a.localeCompare(b, 'he'));
-  const rows = cats.map(c => {
-    const inCat = ids.filter(id => catOf(quizzes[id]) === c);
-    const open = openCats.has(c);
-    const head = '<tr class="ghead-row" data-togglecat="' + esc(c) + '"><td>' +
-      '<span class="gchev">' + (open ? '︿' : '﹀') + '</span>' + esc(c) +
-      '<span class="tag">' + inCat.length + '</span>' +
-      '<span class="gicon">' + categoryIcon(c) + '</span></td></tr>';
-    return head + (open ? inCat.map(quizCard).join('') : '');
-  }).join('');
-  $('list').innerHTML = ids.length ? '<table class="qtable">' + rows + '</table>' : '<p class="muted">עוד אין מבחנים. לחץ "+ מבחן חדש".</p>';
-
-  [...selected].forEach(id => { if (!quizzes[id]) selected.delete(id); });
-  updateSel();
-  screen('s-list');
-}
-$('list').addEventListener('click', e => {
-  const btn = e.target.closest('[data-togglecat]');
-  if (!btn) return;
-  const c = btn.dataset.togglecat;
-  openCats.has(c) ? openCats.delete(c) : openCats.add(c);
-  showList();
-});
-
-
-// מבנה אחיד: נושאים. מבחן ישן מומר אוטומטית.
-function normalize(q) {
-  q.title = q.title || 'מבחן חדש';
-  q.category = (q.category || '').trim();
-  q.qMode = q.qMode === 'topic' ? 'topic' : 'end';
-  if (!q.topics) {
-    q.topics = (q.videos || []).map(v => ({ name: v.title || 'נושא', videos: [v], questions: [] }));
-    if ((q.questions || []).length) {
-      if (q.topics.length) q.topics[0].questions = q.questions;
-      else q.topics.push({ name: 'נושא', videos: [], questions: q.questions });
-    }
-  }
-  delete q.videos; delete q.questions; delete q.passScore; delete q.resultsEmail;
-  if (!q.topics.length) q.topics = [{ name: '', videos: [], questions: [] }];
-  q.topics = q.topics.map(t => ({
-    name: t.name || '',
-    videos: (t.videos || []).map(v => Object.assign({ kind: 'drive', _key: newId() }, v)),
-    questions: (t.questions || []).map(x => x.type === 'choice' ? Object.assign({ options: ['', ''] }, x) : x),
-  }));
-  return q;
-}
-// מבחן מאסטר: אין לו תוכן משלו — הנושאים שלו מחושבים בכל פתיחה מכל המבחנים (הלא-מאסטר) באותה קטגוריה
-function computeMasterTopics(category, excludeId) {
-  const topics = [];
-  Object.keys(quizzes).forEach(id => {
-    if (id === excludeId) return;
-    const q = quizzes[id];
-    if (q.master) return;
-    if ((q.category || '').trim() !== (category || '').trim()) return;
-    normalize(JSON.parse(JSON.stringify(q))).topics.forEach(t => topics.push(Object.assign({}, t, { _src: q.title })));
-  });
-  return topics;
-}
-function openQuiz(id, data) {
-  quizId = id;
-  quiz = normalize(JSON.parse(JSON.stringify(data || {})));
-  if (quiz.master) quiz.topics = computeMasterTopics(quiz.category, id);
-  pendingDeletes = [];
-  openTopicIdx = null;
-  $('title').value = quiz.title;
-  $('crumb').textContent = quiz.title;
-  $('category').value = quiz.category;
-  $('qMode').value = quiz.qMode;
-  $('master').checked = !!quiz.master;
-  $('catlist').innerHTML = [...new Set(Object.values(quizzes).map(q => (q.category || '').trim()).filter(Boolean))]
-    .sort().map(c => '<option value="' + esc(c) + '">').join('');
-  $('editorPanel').innerHTML = '<div id="who-' + id + '"></div>';
-  $('editorMenu').classList.add('hidden');
-  dirty = !data;
-  render();
-  screen('editor');
-}
-$('editorWho').onclick = () => showWho(quizId);
-// שליחה בלחיצה אחת: יוצר קישור חדש ופותח וואטסאפ איתו, בלי מסכים באמצע
-$('editorSend').onclick = async () => {
-  if (dirty) { alert('יש שינויים שלא נשמרו. תלחץ קודם "שמירה".'); return; }
-  const id = quizId;
-  const bad = readiness(id);
-  if (bad.length && !confirm('המבחן עוד לא מוכן:\n\n· ' + bad.join('\n· ') + '\n\nלשלוח בכל זאת?')) return;
-  const code = newCode();
-  try { await authedUrl('PATCH', INV('/' + id), { [code]: { created: Date.now(), sent: Date.now() } }); }
-  catch (err) { alert('היצירה נכשלה. בדוק אינטרנט ונסה שוב.'); return; }
-  loadStats().catch(() => {});
-  open('https://wa.me/?text=' + encodeURIComponent(quizzes[id].title + '\n' + inviteLink(id, code)), '_blank');
-};
-$('editorMore').onclick = () => $('editorMenu').classList.toggle('hidden');
-$('editorReady').onclick = () => readyReport(quizId);
-$('editorDup').onclick = async () => {
-  const id = quizId;
-  const copy = JSON.parse(JSON.stringify(quizzes[id]));
-  copy.title += ' (עותק)'; copy.updated = Date.now();
-  const nid = newId();
-  try { await authedUrl('PUT', DB('/' + nid), copy); } catch (err) { alert('השכפול נכשל. נסה שוב.'); return; }
-  quizzes[nid] = copy; showList();
-  alert('נוצר עותק: "' + copy.title + '". צור לו קישורים חדשים.');
-};
-$('editorDel').onclick = async () => {
-  const id = quizId;
-  if (!confirm('למחוק את "' + quizzes[id].title + '"? הקישורים שלו יפסיקו לעבוד, וההגשות שלו יימחקו.')) return;
-  if (confirm('להוריד קודם גיבוי? (מומלץ)')) await exportBackup();
-  try {
-    const paths = [];
-    (quizzes[id].topics || []).forEach(t => (t.videos || []).forEach(v => v.path && paths.push(v.path)));
-    (quizzes[id].videos || []).forEach(v => v.path && paths.push(v.path));
-    await authedUrl('DELETE', DB('/' + id)); delete quizzes[id];
-    authedUrl('DELETE', SUBS('/' + id)).catch(() => {});
-    authedUrl('DELETE', INV('/' + id)).catch(() => {});
-    authedUrl('DELETE', DONE('/' + id)).catch(() => {});
-    deleteUnused(paths);
-    showList();
-  } catch (err) { alert('המחיקה נכשלה. נסה שוב.'); }
-};
-
-document.querySelector('main').addEventListener('click', async e => {
-  const btn = e.target.closest('[data-list]');
-  if (!btn) return;
-  const d = btn.dataset, id = d.id;
-  if (d.list === 'edit') openQuiz(id, quizzes[id]);
-  else if (d.list === 'resend') resendMail(id, d.key, e.target);
-  else if (d.list === 'mklinks') {
-    const bad = readiness(id);
-    if (bad.length && !confirm('המבחן עוד לא מוכן:\n\n· ' + bad.join('\n· ') + '\n\nליצור קישורים בכל זאת?')) return;
-    const n = Math.min(50, Math.max(1, +($('cnt-' + id) || {}).value || 1));
-    const batch = {};
-    for (let i = 0; i < n; i++) batch[newCode()] = { created: Date.now() };
-    try { await authedUrl('PATCH', INV('/' + id), batch); } catch (err) { alert('היצירה נכשלה. נסה שוב.'); return; }
-    $('who-' + id).dataset.open = ''; showLinks(id); loadStats().catch(() => {});
-  }
-  else if (d.list === 'copylink' || d.list === 'walink') {
-    const url = inviteLink(id, d.key);
-    authedUrl('PATCH', INV('/' + id + '/' + encodeURIComponent(d.key)), { sent: Date.now() })
-      .then(() => { const row = $('row-' + d.key); if (row) row.dataset.sent = '1'; }).catch(() => {});
-    if (d.list === 'walink') return open('https://wa.me/?text=' + encodeURIComponent(quizzes[id].title + '\n' + url), '_blank');
-    try { await navigator.clipboard.writeText(url); btn.textContent = 'הועתק ✅'; }
-    catch (err) { prompt('העתק את הקישור:', url); }
-  }
-  else if (d.list === 'dellink') {
-    if (!confirm('למחוק את הקישור הזה? הוא יפסיק לעבוד.')) return;
-    await authedUrl('DELETE', INV('/' + id + '/' + encodeURIComponent(d.key)));
-    $('who-' + id).dataset.open = ''; showLinks(id);
-  }
-  else if (d.list === 'reopen') {
-    if (!confirm('לאפשר למשתתף הזה לעשות את המבחן שוב?')) return;
-    await authedUrl('DELETE', SUBS('/' + id + '/' + encodeURIComponent(d.key)));
-    authedUrl('DELETE', DONE('/' + id + '/' + encodeURIComponent(d.key))).catch(() => {});
-    $('who-' + id).dataset.open = ''; showWho(id); loadStats().catch(() => {});
-  }
-  else if (d.list === 'reopenall') {
-    if (!confirm('לאפס את כל ההגשות של "' + quizzes[id].title + '"? כל התוצאות יימחקו.')) return;
-    if (confirm('להוריד קודם גיבוי של התוצאות? (מומלץ)')) await exportBackup();
-    if (!confirm('למחוק עכשיו את כל ההגשות?')) return;
-    await authedUrl('DELETE', SUBS('/' + id));
-    authedUrl('DELETE', DONE('/' + id)).catch(() => {});
-    $('who-' + id).dataset.open = ''; showWho(id); loadStats().catch(() => {});
-  }
-});
-
-async function showLinks(id) {
-  const box = $('who-' + id);
-  if (box.dataset.open === 'links') { box.dataset.open = ''; box.innerHTML = ''; return; }
-  box.dataset.open = 'links';
-  box.innerHTML = '<p class="muted">טוען...</p>';
-  let inv = {};
-  try { inv = (await (await fetch(INV('/' + id), { cache: 'no-store' })).json()) || {}; }
-  catch (e) { box.innerHTML = '<p class="err">לא הצלחתי לטעון. נסה שוב.</p>'; return; }
-  const codes = Object.keys(inv).sort((a, b) => (inv[a].used ? 1 : 0) - (inv[b].used ? 1 : 0));
-  const unsent = codes.filter(c => !inv[c].used && !inv[c].sent).length;
-  const used = codes.filter(c => inv[c].used), freeCodes = codes.filter(c => !inv[c].used);
-  const freeRow = c =>
-    '<div class="linkrow" id="row-' + esc(c) + '" data-sent="' + (inv[c].sent ? '1' : '') + '">' +
-      '<input placeholder="שם העובד (לא חובה)" data-forid="' + id + '" data-forkey="' + esc(c) + '" value="' + esc(inv[c].for || '') + '">' +
-      '<span class="code" dir="ltr">' + esc(c) + '<span class="sent"> ✓</span></span>' +
-      '<span class="acts">' +
-        '<button class="mini" data-list="walink" data-id="' + id + '" data-key="' + esc(c) + '" title="וואטסאפ">💬</button>' +
-        '<button class="mini" data-list="copylink" data-id="' + id + '" data-key="' + esc(c) + '" title="העתקה">' + ICON.copy + '</button>' +
-        '<button class="mini del" data-list="dellink" data-id="' + id + '" data-key="' + esc(c) + '" title="מחיקה">' + ICON.trash + '</button>' +
-      '</span></div>';
-  const usedRow = c =>
-    '<div class="linkrow used"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">🔒 ' +
-      (inv[c].for ? esc(inv[c].for) + ' <span class="muted">(' + esc(inv[c].name || '—') + ')</span>' : esc(inv[c].name || '')) +
-      '</span><span class="code">' + new Date(inv[c].used).toLocaleDateString('he-IL') + '</span>' +
-      '<button class="mini del" data-list="dellink" data-id="' + id + '" data-key="' + esc(c) + '" title="מחיקה">' + ICON.trash + '</button></div>';
-  box.innerHTML = '<div class="item" style="margin-top:12px"><b>קישורים אישיים — כל קישור להגשה אחת</b>' +
-    '<p class="muted">פנויים: ' + freeCodes.length + ' (מתוכם ' + unsent + ' עוד לא נשלחו) · נוצלו: ' + used.length + '</p>' +
-    '<div class="linkrow"><input id="cnt-' + id + '" type="number" min="1" max="50" value="5" style="flex:none;width:80px">' +
-      '<button class="mini" data-list="mklinks" data-id="' + id + '">צור קישורים</button></div>' +
-    freeCodes.map(freeRow).join('') +
-    (used.length ? '<details style="margin-top:10px"><summary>נוצלו (' + used.length + ')</summary>' +
-       used.map(usedRow).join('') + '</details>' : '') +
-    '</div>';
-}
-
-// שעת התחלה וסיום של הגשה; מבחנים ישנים בלי startedAt מציגים רק את שעת הסיום
-function timeSummary(r) {
-  const end = new Date(r.at || 0).toLocaleString('he-IL');
-  if (!r.startedAt) return end;
-  const mins = Math.max(0, Math.round((r.at - r.startedAt) / 60000));
-  return new Date(r.startedAt).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) +
-    ' – ' + end + ' (' + mins + ' דק\')';
-}
-async function showWho(id) {
-  const box = $('who-' + id);
-  if (box.dataset.open === 'who') { box.dataset.open = ''; box.innerHTML = ''; return; }
-  box.dataset.open = 'who';
-  box.innerHTML = '<p class="muted">טוען...</p>';
-  let subs = {};
-  try { subs = (await authedGet(SUBS('/' + id))) || {}; }
-  catch (e) { box.innerHTML = '<p class="err">לא הצלחתי לטעון. נסה שוב.</p>'; return; }
-  const keys = Object.keys(subs).sort((a, b) => (subs[b].at || 0) - (subs[a].at || 0));
-  const mark = { yes: ' ✅', no: ' ❌', open: ' (פתוחה — לבדיקה)' };
-  box.innerHTML = '<div class="item" style="margin-top:12px"><b>הגישו: ' + keys.length + '</b>' +
-    (keys.length ? keys.map(k => {
-      const r = subs[k];
-      const score = r.total ? ' · ' + r.right + '/' + r.total + ' (' + r.pct + '%)' : '';
-      const mailOk = r.mail === 'sent';
-      return '<div class="item" style="margin-top:10px">' +
-        '<div class="opt" style="justify-content:space-between"><b>' + esc(r.name || k) + score + '</b>' +
-        '<button class="mini" data-list="reopen" data-id="' + id + '" data-key="' + esc(k) + '">לאפשר שוב</button></div>' +
-        '<div class="tags">' + (mailOk
-          ? '<span class="tag">המייל נשלח ✓</span>'
-          : '<span class="tag warn">המייל לא נשלח</span>' +
-            '<button class="mini" data-list="resend" data-id="' + id + '" data-key="' + esc(k) + '">📧 שלח שוב</button>') + '</div>' +
-        '<details><summary class="muted" style="font-weight:500">פרטים · ' + timeSummary(r) + '</summary>' +
-        (r.topics || []).map(t => '<div class="muted">· <b>' + esc(t.name) + '</b>: ' +
-          (t.choices ? 'ציון ' + t.right + '/' + t.choices : 'בלי שאלות') +
-          (t.watched ? ' · ' + (t.watched === 1 ? 'הבין אחרי סרטון אחד' : 'נזקק ל-' + t.watched + ' סרטונים') : '') + '</div>').join('') +
-        (r.answers || []).map((a, i) => '<div style="margin-top:8px"><b>' + (i + 1) + '. ' +
-          (a.topic ? '[' + esc(a.topic) + '] ' : '') + esc(a.q) + '</b><br>' + esc(a.a) + (mark[a.ok] || '') + '</div>').join('') +
-        '</details></div>';
+  $('panel').innerHTML = '<h1>מבחנים</h1>' +
+    (ids.length ? '' : '<p class="muted">עוד אין מבחנים.</p>') +
+    ids.map(id => {
+      const q = quizzes[id], mail = q.email || globalEmail;
+      return '<div class="row"><div class="side">' +
+        icon('send', 'send', ' data-id="' + id + '"') + icon('pen', 'edit', ' data-id="' + id + '"') + icon('del', 'delete', ' data-id="' + id + '"') +
+        '</div><div class="box"><div>' + esc(q.title || 'ללא שם') +
+        '<small class="ltr">' + esc(mail || 'לא הוגדר מייל לתוצאות') + '</small></div></div></div>';
     }).join('') +
-      '<button class="mini del" style="margin-top:10px" data-list="reopenall" data-id="' + id + '">איפוס כל ההגשות</button>'
-      : '<p class="muted">עוד אף אחד לא הגיש.</p>') + '</div>';
+    '<button class="btn" data-act="newTest">הוסף מבחן</button>' +
+    '<div class="foot"><span class="muted">גרסה 41 · </span><button data-act="logout">יציאה</button></div>';
 }
 
-$('logout').onclick = () => {
-  if (dirty && !confirm('יש שינויים שלא נשמרו. לצאת בכל זאת?')) return;
-  try { sessionStorage.removeItem('rt'); sessionStorage.removeItem('cred'); } catch (e) {}
-  token = null; quiz = null; dirty = false; quizzes = {}; selected.clear();
-  $('email').value = ''; $('pass').value = ''; $('loginErr').textContent = '';
-  $('list').innerHTML = ''; updateSel();
-  screen('s-login');
-};
-
-$('newQuiz').onclick = () => openQuiz(newId(), null);
-$('back').innerHTML = ICON.back + 'חזרה';
-$('back').onclick = () => {
-  if (dirty && !confirm('יש שינויים שלא נשמרו. לצאת בלי לשמור?')) return;
-  dirty = false; showList();
-};
-
-// ---------- ציור העורך ----------
-function moveBtns(kind, ti, i, n) {
-  const d = ' data-kind="' + kind + '" data-ti="' + ti + '" data-i="' + i + '"';
-  return '<button class="mini" data-act="up"' + d + (i === 0 ? ' disabled' : '') + '>▲</button>' +
-         '<button class="mini" data-act="down"' + d + (i === n - 1 ? ' disabled' : '') + '>▼</button>' +
-         '<button class="mini del" data-act="del"' + d + '>מחיקה</button>';
-}
-function videoBlock(v, ti, i, n) {
-  let h = '<div class="item"><div class="item-head"><b>' +
-    (i === 0 ? 'סרטון ראשי' : 'הסבר נוסף ' + i) + (v.kind === 'file' ? ' · מהגלריה' : ' · מ־Drive') + '</b>' +
-    moveBtns('videos', ti, i, n) + '</div>' +
-    '<label class="f">שם הסרטון</label><input data-kind="videos" data-ti="' + ti + '" data-i="' + i + '" data-f="title" value="' + esc(v.title) + '">';
-  if (v.kind === 'file') {
-    h += v.uploading
-      ? '<div class="prog"><div id="p-' + v._key + '" style="width:' + (v.progress || 0) + '%"></div></div><div class="muted" id="t-' + v._key + '">מעלה... ' + (v.progress || 0) + '%</div>'
-      : v.error
-        ? '<p class="err">ההעלאה נכשלה. <span class="muted">(' + esc(v.errMsg || '') + ')</span></p><button class="mini" data-act="retry" data-ti="' + ti + '" data-i="' + i + '">נסה שוב</button>'
-        : '<p class="muted" style="margin:8px 0 0">✅ הועלה' + (v.size ? ' (' + Math.round(v.size / 1048576) + 'MB)' : '') + '</p>';
-  } else {
-    h += '<label class="f">קישור מ־Drive</label><input data-kind="videos" data-ti="' + ti + '" data-i="' + i + '" data-f="url" dir="ltr" placeholder="https://drive.google.com/file/d/..." value="' + esc(v.url) + '">' +
-      '<label class="f">אם Drive חוסם נגינה ישירה — כמה שניות לחכות</label><input type="number" min="0" data-kind="videos" data-ti="' + ti + '" data-i="' + i + '" data-f="minSeconds" value="' + esc(v.minSeconds == null ? DEFAULT_SECONDS : v.minSeconds) + '">';
-  }
-  return h + '</div>';
-}
-function imageBlock(img, ti, i) {
-  if (!img) return '<button class="mini" style="margin-top:8px" data-act="addimg" data-ti="' + ti + '" data-i="' + i + '">🖼️ הוספת תמונה</button>';
-  if (img.uploading) return '<div class="prog"><div id="pi-' + img._key + '" style="width:' + (img.progress || 0) + '%"></div></div>' +
-    '<div class="muted" id="ti-' + img._key + '">מעלה... ' + (img.progress || 0) + '%</div>';
-  if (img.error) return '<p class="err">העלאת התמונה נכשלה.</p><button class="mini" data-act="retryimg" data-ti="' + ti + '" data-i="' + i + '">נסה שוב</button>' +
-    '<button class="mini del" data-act="delimg" data-ti="' + ti + '" data-i="' + i + '">מחיקה</button>';
-  return '<img src="' + esc(img.url) + '" style="max-width:100%;border-radius:12px;margin-top:8px;display:block">' +
-    '<button class="mini del" style="margin-top:8px" data-act="delimg" data-ti="' + ti + '" data-i="' + i + '">מחיקת תמונה</button>';
-}
-function questionBlock(q, ti, i, n) {
-  let h = '<div class="item"><div class="item-head"><b>שאלה ' + (i + 1) + ' · ' + (q.type === 'choice' ? 'אמריקאית' : 'פתוחה') + '</b>' +
-    moveBtns('questions', ti, i, n) + '</div>' +
-    '<textarea data-kind="questions" data-ti="' + ti + '" data-i="' + i + '" data-f="text" placeholder="נוסח השאלה">' + esc(q.text) + '</textarea>';
-  h += imageBlock(q.image, ti, i);
-  if (q.type === 'choice') {
-    h += '<p class="muted" style="margin:8px 0 0">סמן את התשובה הנכונה בעיגול:</p>';
-    h += q.options.map((o, j) =>
-      '<div class="opt"><input type="radio" name="c' + ti + '_' + i + '" data-correct="' + ti + '_' + i + '" value="' + (j + 1) + '"' + (q.correct === j + 1 ? ' checked' : '') + '>' +
-      '<input type="text" data-opt="' + ti + '_' + i + '" data-j="' + j + '" placeholder="תשובה ' + (j + 1) + '" value="' + esc(o) + '">' +
-      (q.options.length > 2 ? '<button class="mini del" data-act="delopt" data-ti="' + ti + '" data-i="' + i + '" data-j="' + j + '">✕</button>' : '') + '</div>').join('');
-    h += '<button class="mini" style="margin-top:8px" data-act="addopt" data-ti="' + ti + '" data-i="' + i + '">+ תשובה</button>';
-  }
-  return h + '</div>';
-}
-function render() {
-  $('addTopic').classList.toggle('hidden', openTopicIdx !== null || quiz.master);
-  if (quiz.master) {
-    $('topics').innerHTML = '<p class="muted">מחושב אוטומטית מכל המבחנים בקטגוריה "' + esc(quiz.category || 'ללא קטגוריה') +
-      '" — לעריכת תוכן, היכנס למבחן המקורי שלו.</p>' +
-      (quiz.topics.length
-        ? quiz.topics.map(t =>
-            '<div class="topicrow" style="cursor:default">' +
-              '<span class="topicrow-edit">✎</span>' +
-              '<span class="topicrow-name">' + (esc(t.name) || 'נושא') + '</span>' +
-              '<span class="topicrow-meta">' + esc(t._src) + '</span>' +
-            '</div>').join('')
-        : '<p class="muted">אין עדיין שום נושא בקטגוריה הזאת באף מבחן אחר.</p>');
-    return;
-  }
-  if (openTopicIdx === null) {
-    $('topics').innerHTML = quiz.topics.length
-      ? quiz.topics.map((t, ti) =>
-          '<div class="topicrow" data-act="opentopic" data-ti="' + ti + '">' +
-            '<span class="topicrow-edit">✎</span>' +
-            '<span class="topicrow-name">' + (esc(t.name) || 'נושא ' + (ti + 1)) + '</span>' +
-            '<span class="topicrow-meta">' + t.videos.length + ' סרטונים · ' + t.questions.length + ' שאלות</span>' +
-          '</div>').join('')
-      : '<p class="muted">אין עדיין נושאים. "+ נושא חדש" למטה.</p>';
-    return;
-  }
-  const ti = openTopicIdx, t = quiz.topics[ti];
-  $('topics').innerHTML =
-    '<div class="crumb2"><button class="mini" data-act="backtopics">‹ נושאים</button><b>' + (esc(t.name) || 'נושא ' + (ti + 1)) + '</b></div>' +
-    '<div class="topic"><div class="item-head"><span class="num">' + (ti + 1) + '</span><b>נושא</b>' +
-      '<button class="mini" data-act="tup" data-ti="' + ti + '"' + (ti === 0 ? ' disabled' : '') + '>▲</button>' +
-      '<button class="mini" data-act="tdown" data-ti="' + ti + '"' + (ti === quiz.topics.length - 1 ? ' disabled' : '') + '>▼</button>' +
-      '<button class="mini del" data-act="tdel" data-ti="' + ti + '">מחיקת הנושא</button></div>' +
-    '<label class="f">שם הנושא (למשל: ריצוף)</label><input data-topicname="' + ti + '" value="' + esc(t.name) + '">' +
-    '<div class="sub">סרטונים — הראשון הוא ההסבר הראשי</div>' +
-    (t.videos.length ? t.videos.map((v, i) => videoBlock(v, ti, i, t.videos.length)).join('') : '<p class="muted">אין סרטונים בנושא.</p>') +
-    '<button class="full" data-act="addfiles" data-ti="' + ti + '">📱 העלאה מהגלריה</button>' +
-    '<button class="full ghost" data-act="adddrive" data-ti="' + ti + '">+ סרטון מקישור Drive</button>' +
-    '<div class="sub">שאלות על הנושא</div>' +
-    (t.questions.length ? t.questions.map((q, i) => questionBlock(q, ti, i, t.questions.length)).join('') : '<p class="muted">אין שאלות בנושא.</p>') +
-    '<button class="full ghost" data-act="addchoice" data-ti="' + ti + '">+ שאלה אמריקאית</button>' +
-    '<button class="full ghost" data-act="addopen" data-ti="' + ti + '">+ שאלה פתוחה</button>' +
-    '</div>';
+// ---------- דף 2: קטגוריות ----------
+function renderCats() {
+  topbar(draftSub(), 'לכל המבחנים', 'toTests');
+  const list = cats();
+  $('panel').innerHTML = '<h1>קטגוריות <span class="ch">‹</span></h1>' + selSummary() +
+    (list.length ? '' : '<p class="muted">הקטלוג ריק.</p><button class="btn ghost" data-act="seed">טעינת הקטלוג הראשוני</button>') +
+    list.map(([cid, c]) => '<div class="row"><div class="side">' + icon('pen', 'renameCat', ' data-cid="' + cid + '"') +
+      '</div><button class="box" data-act="openCat" data-cid="' + cid + '"><div>' + esc(c.name) +
+      '<small>' + countIn(cid) + '</small></div></button></div>').join('') +
+    '<button class="btn ghost" data-act="addCat">הוסף</button>' + buildButtons();
 }
 
-// ---------- עריכה ----------
-document.addEventListener('input', e => {
-  const t = e.target, d = t.dataset;
-  if (d.topicname != null) quiz.topics[+d.topicname].name = t.value;
-  else if (d.kind && d.f) quiz.topics[+d.ti][d.kind][+d.i][d.f] = t.type === 'number' ? (t.value === '' ? 0 : +t.value) : t.value;
-  else if (d.opt != null) { const [ti, i] = d.opt.split('_'); quiz.topics[+ti].questions[+i].options[+d.j] = t.value; }
-  else if (d.correct != null) { const [ti, i] = d.correct.split('_'); quiz.topics[+ti].questions[+i].correct = +t.value; }
-  else if (t.id === 'title') { quiz.title = t.value; $('crumb').textContent = t.value; }
-  else if (t.id === 'category') quiz.category = t.value;
-  else return;
-  dirty = true; status('יש שינויים שלא נשמרו');
-});
-document.addEventListener('change', e => {
-  if (e.target.id === 'qMode') { quiz.qMode = e.target.value; dirty = true; status('יש שינויים שלא נשמרו'); return; }
-  if (e.target.id === 'master') {
-    quiz.master = e.target.checked;
-    if (quiz.master) quiz.topics = computeMasterTopics(quiz.category, quizId);
-    openTopicIdx = null;
-    dirty = true; status('יש שינויים שלא נשמרו'); render(); return;
-  }
-  const d = e.target.dataset;
-  if (!d.forid) return;
-  authedUrl('PATCH', INV('/' + d.forid + '/' + encodeURIComponent(d.forkey)), { for: e.target.value.trim() })
-    .catch(() => alert('השם לא נשמר. בדוק אינטרנט ונסה שוב.'));
-});
-document.addEventListener('click', e => {
-  const el = e.target.closest('[data-act]');
-  if (!el) return;
-  const d = el.dataset;
+// ---------- דף 3: תת־קטגוריות ----------
+function renderSubs() {
+  topbar(draftSub(), 'לכל המבחנים', 'toTests');
+  $('panel').innerHTML = '<h1><a data-act="toCats">קטגוריות</a> <span class="ch">‹</span> ' + esc(catName(curCat)) + ' <span class="ch">‹</span></h1>' +
+    selSummary() +
+    subs(curCat).map(([sid, s]) => '<div class="row"><div class="side">' + icon('pen', 'renameSub', ' data-sid="' + sid + '"') +
+      '</div><button class="box" data-act="openSub" data-sid="' + sid + '"><div>' + esc(s.name) +
+      '<small>' + countIn(curCat, sid) + '</small></div></button></div>').join('') +
+    '<button class="btn ghost" data-act="addSub">הוסף</button>' + buildButtons();
+}
+
+// ---------- דף 3א: הסרטונים והשאלות של תת־קטגוריה ----------
+function itemRow(key, tag, text, extra, playUrl) {
+  const on = draft && draft.items.includes(key);
+  const side = (draft ? '<span class="chk' + (on ? ' on' : '') + '"></span>' : '') +
+               (playUrl ? '<a class="ic" href="' + esc(playUrl) + '" target="_blank" rel="noopener"><svg><use href="#i-play"/></svg></a>' : '');
+  return '<div class="row"><div class="side">' + side + '</div>' +
+    '<button class="box' + (on ? ' on' : '') + '" data-act="item" data-key="' + key + '"><span class="tag">' + tag + '</span><div>' +
+    esc(text) + (extra || '') + '</div></button></div>';
+}
+function renderItems() {
+  topbar(draftSub(), 'לכל המבחנים', 'toTests');
+  const vids = videosIn(curCat, curSub);
+  $('panel').innerHTML = '<h1><a data-act="toCats">קטגוריות</a> <span class="ch">‹</span> <a data-act="toSubs">' +
+    esc(catName(curCat)) + '</a> <span class="ch">‹</span> ' + esc(subName(curCat, curSub)) + '</h1>' + selSummary() +
+    (vids.length ? '' : '<p class="muted">אין עדיין סרטונים בתת־קטגוריה הזו.</p>') +
+    vids.map(([vid, v]) => '<div class="group">' + esc(v.title) + '</div>' +
+      itemRow('v:' + vid, 'סרטון', v.title, v.duration ? '<small>' + fmtDur(v.duration) + ' דקות</small>' : '', v.url) +
+      questionsOf(vid).map(([qid, q]) => {
+        const key = 'q:' + qid;
+        const opts = !draft && expanded.has(key)
+          ? (q.type === 'choice'
+              ? '<ol class="opts">' + q.options.map((o, i) => '<li' + (i === q.correct - 1 ? ' class="ok"' : '') + '>' + esc(o) + (i === q.correct - 1 ? ' ✓' : '') + '</li>').join('') + '</ol>'
+              : '<p class="opts muted">שאלה פתוחה — העובד כותב תשובה חופשית.</p>')
+          : '';
+        return itemRow(key, q.type === 'choice' ? 'אמריקאית' : 'פתוחה', q.text, opts);
+      }).join('')).join('') +
+    (draft && vids.length ? '<button class="btn ghost" data-act="pickAll">סמן את כל מה שבתת־קטגוריה</button>' : '') +
+    buildButtons() +
+    (draft ? '<button class="btn ghost" data-act="toCats">הוסף שאלות מקטגוריה אחרת</button>' : '');
+}
+
+// ---------- סידור המבחן ושמירה ----------
+function renderOrder() {
+  topbar(draftSub(), 'לכל המבחנים', 'toTests');
+  $('panel').innerHTML = '<h1>סידור המבחן</h1>' +
+    '<label class="f">שם המבחן</label><input class="field" id="dTitle" value="' + esc(draft.title) + '" placeholder="למשל: מבחן ריצוף — עובדים חדשים">' +
+    '<div class="group">הסדר שהעובד יראה</div><div id="orderList">' +
+    draft.items.map(key => {
+      const it = itemOf(key);
+      if (!it) return '';
+      return '<div class="row" data-key="' + key + '"><div class="side"><span class="drag" data-drag>☰</span></div>' +
+        '<div class="box"><span class="tag">' + (it.k === 'v' ? 'סרטון' : it.type === 'choice' ? 'אמריקאית' : 'פתוחה') + '</span><div>' +
+        esc(it.k === 'v' ? it.title : it.text) + '<small>' + esc(it.cat + ' ‹ ' + it.sub) + '</small></div></div></div>';
+    }).join('') + '</div>' +
+    '<p class="muted">גוררים בסימן ☰ כדי לשנות סדר.</p>' +
+    '<label class="f">מייל לתוצאות</label><input class="field ltr" id="dEmail" type="email" value="' + esc(draft.email) + '" placeholder="name@example.com">' +
+    '<p class="err" id="saveErr"></p>' +
+    '<button class="btn" data-act="save">שמירת המבחן</button>' +
+    '<button class="btn ghost" data-act="toCats">חזרה לבחירת שאלות</button>';
+  $('dTitle').oninput = e => { draft.title = e.target.value; $('tbSub').textContent = draftSub(); };
+  $('dEmail').oninput = e => { draft.email = e.target.value.trim(); };
+}
+
+// גרירה לשינוי סדר. עובד באצבע ובעכבר; גלילה אוטומטית ליד קצה המסך.
+function startDrag(e, row) {
   e.preventDefault();
-  const ti = +d.ti, i = +d.i;
-  const T = quiz.topics[ti];
-  if (d.act === 'opentopic') { openTopicIdx = ti; render(); return; }
-  else if (d.act === 'backtopics') { openTopicIdx = null; render(); return; }
-  else if (d.act === 'tup') { [quiz.topics[ti - 1], quiz.topics[ti]] = [quiz.topics[ti], quiz.topics[ti - 1]]; }
-  else if (d.act === 'tdown') { [quiz.topics[ti + 1], quiz.topics[ti]] = [quiz.topics[ti], quiz.topics[ti + 1]]; }
-  else if (d.act === 'tdel') {
-    if (!confirm('למחוק את הנושא על כל הסרטונים והשאלות שלו?')) return;
-    T.videos.forEach(v => { if (v.path) { if (v.uploading) v.cancelled = true; else pendingDeletes.push(v.path); } });
-    quiz.topics.splice(ti, 1);
-    openTopicIdx = null;
-    if (!quiz.topics.length) quiz.topics.push({ name: '', videos: [], questions: [] });
-  }
-  else if (d.act === 'up') { const L = T[d.kind]; [L[i - 1], L[i]] = [L[i], L[i - 1]]; }
-  else if (d.act === 'down') { const L = T[d.kind]; [L[i + 1], L[i]] = [L[i], L[i + 1]]; }
-  else if (d.act === 'del') {
-    if (!confirm('למחוק?')) return;
-    const [gone] = T[d.kind].splice(i, 1);
-    if (gone && gone.path) { if (gone.uploading) gone.cancelled = true; else pendingDeletes.push(gone.path); }
-  }
-  else if (d.act === 'retry') { uploadVideo(T.videos[i]); return; }
-  else if (d.act === 'addopt') T.questions[i].options.push('');
-  else if (d.act === 'delopt') {
-    const q = T.questions[i], j = +d.j;
-    q.options.splice(j, 1);
-    if (q.correct === j + 1) q.correct = 0; else if (q.correct > j + 1) q.correct--;
-  }
-  else if (d.act === 'adddrive') T.videos.push({ kind: 'drive', _key: newId(), title: '', url: '', minSeconds: DEFAULT_SECONDS });
-  else if (d.act === 'addchoice') T.questions.push({ type: 'choice', text: '', options: ['', '', '', ''], correct: 0 });
-  else if (d.act === 'addopen') T.questions.push({ type: 'open', text: '' });
-  else if (d.act === 'addfiles') { $('pick').dataset.ti = ti; $('pick').click(); return; }
-  else if (d.act === 'addimg') { $('pickImg').dataset.ti = ti; $('pickImg').dataset.i = i; $('pickImg').click(); return; }
-  else if (d.act === 'retryimg') { uploadImage(T.questions[i]); return; }
-  else if (d.act === 'delimg') {
-    const img = T.questions[i].image;
-    if (img && img.path) { if (img.uploading) img.cancelled = true; else pendingDeletes.push(img.path); }
-    delete T.questions[i].image;
-  }
-  dirty = true; status('יש שינויים שלא נשמרו'); render();
-});
-$('addTopic').onclick = () => { quiz.topics.push({ name: '', videos: [], questions: [] }); openTopicIdx = quiz.topics.length - 1; dirty = true; render(); };
-
-// ---------- העלאת סרטונים ----------
-$('pick').onchange = async () => {
-  const ti = +$('pick').dataset.ti;
-  const picked = Array.from($('pick').files);
-  $('pick').value = '';
-  const BIG = 200 * 1024 * 1024;
-  const heavy = picked.filter(f => f.size > BIG);
-  if (heavy.length && !confirm('שים לב: ' + heavy.length + ' מהסרטונים כבדים מ-200MB (' +
-      heavy.map(f => Math.round(f.size / 1048576) + 'MB').join(', ') + ').\n' +
-      'סרטונים כבדים אוכלים מהנפח החינמי ונטענים לאט אצל העובד. ' +
-      'אפשר להקליט ב-720p במקום 4K ולקבל קובץ קטן בהרבה.\n\nלהעלות בכל זאת?')) { return; }
-  const items = picked.map(f => {
-    const v = { kind: 'file', _key: newId(), title: f.name.replace(/\.[^.]+$/, ''), url: '', size: f.size,
-                path: 'videos/' + Date.now() + '-' + newId() + (f.name.match(/\.[\w]+$/) || ['.mp4'])[0].toLowerCase() };
-    files.set(v._key, f);
-    quiz.topics[ti].videos.push(v);
-    return v;
-  });
-  dirty = true; render();
-  for (const v of items) await uploadVideo(v);
-};
-
-// ---------- תמונות בשאלות ----------
-$('pickImg').onchange = async () => {
-  const ti = +$('pickImg').dataset.ti, i = +$('pickImg').dataset.i;
-  const f = $('pickImg').files[0];
-  $('pickImg').value = '';
-  if (!f) return;
-  const img = { _key: newId(), url: '', path: 'images/' + Date.now() + '-' + newId() + (f.name.match(/\.[\w]+$/) || ['.jpg'])[0].toLowerCase() };
-  files.set(img._key, f);
-  quiz.topics[ti].questions[i].image = img;
-  dirty = true; render();
-  await uploadImage(quiz.topics[ti].questions[i]);
-};
-async function uploadImage(q) {
-  const img = q.image;
-  const file = files.get(img._key);
-  if (!file) return;
-  img.uploading = true; img.error = false; img.progress = 10; render();
-  try {
-    const type = file.type || 'image/jpeg';
-    const start = await storageFetch(STORAGE + '?name=' + encodeURIComponent(img.path), {
-      method: 'POST',
-      headers: { 'X-Goog-Upload-Protocol': 'resumable', 'X-Goog-Upload-Command': 'start',
-                 'X-Goog-Upload-Header-Content-Length': String(file.size), 'X-Goog-Upload-Header-Content-Type': type,
-                 'Content-Type': 'application/json; charset=utf-8' },
-      body: JSON.stringify({ name: img.path, contentType: type }),
-    });
-    const uploadUrl = start.headers.get('X-Goog-Upload-URL');
-    if (!start.ok || !uploadUrl) throw new Error('start ' + start.status);
-    img.progress = 60; render();
-    const res = await storageFetch(uploadUrl, {
-      method: 'POST',
-      headers: { 'X-Goog-Upload-Command': 'upload, finalize', 'X-Goog-Upload-Offset': '0' },
-      body: file,
-    });
-    if (!res.ok) throw new Error('upload ' + res.status);
-    const result = await res.json();
-    if (img.cancelled) { files.delete(img._key); deleteFile(img.path); return; }
-    img.url = STORAGE + '/' + encodeURIComponent(img.path) + '?alt=media&token=' + result.downloadTokens;
-    img.uploading = false; img.progress = 100; files.delete(img._key);
-  } catch (e) {
-    img.uploading = false; img.error = true;
-  }
-  render();
-  if (!img.uploading && !img.error) status('התמונה הועלתה — לחץ שמירה', 'ok');
-}
-function showProgress(v) {
-  const bar = $('p-' + v._key), txt = $('t-' + v._key);
-  if (bar) bar.style.width = v.progress + '%';
-  if (txt) txt.textContent = 'מעלה... ' + v.progress + '%';
-}
-async function storageFetch(url, opts) {
-  const go = () => {
-    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 90000);
-    return fetch(url, Object.assign({}, opts, { signal: ctl.signal, headers: Object.assign({ Authorization: 'Firebase ' + token }, opts.headers) }))
-      .finally(() => clearTimeout(timer));
+  const list = $('orderList');
+  row.classList.add('dragging');
+  let lastY = e.clientY, timer = null;
+  const place = y => {
+    const others = [...list.children].filter(r => r !== row);
+    const before = others.find(r => { const b = r.getBoundingClientRect(); return y < b.top + b.height / 2; });
+    if (before) list.insertBefore(row, before); else list.appendChild(row);
   };
-  let res = await go();
-  if (res.status === 401) { await relogin(); res = await go(); }
-  return res;
+  const move = ev => { lastY = ev.clientY; place(lastY); };
+  timer = setInterval(() => {
+    if (lastY < 90) scrollBy(0, -12); else if (lastY > innerHeight - 60) scrollBy(0, 12); else return;
+    place(lastY);
+  }, 30);
+  const up = () => {
+    clearInterval(timer);
+    removeEventListener('pointermove', move); removeEventListener('pointerup', up); removeEventListener('pointercancel', up);
+    row.classList.remove('dragging');
+    draft.items = [...list.children].map(r => r.dataset.key);
+  };
+  addEventListener('pointermove', move); addEventListener('pointerup', up); addEventListener('pointercancel', up);
 }
-const anyUploading = () => quiz.topics.some(t => t.videos.some(v => v.uploading));
-const anyError = () => quiz.topics.some(t => t.videos.some(v => v.error));
-async function uploadVideo(v) {
-  const file = files.get(v._key);
-  if (!file) return;
-  v.uploading = true; v.error = false; v.progress = 0; render();
+$('panel').addEventListener('pointerdown', e => {
+  const h = e.target.closest('[data-drag]');
+  if (h) startDrag(e, h.closest('.row'));
+});
+
+// סימון פריט. סדר ברירת מחדל: סרטון לפני השאלות שלו, שאלה אחרי הסרטון שלה.
+function toggleItem(key) {
+  const i = draft.items.indexOf(key);
+  if (i > -1) { draft.items.splice(i, 1); return; }
+  const id = key.slice(2), vid = key[0] === 'v' ? id : (catalog.questions[id] || {}).video;
+  const mine = k => k === 'v:' + vid || (k[0] === 'q' && (catalog.questions[k.slice(2)] || {}).video === vid);
+  if (key[0] === 'v') {
+    const first = draft.items.findIndex(mine);
+    if (first > -1) return draft.items.splice(first, 0, key);
+  } else {
+    let last = -1; draft.items.forEach((k, j) => { if (mine(k)) last = j; });
+    if (last > -1) return draft.items.splice(last + 1, 0, key);
+  }
+  draft.items.push(key);
+}
+
+function startDraft(id) {
+  const q = id ? quizzes[id] : null;
+  const items = q ? (q.items || []) : [];
+  draft = { id: id || null, title: q ? q.title || '' : '', email: q ? q.email || globalEmail : globalEmail,
+            items: items.map(it => it.key).filter(Boolean), snap: {} };
+  items.forEach(it => { if (it.key) draft.snap[it.key] = it; });
+}
+function leaveDraft() {
+  if (!draft) return true;
+  const was = draft.id ? quizzes[draft.id] : null;
+  const same = was && JSON.stringify((was.items || []).map(i => i.key)) === JSON.stringify(draft.items) && was.title === draft.title;
+  if (!same && (draft.items.length || draft.title) && !confirm('לצאת בלי לשמור את המבחן?')) return false;
+  draft = null;
+  return true;
+}
+
+async function save() {
+  const err = m => { $('saveErr').textContent = m; };
+  draft.title = $('dTitle').value.trim(); draft.email = $('dEmail').value.trim();
+  if (!draft.title) return err('צריך שם למבחן.');
+  const items = draft.items.map(itemOf).filter(Boolean);
+  if (!items.some(i => i.k === 'q')) return err('צריך לפחות שאלה אחת.');
+  if (!validEmail(draft.email)) return err('צריך מייל תקין לתוצאות.');
+  const id = draft.id || newId();
+  const quiz = { v: 2, title: draft.title, email: draft.email, updated: Date.now(), items };
+  try { await api('PUT', '/quizzes/' + id, quiz); } catch (e) { return err('השמירה נכשלה. בדוק אינטרנט ונסה שוב.'); }
+  if (!globalEmail) api('PUT', '/settings/resultsEmail', draft.email).then(() => { globalEmail = draft.email; }).catch(() => {});
+  quizzes[id] = quiz; draft = null;
+  go('tests');
+}
+
+// שליחה בלחיצה אחת: קישור אישי חד־פעמי חדש + וואטסאפ עם הטקסט מוכן
+async function send(id) {
+  const q = quizzes[id];
+  if (!(q.items || q.topics || []).length) return alert('המבחן ריק. ערוך אותו קודם.');
+  if (!validEmail(q.email || globalEmail)) return alert('אין מייל לתוצאות. ערוך את המבחן והוסף מייל.');
+  const code = newCode();
+  try { await api('PATCH', '/invites/' + id, { [code]: { created: Date.now(), sent: Date.now() } }); }
+  catch (e) { return alert('היצירה נכשלה. בדוק אינטרנט ונסה שוב.'); }
+  open('https://wa.me/?text=' + encodeURIComponent(q.title + '\n' + inviteLink(id, code)), '_blank');
+}
+async function del(id) {
+  if (!confirm('למחוק את "' + quizzes[id].title + '"? הקישורים שלו יפסיקו לעבוד, וההגשות שלו יימחקו.')) return;
+  try { await api('DELETE', '/quizzes/' + id); } catch (e) { return alert('המחיקה נכשלה. נסה שוב.'); }
+  ['/submissions/', '/invites/', '/done/'].forEach(p => api('DELETE', p + id).catch(() => {}));
+  delete quizzes[id]; renderTests();
+}
+
+async function rename(path, current, label) {
+  const name = (prompt(label, current) || '').trim();
+  if (!name || name === current) return null;
+  try { await api('PATCH', path, { name }); return name; } catch (e) { alert('השמירה נכשלה. נסה שוב.'); return null; }
+}
+async function addNode(path, label) {
+  const name = (prompt(label) || '').trim();
+  if (!name) return null;
+  const node = { name, order: Date.now() };
+  try { await api('PUT', path, node); return node; } catch (e) { alert('השמירה נכשלה. נסה שוב.'); return null; }
+}
+async function seed() {
   try {
-    const type = file.type || 'video/mp4';
-    const start = await storageFetch(STORAGE + '?name=' + encodeURIComponent(v.path), {
-      method: 'POST',
-      headers: { 'X-Goog-Upload-Protocol': 'resumable', 'X-Goog-Upload-Command': 'start',
-                 'X-Goog-Upload-Header-Content-Length': String(file.size), 'X-Goog-Upload-Header-Content-Type': type,
-                 'Content-Type': 'application/json; charset=utf-8' },
-      body: JSON.stringify({ name: v.path, contentType: type }),
-    });
-    const uploadUrl = start.headers.get('X-Goog-Upload-URL');
-    if (!start.ok || !uploadUrl) throw new Error('start ' + start.status);
-    let offset = 0, fails = 0, result = null;
-    while (!result) {
-      if (v.cancelled) return;
-      const end = Math.min(offset + CHUNK, file.size), last = end === file.size;
-      try {
-        const res = await storageFetch(uploadUrl, {
-          method: 'POST',
-          headers: { 'X-Goog-Upload-Command': last ? 'upload, finalize' : 'upload', 'X-Goog-Upload-Offset': String(offset) },
-          body: file.slice(offset, end),
-        });
-        if (!res.ok) throw new Error('chunk ' + res.status);
-        if (last) result = await res.json();
-        offset = end; fails = 0;
-      } catch (err) {
-        if (++fails > 6) throw err;
-        await new Promise(r => setTimeout(r, 1000 * 2 ** fails));
-        const q = await storageFetch(uploadUrl, { method: 'POST', headers: { 'X-Goog-Upload-Command': 'query' } }).catch(() => null);
-        const got = q && q.headers.get('X-Goog-Upload-Size-Received');
-        if (got != null) offset = +got;
-      }
-      v.progress = Math.floor(offset / file.size * 100); showProgress(v);
-    }
-    v.url = STORAGE + '/' + encodeURIComponent(v.path) + '?alt=media&token=' + result.downloadTokens;
-    v.uploading = false; files.delete(v._key);
-    if (v.cancelled) deleteFile(v.path);
-  } catch (e) {
-    v.uploading = false; v.error = true; v.errMsg = e.message || String(e);
-  }
-  render();
-  if (!anyUploading()) status(anyError() ? 'חלק מההעלאות נכשלו' : 'ההעלאה הסתיימה — לחץ שמירה', anyError() ? 'err' : 'ok');
-}
-function deleteFile(path) {
-  return storageFetch(STORAGE + '/' + encodeURIComponent(path), { method: 'DELETE' })
-    .then(res => !res || res.ok || res.status === 404)
-    .catch(() => false);
-}
-// סרטון נמחק מהאחסון רק אם אף מבחן ואף פריט במאגר לא מצביע עליו
-function deleteUnused(paths) {
-  const used = new Set();
-  Object.values(quizzes).forEach(q => (q.topics || []).forEach(t => (t.videos || []).forEach(v => v.path && used.add(v.path))));
-  if (quiz) quiz.topics.forEach(t => t.videos.forEach(v => v.path && used.add(v.path)));
-  Object.values(library.videos || {}).forEach(v => { if (v.path && !v.archived) used.add(v.path); });
-  const todo = paths.filter(p => !used.has(p));
-  if (!todo.length) return;
-  // כשל במחיקה לא נבלע: הקובץ נשאר ותופס מכסה, וצריך לדעת עליו
-  Promise.all(todo.map(deleteFile)).then(ok => {
-    const failed = ok.filter(x => !x).length;
-    if (failed) status('שים לב: ' + failed + ' קובצי סרטון לא נמחקו מהאחסון. הם תופסים מכסה.', 'err');
-  });
-}
-
-// ---------- בדיקה ושמירה ----------
-function validate() {
-  if (quiz.master) return null;   // אין לו תוכן משלו לבדוק — הוא מחושב מהמבחנים בקטגוריה
-  let questions = 0;
-  for (let ti = 0; ti < quiz.topics.length; ti++) {
-    const t = quiz.topics[ti], where = 'בנושא ' + (ti + 1) + (t.name ? ' (' + t.name + ')' : '');
-    if (!t.name.trim() && quiz.topics.length > 1) return 'לנושא ' + (ti + 1) + ' חסר שם.';
-    for (let i = 0; i < t.videos.length; i++) {
-      const v = t.videos[i];
-      if (!v.title.trim()) return 'לסרטון ' + (i + 1) + ' ' + where + ' חסר שם.';
-      if (v.uploading) return 'חכה שההעלאה של סרטון ' + (i + 1) + ' ' + where + ' תסתיים.';
-      if (v.error) return 'ההעלאה של סרטון ' + (i + 1) + ' ' + where + ' נכשלה — נסה שוב או מחק אותו.';
-      if (v.kind === 'file') continue;
-      if (!/drive\.google\.com\/(file\/d\/|open\?id=)[\w-]+/.test(v.url)) return 'הקישור של סרטון ' + (i + 1) + ' ' + where + ' הוא לא קישור Drive תקין.';
-    }
-    for (let i = 0; i < t.questions.length; i++) {
-      const q = t.questions[i];
-      questions++;
-      if (!q.text.trim()) return 'לשאלה ' + (i + 1) + ' ' + where + ' חסר נוסח.';
-      if (q.image && q.image.uploading) return 'חכה שהעלאת התמונה לשאלה ' + (i + 1) + ' ' + where + ' תסתיים.';
-      if (q.image && q.image.error) return 'העלאת התמונה לשאלה ' + (i + 1) + ' ' + where + ' נכשלה — נסה שוב או מחק אותה.';
-      if (q.type === 'choice') {
-        if (q.options.some(o => !o.trim())) return 'בשאלה ' + (i + 1) + ' ' + where + ' יש תשובה ריקה.';
-        if (!(q.correct >= 1 && q.correct <= q.options.length)) return 'בשאלה ' + (i + 1) + ' ' + where + ' לא סומנה תשובה נכונה.';
-      }
-    }
-  }
-  if (!questions) return 'צריך לפחות שאלה אחת.';
-  return null;
-}
-$('save').onclick = async () => {
-  const problem = validate();
-  if (problem) { status(problem, 'err'); return; }
-  $('save').disabled = true; status('שומר...');
-  try {
-    // מבחן מאסטר לא שומר תוכן משלו — הנושאים שלו מחושבים מחדש בכל פתיחה ובכל שליחה לעובד
-    const clean = { title: quiz.title, category: quiz.category.trim(), qMode: quiz.qMode, master: !!quiz.master, updated: Date.now(),
-      topics: quiz.master ? [] : quiz.topics.map(t => ({
-        name: t.name,
-        videos: t.videos.map(v => {
-          const o = { kind: v.kind, title: v.title, url: v.url };
-          if (v.kind === 'file') { o.path = v.path; o.size = v.size; } else o.minSeconds = v.minSeconds;
-          return o;
-        }),
-        questions: t.questions.map(x => {
-          // מזהה קבוע לשאלה: נקבע פעם אחת, ולכן שינוי נוסח מעדכן את אותו פריט במאגר
-          if (!x.qid) x.qid = hash(String(x.text || '').trim());
-          return JSON.parse(JSON.stringify(x));
-        }),
-      })) };
-    await authedUrl('PUT', DB('/' + quizId), clean);
-    quizzes[quizId] = clean;
-    deleteUnused(pendingDeletes); pendingDeletes = [];
-    dirty = false; status('נשמר ✅ העובדים יראו את הגרסה החדשה מיד.', 'ok');
-    // המאגר הוא שלב נפרד, עם מצב משלו — כשל בו לא מסתיר את זה שהמבחן נשמר
-    try { await saveToLibrary(clean); pendingLib = null; }
-    catch (e2) {
-      pendingLib = clean;
-      $('status').className = 'err';
-      $('status').innerHTML = 'המבחן נשמר ✅ — אבל ההכנסה למאגר נכשלה. <button class="mini" id="libRetry">נסה שוב</button>';
-    }
-  } catch (e) {
-    status('השמירה נכשלה. בדוק אינטרנט ונסה שוב.', 'err');
-  }
-  $('save').disabled = false;
-};
-// כל שאלה וכל סרטון נכנסים למאגר בשמירה. עריכה מעדכנת את אותו פריט.
-async function saveToLibrary(q) {
-  const vids = {}, qs = {};
-  q.topics.forEach(t => {
-    t.videos.forEach(v => { if (v.url) vids[hash(v.path || v.url)] = Object.assign({}, v, { topic: t.name || '', quiz: q.title, at: Date.now() }); });
-    t.questions.forEach(x => { if (x.text.trim()) qs[x.qid || hash(x.text.trim())] = Object.assign({}, x, { topic: t.name || '', quiz: q.title, at: Date.now() }); });
-  });
-  if (Object.keys(vids).length) { await authedUrl('PATCH', LIB('/videos'), vids); Object.assign(library.videos, vids); }
-  if (Object.keys(qs).length) { await authedUrl('PATCH', LIB('/questions'), qs); Object.assign(library.questions, qs); }
+    const data = await (await fetch('catalog.json?v=' + Date.now())).json();
+    if (Object.keys(catalog.cats || {}).length) return;
+    await api('PUT', '/library/catalog', data);
+    catalog = Object.assign({ cats: {}, videos: {}, questions: {} }, data);
+    renderCats();
+  } catch (e) { alert('הטעינה נכשלה. בדוק אינטרנט ונסה שוב.'); }
 }
 
 document.addEventListener('click', async e => {
-  if (e.target.id !== 'libRetry' || !pendingLib) return;
-  e.target.disabled = true; e.target.textContent = 'שולח...';
-  try { await saveToLibrary(pendingLib); pendingLib = null; status('נכנס למאגר ✅', 'ok'); }
-  catch (err) { e.target.disabled = false; e.target.textContent = 'נסה שוב'; }
-});
-
-// ---------- ייבוא מבחנים ----------
-// פורמט טקסט פשוט, כדי שאפשר יהיה להכין 500 שאלות בחוץ ולהכניס אותן בלחיצה אחת.
-function parseImport(text) {
-  const out = [], errors = [];
-  const t = text.trim();
-  if (!t) { errors.push('אין תוכן.'); return { quizzes: out, errors: errors }; }
-
-  // קובץ גיבוי או JSON של מבחנים
-  if (t[0] === '{' || t[0] === '[') {
-    let data;
-    try { data = JSON.parse(t); } catch (e) { errors.push('הקובץ לא JSON תקין.'); return { quizzes: out, errors: errors }; }
-    const src = Array.isArray(data) ? data : (data.quizzes || data);
-    const list = Array.isArray(src) ? src : Object.values(src || {});
-    list.forEach(q => {
-      if (!q || !q.title) return;
-      const n = normalize(JSON.parse(JSON.stringify(q)));
-      out.push({ title: String(q.title), category: String(q.category || '').trim(),
-        qMode: q.qMode === 'topic' ? 'topic' : 'end', topics: n.topics });
-    });
-    if (!out.length) errors.push('לא נמצאו מבחנים בקובץ.');
-    return { quizzes: out, errors: errors };
+  const el = e.target.closest('[data-act]');
+  if (!el || !el.dataset.act) return;
+  const d = el.dataset;
+  switch (d.act) {
+    case 'login': {
+      $('loginErr').textContent = ''; el.disabled = true;
+      try { token = await login($('email').value.trim(), $('pass').value); await load(); }
+      catch (err) { $('loginErr').textContent = 'אימייל או סיסמה לא נכונים.'; el.disabled = false; }
+      break;
+    }
+    case 'logout': sessionSet('rt', ''); token = null; draft = null; go('login'); break;
+    case 'settings': draft = null; go('cats'); break;
+    case 'newTest': startDraft(null); go('cats'); break;
+    case 'edit': startDraft(d.id); go('cats'); break;
+    case 'send': send(d.id); break;
+    case 'delete': del(d.id); break;
+    case 'toTests': if (leaveDraft()) go('tests'); break;
+    case 'toCats': go('cats'); break;
+    case 'toSubs': go('subs'); break;
+    case 'openCat': curCat = d.cid; go('subs'); break;
+    case 'openSub': curSub = d.sid; go('items'); break;
+    case 'toOrder': go('order'); break;
+    case 'save': save(); break;
+    case 'seed': seed(); break;
+    case 'item':
+      if (draft) toggleItem(d.key);
+      else if (d.key[0] === 'q') expanded.has(d.key) ? expanded.delete(d.key) : expanded.add(d.key);
+      else return;
+      renderItems(); break;
+    case 'pickAll':
+      videosIn(curCat, curSub).forEach(([vid]) => {
+        ['v:' + vid].concat(questionsOf(vid).map(([qid]) => 'q:' + qid))
+          .forEach(k => { if (!draft.items.includes(k)) toggleItem(k); });
+      });
+      renderItems(); break;
+    case 'renameCat': {
+      const n = await rename('/library/catalog/cats/' + d.cid, catName(d.cid), 'שם הקטגוריה:');
+      if (n) { catalog.cats[d.cid].name = n; renderCats(); }
+      break;
+    }
+    case 'renameSub': {
+      const n = await rename('/library/catalog/cats/' + curCat + '/subs/' + d.sid, subName(curCat, d.sid), 'שם תת־הקטגוריה:');
+      if (n) { catalog.cats[curCat].subs[d.sid].name = n; renderSubs(); }
+      break;
+    }
+    case 'addCat': {
+      const cid = 'c' + newId(), node = await addNode('/library/catalog/cats/' + cid, 'שם הקטגוריה החדשה:');
+      if (node) { catalog.cats[cid] = node; renderCats(); }
+      break;
+    }
+    case 'addSub': {
+      const sid = 's' + newId(), node = await addNode('/library/catalog/cats/' + curCat + '/subs/' + sid, 'שם תת־הקטגוריה החדשה:');
+      if (node) { (catalog.cats[curCat].subs = catalog.cats[curCat].subs || {})[sid] = node; renderSubs(); }
+      break;
+    }
   }
-
-  let quiz = null, topic = null, q = null;
-  const newTopic = name => { topic = { name: name, videos: [], questions: [] }; quiz.topics.push(topic); return topic; };
-  const needTopic = () => topic || newTopic('');
-  text.split(/\r?\n/).forEach((raw, i) => {
-    const line = raw.trim(), ln = 'שורה ' + (i + 1) + ': ';
-    if (!line) return;
-    if (line.startsWith('##')) {
-      if (!quiz) return errors.push(ln + 'נושא לפני שהתחיל מבחן (חסרה שורת # עם שם המבחן).');
-      newTopic(line.replace(/^##\s*(נושא:)?\s*/, '').trim()); q = null;
-    } else if (line.startsWith('#')) {
-      quiz = { title: line.replace(/^#\s*(מבחן:)?\s*/, '').trim(), category: '', qMode: 'end', topics: [] };
-      topic = null; q = null;
-      if (!quiz.title) errors.push(ln + 'למבחן אין שם.');
-      out.push(quiz);
-    } else if (/^קטגוריה\s*:/.test(line)) {
-      if (quiz) quiz.category = line.split(':').slice(1).join(':').trim();
-    } else if (/^שאלות\s*:/.test(line)) {
-      if (quiz) quiz.qMode = /נושא/.test(line) ? 'topic' : 'end';
-    } else if (/^(סרטון|וידאו)\s*:/.test(line)) {
-      if (!quiz) return errors.push(ln + 'סרטון לפני שהתחיל מבחן.');
-      const rest = line.split(':').slice(1).join(':').trim();
-      const [url, title] = rest.split('|').map(x => (x || '').trim());
-      if (!/drive\.google\.com\/(file\/d\/|open\?id=)[\w-]+/.test(url)) return errors.push(ln + 'קישור Drive לא תקין.');
-      needTopic().videos.push({ kind: 'drive', title: title || 'סרטון', url: url, minSeconds: DEFAULT_SECONDS });
-      q = null;
-    } else if (line.startsWith('??')) {
-      if (!quiz) return errors.push(ln + 'שאלה לפני שהתחיל מבחן.');
-      q = { type: 'open', text: line.slice(2).trim() };
-      if (!q.text) errors.push(ln + 'שאלה פתוחה בלי נוסח.');
-      needTopic().questions.push(q); q = null;
-    } else if (line.startsWith('?')) {
-      if (!quiz) return errors.push(ln + 'שאלה לפני שהתחיל מבחן.');
-      q = { type: 'choice', text: line.slice(1).trim(), options: [], correct: 0 };
-      if (!q.text) errors.push(ln + 'שאלה בלי נוסח.');
-      needTopic().questions.push(q);
-    } else if (line[0] === '*' || line[0] === '-') {
-      if (!q || q.type !== 'choice') return errors.push(ln + 'תשובה בלי שאלה אמריקאית לפניה.');
-      q.options.push(line.slice(1).trim());
-      if (line[0] === '*') {
-        if (q.correct) errors.push(ln + 'יש יותר מתשובה נכונה אחת (*) באותה שאלה.');
-        q.correct = q.options.length;
-      }
-    } else {
-      errors.push(ln + 'לא הבנתי את השורה. התחל ב- # ## ? ?? * - או "סרטון:".');
-    }
-  });
-
-  out.forEach(z => {
-    if (!z.topics.length) errors.push('במבחן "' + z.title + '" אין נושאים או שאלות.');
-    let n = 0;
-    z.topics.forEach(tp => tp.questions.forEach((x, i) => {
-      n++;
-      if (x.type !== 'choice') return;
-      if (x.options.length < 2) errors.push('במבחן "' + z.title + '", שאלה ' + n + ': פחות משתי תשובות.');
-      if (x.options.some(o => !o)) errors.push('במבחן "' + z.title + '", שאלה ' + n + ': יש תשובה ריקה.');
-      if (!x.correct) errors.push('במבחן "' + z.title + '", שאלה ' + n + ': לא סומנה תשובה נכונה (*).');
-    }));
-    if (!n) errors.push('במבחן "' + z.title + '" אין אף שאלה.');
-    if (z.topics.length > 1 && z.topics.some(tp => !tp.name)) errors.push('במבחן "' + z.title + '" יש נושא בלי שם.');
-  });
-  return { quizzes: out, errors: errors };
-}
-
-let impReady = null;
-$('impBack').innerHTML = ICON.back + 'חזרה';
-$('impBack').onclick = () => showList();
-$('openImp').onclick = () => { impReady = null; $('impGo').classList.add('hidden'); $('impOut').innerHTML = ''; screen('s-imp'); };
-$('impFile').onchange = async () => {
-  const f = $('impFile').files[0];
-  if (!f) return;
-  $('impText').value = await f.text();
-  $('impCheck').click();
-};
-$('impCheck').onclick = () => {
-  const r = parseImport($('impText').value);
-  impReady = r.errors.length ? null : r.quizzes;
-  $('impGo').classList.toggle('hidden', !impReady);
-  $('impOut').innerHTML = r.errors.length
-    ? '<div class="item"><b class="err">צריך לתקן ' + r.errors.length + ' דברים:</b>' +
-      r.errors.slice(0, 20).map(x => '<div class="muted">· ' + esc(x) + '</div>').join('') +
-      (r.errors.length > 20 ? '<div class="muted">· ועוד ' + (r.errors.length - 20) + '...</div>' : '') + '</div>'
-    : '<div class="item"><b>מוכן לייבוא: ' + r.quizzes.length + (r.quizzes.length === 1 ? ' מבחן' : ' מבחנים') + '</b>' +
-      r.quizzes.map(z => '<div class="muted">· ' + esc(z.title) + (z.category ? ' [' + esc(z.category) + ']' : '') +
-        ' — ' + z.topics.length + ' נושאים, ' +
-        z.topics.reduce((a, t) => a + t.questions.length, 0) + ' שאלות, ' +
-        z.topics.reduce((a, t) => a + t.videos.length, 0) + ' סרטונים</div>').join('') + '</div>';
-};
-$('impGo').onclick = async () => {
-  if (!impReady) return;
-  $('impGo').disabled = true; $('impGo').textContent = 'מייבא...';
-  const made = [];
-  try {
-    for (const z of impReady) {
-      const clean = { title: z.title, category: z.category, qMode: z.qMode, updated: Date.now(),
-        topics: z.topics.map(t => ({ name: t.name,
-          videos: t.videos.map(v => ({ kind: 'drive', title: v.title, url: v.url,
-            minSeconds: v.minSeconds == null ? DEFAULT_SECONDS : v.minSeconds })),
-          questions: t.questions.map(x => {
-            const o = { qid: hash(String(x.text).trim()), type: x.type, text: x.text };
-            if (x.type === 'choice') { o.options = x.options; o.correct = x.correct; }
-            return o;
-          }) })) };
-      const nid = newId();
-      await authedUrl('PUT', DB('/' + nid), clean);
-      quizzes[nid] = clean; made.push(clean);
-      await saveToLibrary(clean).catch(() => {});
-    }
-    $('impText').value = ''; $('impFile').value = ''; impReady = null;
-    showList();
-    alert('יובאו ' + made.length + (made.length === 1 ? ' מבחן.' : ' מבחנים.') + ' צור להם קישורים כשתרצה לשלוח.');
-  } catch (e) {
-    $('impOut').innerHTML = '<div class="item"><b class="err">הייבוא נעצר אחרי ' + made.length +
-      ' מבחנים. בדוק אינטרנט ולחץ שוב — מה שנוצר כבר נמצא ברשימה.</b></div>';
-  }
-  $('impGo').disabled = false; $('impGo').textContent = 'ייבוא';
-};
-
-// ---------- מסך המאגר ----------
-$('libBack').innerHTML = ICON.back + 'חזרה';
-$('libBack').onclick = () => showList();
-$('openLib').onclick = async () => {
-  $('libList').innerHTML = '<p class="muted">טוען...</p>';
-  screen('s-lib');
-  try { await loadLibrary(); }
-  catch (e) { $('libList').innerHTML = '<p class="err">לא הצלחתי לטעון. נסה שוב.</p>'; return; }
-  renderLib();
-};
-$('tabQ').onclick = () => { libTab = 'questions'; renderLib(); };
-$('tabV').onclick = () => { libTab = 'videos'; renderLib(); };
-$('libSearch').addEventListener('input', renderLib);
-
-// באילו מבחנים הפריט בשימוש עכשיו — לפי הקוד, לא לפי מה שנרשם בזמן השמירה
-function usedIn(it, isV, key) {
-  const names = [];
-  Object.keys(quizzes).forEach(id => {
-    const q = quizzes[id];
-    const hit = (q.topics || []).some(t => isV
-      ? (t.videos || []).some(v => (it.path && v.path === it.path) || (!it.path && v.url === it.url))
-      : (t.questions || []).some(x => x.qid === key || String(x.text || '').trim() === String(it.text || '').trim()));
-    if (hit) names.push(q.title);
-  });
-  return names;
-}
-function libLine(it, isV, key) {
-  const names = usedIn(it, isV, key);
-  const use = names.length ? ' · בשימוש ב: ' + names.join(', ') : ' · לא בשימוש';
-  if (isV) return (it.kind === 'file' ? 'מהגלריה' : 'מ־Drive') +
-    (it.size ? ' · ' + Math.round(it.size / 1048576) + 'MB' : '') +
-    (it.topic ? ' · ' + it.topic : '') + use;
-  return (it.type === 'choice' ? 'אמריקאית · ' + (it.options || []).length + ' תשובות' : 'פתוחה') +
-    (it.topic ? ' · ' + it.topic : '') + use;
-}
-function renderLib() {
-  const isV = libTab === 'videos';
-  $('tabQ').classList.toggle('on', !isV);
-  $('tabV').classList.toggle('on', isV);
-  $('tabQ').textContent = 'שאלות (' + Object.keys(library.questions).length + ')';
-  $('tabV').textContent = 'סרטונים (' + Object.keys(library.videos).length + ')';
-  const term = $('libSearch').value.trim();
-  const src = isV ? library.videos : library.questions;
-  const keys = Object.keys(src).filter(k => {
-    const it = src[k];
-    if (libArch ? !it.archived : !!it.archived) return false;
-    return !term || ((isV ? it.title : it.text) + ' ' + (it.topic || '') + ' ' + (it.quiz || '')).includes(term);
-  }).sort((a, b) => (src[b].at || 0) - (src[a].at || 0));
-  const arch = Object.values(src).filter(x => x.archived).length;
-  $('libArch').textContent = libArch ? '← חזרה למאגר' : '📦 ארכיון (' + arch + ')';
-  $('libList').innerHTML = keys.length ? keys.map(k => {
-    const it = src[k], id = (isV ? 'v:' : 'q:') + k, on = libSel.has(id);
-    return '<div class="libitem' + (on ? ' chk' : '') + '">' +
-      '<div class="libitem-top">' +
-      '<div class="ico">' + (isV ? '🎬' : '❓') + '</div>' +
-      '<div class="mid"><b>' + esc(isV ? it.title : it.text) + '</b></div></div>' +
-      '<div class="libitem-foot">' +
-      '<input type="checkbox" data-lib="' + esc(id) + '"' + (on ? ' checked' : '') + '>' +
-      '<div class="src">' + esc(libLine(it, isV, k)) + '</div>' +
-      '<div class="libitem-actions">' +
-      '<button class="mini" data-libarch="' + esc(id) + '" title="' + (libArch ? 'החזרה מהארכיון' : 'לארכיון') + '">' + (libArch ? '↩' : '📦') + '</button>' +
-      '<button class="mini del" data-libdel="' + esc(id) + '" title="מחיקה מהמאגר">' + ICON.trash + '</button>' +
-      '</div></div></div>';
-  }).join('') : '<p class="muted">' + (term ? 'אין תוצאות לחיפוש.'
-      : libArch ? 'הארכיון ריק.' : 'המאגר ריק. הוא מתמלא מעצמו בכל שמירה של מבחן.') + '</p>';
-}
-function libUpdate() {
-  const v = [...libSel].filter(x => x[0] === 'v').length, q = libSel.size - v;
-  const parts = [];
-  if (q) parts.push(q + (q === 1 ? ' שאלה' : ' שאלות'));
-  if (v) parts.push(v + (v === 1 ? ' סרטון' : ' סרטונים'));
-  $('libCount').textContent = 'נבחרו ' + parts.join(' ו-');
-  $('libbar').classList.toggle('hidden', !libSel.size || $('s-lib').classList.contains('hidden'));
-  $('libPick').classList.add('hidden');
-}
-document.addEventListener('change', e => {
-  const id = e.target.dataset.lib;
-  if (!id) return;
-  e.target.checked ? libSel.add(id) : libSel.delete(id);
-  e.target.closest('.libitem').classList.toggle('chk', e.target.checked);
-  libUpdate();
 });
-document.addEventListener('click', async e => {
-  const btn = e.target.closest('[data-libdel]');
-  if (!btn) return;
-  const id = btn.dataset.libdel;
-  const kind = id[0] === 'v' ? 'videos' : 'questions', key = id.slice(2);
-  const names = usedIn(library[kind][key] || {}, kind === 'videos', key);
-  if (!confirm(names.length
-    ? 'הפריט בשימוש ב: ' + names.join(', ') + '.\nהמחיקה מהמאגר לא תשנה את המבחנים האלה. למחוק מהמאגר?\n(אם רק רצית לנקות — עדיף "לארכיון")'
-    : 'למחוק מהמאגר? (אם רק רצית לנקות — עדיף "לארכיון")')) return;
-  try { await authedUrl('DELETE', LIB('/' + kind + '/' + key)); } catch (err) { alert('המחיקה נכשלה.'); return; }
-  delete library[kind][key]; libSel.delete(id); renderLib(); libUpdate();
-});
-$('libClear').onclick = () => { libSel.clear(); renderLib(); libUpdate(); };
-$('libArch').onclick = () => { libArch = !libArch; libSel.clear(); renderLib(); libUpdate(); };
-// ארכוב במקום מחיקה: הפריט יורד מהמאגר ולא נוגע במבחנים שמשתמשים בו
-document.addEventListener('click', async e => {
-  const btn = e.target.closest('[data-libarch]');
-  if (!btn) return;
-  const id = btn.dataset.libarch, kind = id[0] === 'v' ? 'videos' : 'questions', key = id.slice(2);
-  const to = libArch ? null : Date.now();
-  try { await authedUrl('PATCH', LIB('/' + kind + '/' + key), { archived: to }); }
-  catch (err) { alert('הפעולה נכשלה. נסה שוב.'); return; }
-  if (to) library[kind][key].archived = to; else delete library[kind][key].archived;
-  libSel.delete(id); renderLib(); libUpdate();
-});
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && view === 'login') document.querySelector('[data-act="login"]').click(); });
+addEventListener('beforeunload', e => { if (draft && draft.items.length) { e.preventDefault(); e.returnValue = ''; } });
 
-// בניית נושאים מהפריטים שסומנו, לפי הנושא המקורי שלהם
-function selectedTopics() {
-  const byTopic = new Map();
-  const get = n => { if (!byTopic.has(n)) byTopic.set(n, { name: n, videos: [], questions: [] }); return byTopic.get(n); };
-  [...libSel].forEach(id => {
-    const isV = id[0] === 'v', key = id.slice(2);
-    const it = (isV ? library.videos : library.questions)[key];
-    if (!it) return;
-    const t = get(it.topic || 'כללי');
-    if (isV) {
-      const o = { kind: it.kind || 'drive', title: it.title, url: it.url };
-      if (o.kind === 'file') { o.path = it.path; o.size = it.size; } else o.minSeconds = it.minSeconds == null ? DEFAULT_SECONDS : it.minSeconds;
-      t.videos.push(o);
-    } else {
-      t.questions.push({ type: it.type, text: it.text, options: it.options, correct: it.correct });
-    }
-  });
-  return [...byTopic.values()];
-}
-$('libNew').onclick = async () => {
-  const topics = selectedTopics();
-  if (!topics.length) return;
-  const title = prompt('שם המבחן החדש:', 'מבחן מהמאגר');
-  if (!title || !title.trim()) return;
-  const nid = newId();
-  const clean = { title: title.trim(), qMode: 'end', updated: Date.now(), topics };
-  try { await authedUrl('PUT', DB('/' + nid), clean); } catch (e) { alert('היצירה נכשלה. נסה שוב.'); return; }
-  quizzes[nid] = clean; libSel.clear(); libUpdate(); showList();
-  alert('נוצר המבחן "' + clean.title + '".');
-};
-$('libAdd').onclick = () => {
-  const ids = Object.keys(quizzes).sort((a, b) => (quizzes[b].updated || 0) - (quizzes[a].updated || 0));
-  if (!ids.length) return alert('אין עדיין מבחנים.');
-  $('libPick').innerHTML = '<span class="muted" style="width:100%">לאיזה מבחן להוסיף?</span>' +
-    ids.map(id => '<button class="mini" data-libto="' + id + '">' + esc(quizzes[id].title) + '</button>').join('');
-  $('libPick').classList.remove('hidden');
-};
-document.addEventListener('click', async e => {
-  const to = e.target.closest('[data-libto]');
-  if (!to) return;
-  const id = to.dataset.libto;
-  const target = normalize(JSON.parse(JSON.stringify(quizzes[id])));
-  selectedTopics().forEach(t => {
-    const exist = target.topics.find(x => x.name === t.name);
-    if (exist) { exist.videos.push(...t.videos); exist.questions.push(...t.questions); }
-    else target.topics.push(t);
-  });
-  const clean = { title: target.title, category: (target.category || '').trim(), qMode: target.qMode, updated: Date.now(),
-    topics: target.topics.map(t => ({ name: t.name,
-      videos: t.videos.map(v => { const o = { kind: v.kind, title: v.title, url: v.url };
-        if (v.kind === 'file') { o.path = v.path; o.size = v.size; } else o.minSeconds = v.minSeconds == null ? DEFAULT_SECONDS : v.minSeconds;
-        return o; }),
-      questions: JSON.parse(JSON.stringify(t.questions)) })) };
-  try { await authedUrl('PUT', DB('/' + id), clean); } catch (err) { alert('ההוספה נכשלה. נסה שוב.'); return; }
-  quizzes[id] = clean; libSel.clear(); libUpdate(); showList();
-  alert('הפריטים נוספו למבחן "' + clean.title + '".');
-});
-
-$('preview').onclick = () => {
-  if (dirty) { status('קודם שמור, ואז תצוגה מקדימה.', 'err'); return; }
-  open(quizLink(quizId), '_blank');
-};
-addEventListener('beforeunload', e => { if (dirty || (quiz && anyUploading())) { e.preventDefault(); e.returnValue = ''; } });
-
+go('login');
 (async () => {
   if (!sessionGet('rt')) return;
   try { await relogin(); await load(); } catch (e) {}

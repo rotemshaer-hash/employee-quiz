@@ -4,192 +4,150 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>מבחן עובדים</title>
-<meta name="theme-color" content="#bbc8d4">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://drive.usercontent.google.com" crossorigin>
+<meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#bbc8d4; --card:#ebf0f4; --soft:#d6dde4; --line:#a3b4c4;
-    --text:#0e1216; --muted:#2d465e;
-    --accent:#0a5fc4; --accent2:#2fa8ef; --bad:#ef4444;
-    --grad:linear-gradient(135deg,#0a5fc4 0%,#2fa8ef 100%);
-    --r:20px; --sh:0 1px 2px rgba(0,0,0,.4), 0 14px 32px -20px rgba(47,168,239,.3);
+    --bg:#f0f0f6; --top:#ffffff; --ink:#111; --muted:#777; --box:#7a7a7a;
+    --purple:#7458c4; --soft:#ece8f8; --icon:#9a9a9a; --line:#d4d4da; --bad:#d23c3c;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 Heebo,system-ui,-apple-system,Arial,sans-serif}
+  body{margin:0;background:var(--bg);font:16px/1.4 Arial,Helvetica,sans-serif;color:var(--ink)}
+  button{font:inherit;cursor:pointer}
 
-  header{background:var(--grad);color:#fff;padding:22px 20px 56px;position:relative;overflow:hidden}
-  header::before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;
-    background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%);top:-160px;inset-inline-start:-80px}
-  header::after{content:"";position:absolute;inset-inline:0;bottom:-1px;height:30px;background:var(--bg);border-radius:30px 30px 0 0}
-  .hrow{display:flex;align-items:center;gap:12px;position:relative;z-index:1}
-  .chip-logo{background:#fff;border-radius:14px;padding:6px 8px;box-shadow:0 8px 22px -12px rgba(0,0,0,.6);flex:none}
-  .chip-logo img{display:block;width:clamp(58px,17vw,92px)}
-  .htxt{min-width:0;flex:1}
-  .htxt h1{margin:0;font-size:clamp(17px,5vw,22px);font-weight:800;letter-spacing:-.02em;line-height:1.25}
-  .htxt p{margin:2px 0 0;font-size:12.5px;opacity:.85}
+  .topbar{position:sticky;top:0;z-index:5;background:var(--top);display:flex;align-items:center;gap:10px;
+          padding:12px;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+  .avatar{width:40px;height:40px;border-radius:50%;background:var(--soft);display:grid;place-items:center;flex:none}
+  .avatar svg{width:22px;height:22px;fill:var(--purple)}
+  .brand{font-weight:700;font-size:20px;color:#666;flex:none}
+  .sep{width:1px;height:28px;background:#ddd;flex:none}
+  .sub{color:#999;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 
-  main{max-width:640px;margin:-26px auto 0;padding:0 12px 48px;position:relative;z-index:1}
-  h2{font-size:20px;font-weight:800;margin:0 0 6px;letter-spacing:-.02em}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:18px;
-        box-shadow:var(--sh);animation:rise .3s ease both}
-  @keyframes rise{from{opacity:0;transform:translateY(8px)}}
-  .muted{color:var(--muted);font-size:14.5px}
+  main{max-width:720px;margin:0 auto}
+  .panel{margin:0 12px;border-inline:1px solid var(--line);min-height:calc(100vh - 64px);padding:20px 10px 40px}
+  h1{font-size:24px;margin:0 0 16px;line-height:1.5}
+  h1 .ch{font-weight:400;margin:0 6px}
+  .steps{display:flex;gap:5px;margin-bottom:16px}
+  .steps i{flex:1;height:6px;border-radius:9px;background:var(--line)}
+  .steps i.on{background:var(--purple)}
+  .muted{color:var(--muted);font-size:15px}
 
-  input[type=text],textarea{width:100%;font:inherit;padding:15px;border:1.5px solid var(--line);
-    border-radius:14px;background:var(--soft);color:inherit}
-  input[type=text]:focus,textarea:focus{outline:0;border-color:var(--accent2);background:var(--card);
-    box-shadow:0 0 0 4px color-mix(in srgb,var(--accent2) 16%,transparent)}
-  textarea{min-height:110px;resize:vertical}
+  .row{display:flex;flex-direction:row-reverse;align-items:center;gap:8px;margin-bottom:10px;cursor:pointer}
+  .box{flex:1;min-width:0;border:3px solid var(--box);border-radius:9px;padding:11px 12px;font-size:18px;min-height:50px;
+       display:flex;align-items:center;background:var(--bg)}
+  .row:has(input:checked) .box{border-color:var(--purple)}
+  .row input{appearance:none;-webkit-appearance:none;width:26px;height:26px;border:3px solid var(--box);border-radius:50%;margin:0;flex:none}
+  .row input:checked{border-color:var(--purple);box-shadow:inset 0 0 0 4px var(--bg),inset 0 0 0 12px var(--purple)}
+  .q{margin-bottom:22px;border-radius:9px}
+  .q > p{font-weight:700;margin:0 0 8px;font-size:17px}
+  .q > p small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+  .q.missing{outline:3px solid var(--bad);outline-offset:6px}
+  .q img{max-width:100%;border-radius:9px;margin:0 0 10px;display:block}
+  .field{width:100%;font:inherit;font-size:18px;border:3px solid var(--box);border-radius:9px;padding:11px 12px;background:#fff;color:var(--ink)}
+  .field:focus{outline:0;border-color:var(--purple)}
+  textarea.field{min-height:100px;resize:vertical}
 
-  button{width:100%;font:inherit;font-weight:700;padding:15px;border:0;border-radius:14px;
-         background:var(--grad);color:#fff;cursor:pointer;margin-top:12px;
-         box-shadow:0 10px 22px -14px var(--accent)}
-  button:active:not(:disabled){transform:scale(.985)}
-  button:disabled{background:var(--line);color:var(--muted);box-shadow:none;cursor:default}
-  button.soft{background:var(--soft);border:1px solid var(--line);color:var(--accent2);box-shadow:none}
+  .video{position:relative;border:3px solid var(--box);border-radius:9px;overflow:hidden;background:#000;aspect-ratio:16/9}
+  .video.tall{aspect-ratio:9/16;max-height:70vh;margin:0 auto}
+  .video video,.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+  .vname{font-weight:700;font-size:17px;margin:12px 0 0}
+  .ask{font-weight:700;text-align:center;margin:14px 0 2px;min-height:1.4em}
 
-  .video{position:relative;padding-top:56.25%;border-radius:16px;overflow:hidden;background:#000}
-  .video iframe,.video video{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
-  .steps{display:flex;gap:5px;margin-bottom:14px}
-  .steps i{flex:1;height:5px;border-radius:99px;background:var(--line)}
-  .steps i.on{background:var(--grad)}
-  .progress{display:none}
-  .count{display:inline-block;font-size:12.5px;font-weight:700;color:var(--accent2);
-         background:color-mix(in srgb,var(--accent2) 14%,transparent);padding:5px 12px;border-radius:99px}
-
-  label.opt{display:flex;gap:12px;align-items:center;padding:15px;border:1.5px solid var(--line);
-            border-radius:14px;margin-top:9px;cursor:pointer;background:var(--soft)}
-  label.opt:has(input:checked){border-color:var(--accent2);font-weight:700;
-            background:color-mix(in srgb,var(--accent2) 10%,transparent)}
-  label.opt input{accent-color:var(--accent2);width:21px;height:21px;margin:0;flex:none}
-
-  .qh{display:flex;align-items:center;gap:9px;margin:26px 0 12px;font-size:17px;font-weight:800}
-  .qh span{width:26px;height:26px;border-radius:9px;background:var(--grad);color:#fff;
-           display:grid;place-items:center;font-size:13px;flex:none}
-  .q{margin-bottom:24px}
-  .q p{font-weight:700;margin:0 0 2px}
-  .q.missing{outline:2px solid var(--bad);outline-offset:8px;border-radius:8px}
-  .err{color:var(--bad);font-weight:700;margin-top:10px}
-
-  .done{text-align:center;padding:34px 20px}
-  .tick{width:80px;height:80px;margin:0 auto 16px;border-radius:50%;background:var(--grad);
-        display:grid;place-items:center;color:#fff;font-size:40px;
-        box-shadow:0 16px 34px -18px var(--accent);animation:pop .45s cubic-bezier(.2,1.4,.5,1) both}
-  @keyframes pop{from{transform:scale(.4);opacity:0}}
-
-  @media (min-width:900px){
-    main{max-width:780px}
-    header{padding:28px 24px 60px}
-    .chip-logo img{width:110px}
-    .htxt h1{font-size:26px}
-  }
-  .hidden{display:none}
+  .btn{display:block;width:100%;background:var(--purple);color:#fff;border:3px solid var(--purple);border-radius:9px;
+       padding:11px;font-size:18px;font-weight:700;text-align:center;margin-top:8px}
+  .btn.ghost{background:transparent;color:var(--purple)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .err{color:var(--bad);font-weight:700;margin:10px 0 0}
+  .done{text-align:center;padding-top:30px}
+  .tick{width:76px;height:76px;margin:0 auto 14px;border-radius:50%;background:var(--purple);color:#fff;
+        display:grid;place-items:center;font-size:38px}
+  .tick.gray{background:var(--box)}
+  .hidden{display:none!important}
 </style>
 </head>
 <body>
-<header>
-  <div class="hrow">
-    <div class="chip-logo"><img src="logo.png?v=1" alt="מבנים — בדק בית וייעוץ הנדסי"></div>
-    <div class="htxt"><h1 id="title">מבחן עובדים</h1><p id="sub">הדרכת עובדים · מילוי אישי</p></div>
-  </div>
-</header>
-<main>
-  <!-- 1. שם -->
-  <section id="s-name" class="card">
-    <h2>ברוך הבא</h2>
-    <p class="muted" id="intro">בכל נושא תצפה בסרטון. אם הבנת — תתקדם. אם לא — תקבל עוד הסבר. בסוף יש מבחן.</p>
-    <input id="name" type="text" placeholder="שם מלא" autocomplete="name">
-    <button id="start" disabled>התחלה</button>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4 0-9 2-9 5v3h18v-3c0-3-5-5-9-5z"/></symbol>
+</svg>
+<div class="topbar">
+  <div class="avatar"><svg><use href="#i-user"/></svg></div>
+  <div class="brand">מבנים</div>
+  <div class="sep"></div>
+  <div class="sub" id="title">מבחן עובדים</div>
+</div>
+<main><div class="panel">
+  <section id="s-name">
+    <h1>ברוך הבא</h1>
+    <p class="muted" id="intro">תצפה בסרטונים ותענה על השאלות לפי הסדר. אם משהו לא ברור — אפשר לצפות שוב.</p>
+    <input class="field" id="name" type="text" placeholder="שם מלא" autocomplete="name">
+    <button class="btn" id="start" disabled>התחלה</button>
   </section>
 
-  <!-- 2. נושא וסרטון -->
-  <section id="s-videos" class="card hidden">
-    <span class="count" id="pkgcount"></span>
-    <div class="steps" id="steps" style="margin-top:12px"></div>
-    <span class="count" id="vcount"></span>
-    <h2 id="vtitle" style="margin:10px 0 12px"></h2>
+  <section id="s-video" class="hidden">
+    <div class="steps" id="steps1"></div>
+    <h1 id="vcrumb"></h1>
     <div class="video" id="vbox"></div>
-    <p class="muted" id="vask" style="margin:18px 0 0;font-weight:700;color:var(--text);text-align:center"></p>
-    <button id="vdone">הבנתי — אפשר להמשיך</button>
-    <button id="vmore" class="soft">לא הבנתי — תן לי עוד הסבר</button>
+    <p class="vname" id="vname"></p>
+    <p class="ask" id="vask"></p>
+    <button class="btn" id="vdone">הבנתי — המשך</button>
+    <button class="btn ghost" id="vagain">לא הבנתי — לצפות שוב</button>
   </section>
 
-  <!-- 3. אישור -->
-  <section id="s-confirm" class="card hidden">
-    <h2 id="confirmTitle">סיימת את ההדרכה</h2>
-    <p class="muted">עוד שלב אחד ואפשר להתחיל במבחן.</p>
-    <label class="opt"><input type="checkbox" id="watched"> <span>אני מאשר/ת שצפיתי בחומר ההדרכה</span></label>
-    <button id="confirm" disabled>אישור שצפיתי — למבחן</button>
-  </section>
-
-  <!-- 4. מבחן -->
-  <section id="s-quiz" class="card hidden">
-    <span class="count" id="qpkg"></span>
-    <h2 style="margin-top:10px">מבחן</h2>
-    <p class="muted">חובה לענות על כל השאלות.</p>
+  <section id="s-quiz" class="hidden">
+    <div class="steps" id="steps2"></div>
+    <h1>שאלות</h1>
     <form id="quiz"></form>
-    <div id="qconfirm" class="hidden">
-      <label class="opt"><input type="checkbox" id="watched2"> <span>אני מאשר/ת שצפיתי בחומר ההדרכה</span></label>
-    </div>
-    <div id="qerr" class="err"></div>
-    <button id="send">שליחת המבחן</button>
+    <p class="err" id="qerr"></p>
+    <button class="btn" id="send">המשך</button>
   </section>
 
-  <!-- 5. קישור לא תקין -->
-  <section id="s-bad" class="card done hidden">
-    <div class="tick" style="background:#8a94a0">?</div>
-    <h2>הקישור לא תקין</h2>
-    <p class="muted">בקש מהמנהל קישור חדש.</p>
+  <section id="s-bad" class="done hidden">
+    <div class="tick gray">?</div><h1>הקישור לא תקין</h1><p class="muted">בקש מהמנהל קישור חדש.</p>
   </section>
-
-  <!-- 6. כבר נוצל -->
-  <section id="s-used" class="card done hidden">
-    <div class="tick" style="background:#8a94a0">!</div>
-    <h2>הקישור כבר נוצל</h2>
-    <p class="muted" id="usedBy">הקישור הזה הוא חד־פעמי. אם אתה צריך לבצע שוב, פנה למנהל.</p>
+  <section id="s-used" class="done hidden">
+    <div class="tick gray">!</div><h1>הקישור כבר נוצל</h1><p class="muted" id="usedBy"></p>
   </section>
-
-  <!-- 7. סיום -->
-  <section id="s-done" class="card done hidden">
-    <div class="tick">✓</div>
-    <h2>תודה! ההגשה נקלטה</h2>
-    <p class="muted" id="doneNote">אפשר לסגור את הדף.</p>
+  <section id="s-done" class="done hidden">
+    <div class="tick">✓</div><h1>תודה! ההגשה נקלטה</h1><p class="muted" id="doneNote">אפשר לסגור את הדף.</p>
   </section>
-</main>
+</div></main>
 
-<script src="settings.js?v=40"></script>
-<script src="demo.js?v=40"></script>
+<script src="settings.js?v=41"></script>
+<script src="demo.js?v=41"></script>
 <script>
 const $ = id => document.getElementById(id);
-const show = id => { document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
+const show = id => { document.querySelectorAll('.panel > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nameKey = n => n.trim().replace(/\s+/g, ' ').toLowerCase().replace(/[.$#\[\]/]/g, '_');
 const DB = path => SETTINGS.databaseURL + path + '.json';
 
-let PKG = [];            // המבחנים שבקישור: אחד, או כמה אם זו חבילה
-let qIndex = 0;          // המבחן הנוכחי
+let PKG = [];                // המבחנים בקישור (אחד, או כמה בחבילה)
 let code = null, bundleId = null, resultsEmail = '';
-const results = [];      // תוצאות לכל מבחן
-let startedAt = null;    // שעת התחלת המבחן הראשון
+let steps = [], si = 0;      // שלב = סרטון אחד, או רצף שאלות ברצף אחד
+const views = {}, answers = {};
+let startedAt = null;
 
 const lockUrl = () => bundleId ? DB('/bundles/' + encodeURIComponent(bundleId))
                                : DB('/invites/' + PKG[0].id + '/' + encodeURIComponent(code));
 const subKeyFor = name => bundleId ? 'b_' + bundleId : (code ? 'c_' + code : nameKey(name));
 const DONE_KEY = n => 'done-' + (bundleId || PKG[0].id) + '-' + nameKey(n);
 
-// מבנה אחיד: נושאים. מבחן ישן מומר אוטומטית.
-function normalize(q) {
-  if (!q.topics) q.topics = (q.videos || []).map(v => ({ name: v.title || 'נושא', videos: [v], questions: [] }));
-  q.topics = (q.topics || []).map(t => Object.assign({ name: '', videos: [], questions: [] }, t));
-  if ((q.questions || []).length) q.topics.push({ name: '', videos: [], questions: q.questions });
-  q.qMode = q.qMode === 'topic' ? 'topic' : 'end';
-  return q;
+// מבחן חדש = רשימת פריטים מסודרת. מבחן ישן (נושאים) מומר לאותה רשימה.
+function toItems(q) {
+  if (Array.isArray(q.items)) return q.items.map((it, i) => Object.assign({ key: it.key || 'i' + i }, it));
+  let topics = q.topics || (q.videos || []).map(v => ({ name: v.title || 'נושא', videos: [v], questions: [] }));
+  if ((q.questions || []).length) topics = topics.concat([{ name: '', videos: [], questions: q.questions }]);
+  const cat = (q.category || '').trim() || q.title || '';
+  const vids = [], qs = [];
+  const out = [];
+  topics.forEach((t, ti) => {
+    const v = (t.videos || []).map((x, vi) => ({ key: 'v' + ti + '_' + vi, k: 'v', title: x.title || t.name, url: x.url,
+                                                minSeconds: x.minSeconds, cat, sub: t.name || '' }));
+    const s = (t.questions || []).map((x, qi) => Object.assign({ key: 'q' + ti + '_' + qi, k: 'q', cat, sub: t.name || '' }, x));
+    if (q.qMode === 'topic') out.push(...v, ...s); else { vids.push(...v); qs.push(...s); }
+  });
+  return q.qMode === 'topic' ? out : vids.concat(qs);
 }
-const countQ = q => q.topics.reduce((a, t) => a + t.questions.length, 0);
 
 (async () => {
   try {
@@ -211,36 +169,28 @@ const countQ = q => q.topics.reduce((a, t) => a + t.questions.length, 0);
       if (code && !/^[\w-]+$/.test(code)) { code = null; return show('s-bad'); }
       ids = [id];
     }
-
-    const loaded = [];
     for (const id of ids) {
       const q = await (await fetch(DB('/quizzes/' + id), { cache: 'no-store' })).json();
       if (!q) continue;
-      normalize(q); q.id = id;
-      // מבחן מאסטר: בלי תוכן משלו — הנושאים מחושבים מכל המבחנים (הלא-מאסטר) באותה קטגוריה, ברגע ההגשה
-      if (q.master) {
+      q.id = id;
+      if (q.master) {   // מבחן מאסטר ישן: הנושאים מחושבים מכל המבחנים באותה קטגוריה
         const all = (await (await fetch(DB('/quizzes'), { cache: 'no-store' })).json()) || {};
         q.topics = [];
         Object.keys(all).forEach(oid => {
-          if (oid === id) return;
           const sib = all[oid];
-          if (!sib || sib.master) return;
-          if ((sib.category || '').trim() !== (q.category || '').trim()) return;
-          normalize(sib).topics.forEach(t => q.topics.push(t));
+          if (oid === id || !sib || sib.master || (sib.category || '').trim() !== (q.category || '').trim()) return;
+          (sib.topics || []).forEach(t => q.topics.push(t));
         });
       }
-      if (countQ(q)) loaded.push(q);
+      q.list = toItems(q);
+      if (q.list.some(it => it.k === 'q')) PKG.push(q);
     }
-    if (!loaded.length) throw 0;
-    PKG = loaded;
+    if (!PKG.length) throw 0;
+    resultsEmail = PKG[0].email || (await (await fetch(DB('/settings/resultsEmail'), { cache: 'no-store' })).json()) || PKG[0].resultsEmail || '';
 
-    resultsEmail = (await (await fetch(DB('/settings/resultsEmail'), { cache: 'no-store' })).json())
-                   || PKG[0].resultsEmail || '';
-
-    document.title = PKG.length > 1 ? 'מבחני עובדים' : PKG[0].title;
-    $('title').textContent = PKG.length > 1 ? 'מבחני עובדים' : PKG[0].title;
-    if (PKG.length > 1) $('sub').textContent = PKG.length + ' מבחנים · מילוי אישי';
-    if (PKG.length > 1) $('intro').textContent = 'יש כאן ' + PKG.length + ' מבחנים. תעבור אותם אחד אחרי השני, ובסוף הכול נשלח יחד.';
+    const title = PKG.length > 1 ? PKG.length + ' מבחנים' : PKG[0].title;
+    document.title = title; $('title').textContent = title;
+    if (PKG.length > 1) $('intro').textContent = 'יש כאן ' + PKG.length + ' מבחנים ברצף. בסוף הכול נשלח יחד.';
     $('name').dispatchEvent(new Event('input'));
 
     if (code) {
@@ -251,7 +201,7 @@ const countQ = q => q.topics.reduce((a, t) => a + t.questions.length, 0);
     }
   } catch (e) {
     if (code || bundleId) return show('s-bad');
-    $('s-name').innerHTML = '<h2>המבחן עדיין לא מוכן</h2><p class="muted">נסה שוב מאוחר יותר.</p>';
+    $('s-name').innerHTML = '<h1>המבחן עדיין לא מוכן</h1><p class="muted">נסה שוב מאוחר יותר.</p>';
   }
 })();
 
@@ -278,29 +228,34 @@ $('start').onclick = async () => {
       try { if (localStorage.getItem(DONE_KEY(who))) return usedScreen(who); } catch (e2) {}
     }
   }
-  $('start').disabled = false; $('start').textContent = 'התחלה';
+  $('start').textContent = 'התחלה';
   startedAt = Date.now();
-  qIndex = 0; runQuiz(0);
+  buildSteps();
+  runStep(0);
 };
 
-// ---------- ניהול המבחן הנוכחי ----------
-let cur = null, tList = [], tIndex = 0, vIndex = 0, vTimer = null, seen = {}, store = {};
-
-function pkgLabel() {
-  return PKG.length > 1 ? 'מבחן ' + (qIndex + 1) + ' מתוך ' + PKG.length + ' · ' + cur.title : '';
+// ---------- שלבים ----------
+function buildSteps() {
+  steps = [];
+  PKG.forEach((q, pi) => q.list.forEach(it => {
+    const id = pi + ':' + it.key;
+    if (it.k === 'v') steps.push({ k: 'v', pi, it, id });
+    else {
+      const last = steps[steps.length - 1];
+      if (last && last.k === 'q' && last.pi === pi) last.items.push({ it, id });
+      else steps.push({ k: 'q', pi, items: [{ it, id }] });
+    }
+  }));
 }
-function runQuiz(i) {
-  qIndex = i; cur = PKG[i];
-  tList = cur.topics.filter(t => t.videos.length);
-  seen = {}; store = {};
-  $('pkgcount').textContent = pkgLabel();
-  $('pkgcount').style.display = PKG.length > 1 ? 'inline-block' : 'none';
-  $('qpkg').textContent = pkgLabel();
-  $('qpkg').style.display = PKG.length > 1 ? 'inline-block' : 'none';
-  if (tList.length) { show('s-videos'); playTopic(0, 0); }
-  else goQuestions(cur.topics.map((_, k) => k));
+const stepBar = () => steps.map((_, j) => '<i class="' + (j <= si ? 'on' : '') + '"></i>').join('');
+function runStep(i) {
+  si = i;
+  if (si >= steps.length) return sendAll();
+  const s = steps[si];
+  if (s.k === 'v') playVideo(s); else showQuestions(s);
 }
 
+// ---------- סרטון: אין דילוג קדימה, אין האצה, אין הורדה בלחיצה ארוכה ----------
 const resolveSrc = window.resolveVideoSrc || (u => u);
 function embedUrl(url) {
   const drive = String(url).match(/drive\.google\.com\/(?:file\/d\/|open\?id=)([\w-]+)/);
@@ -308,347 +263,234 @@ function embedUrl(url) {
                       fallback: 'https://drive.google.com/file/d/' + drive[1] + '/preview' };
   return { src: url };
 }
-
-function announceTopic(name) {
-  try {
-    if (!name || !window.speechSynthesis) return;
-    const u = new SpeechSynthesisUtterance(name);
-    u.lang = 'he-IL';
-    speechSynthesis.cancel();
-    speechSynthesis.speak(u);
-  } catch (e) {}
-}
-async function playTopic(ti, vi) {
-  tIndex = ti; vIndex = vi;
-  const t = tList[ti], v = t.videos[vi];
-  const lastTopic = ti === tList.length - 1;
-  const hasMore = vi < t.videos.length - 1;
-  seen[t.name || ti] = vi + 1;
-  if (vi === 0) announceTopic(t.name);
-
-  $('steps').innerHTML = tList.map((_, j) => '<i class="' + (j <= ti ? 'on' : '') + '"></i>').join('');
-  $('vcount').textContent = (t.name ? t.name + ' · ' : '') + 'נושא ' + (ti + 1) + ' מתוך ' + tList.length +
-    (t.videos.length > 1 ? ' · הסבר ' + (vi + 1) + ' מתוך ' + t.videos.length : '');
-  $('vtitle').textContent = v.title || t.name;
+let vTimer = null;
+async function playVideo(s) {
+  const it = s.it, my = si;
+  views[s.id] = 1;
+  $('steps1').innerHTML = stepBar();
+  $('vcrumb').innerHTML = esc(it.cat) + (it.sub && it.sub !== it.cat ? ' <span class="ch">‹</span> ' + esc(it.sub) : '');
+  $('vname').textContent = it.title || '';
+  $('vbox').classList.remove('tall');
   clearInterval(vTimer);
-
-  const nextLabel = cur.qMode === 'topic' && t.questions.length ? 'הבנתי — לשאלות'
-                  : lastTopic ? 'הבנתי — למבחן' : 'הבנתי — לנושא הבא';
   const ready = on => {
-    $('vask').textContent = on
-      ? (t.name ? 'הבנת את הנושא "' + t.name + '"?' : 'הבנת?') + (hasMore ? ' אפשר להתקדם, או לראות עוד הסבר.' : ' (אלה כל הסרטונים בנושא הזה)')
-      : '';
-    $('vdone').style.display = on ? 'block' : 'none';
-    $('vdone').textContent = nextLabel;
-    $('vmore').style.display = on && hasMore ? 'block' : 'none';
+    $('vdone').classList.toggle('hidden', !on);
+    $('vagain').classList.toggle('hidden', !on);
+    $('vask').textContent = on ? 'הבנת?' : 'צפה בסרטון עד הסוף';
   };
   ready(false);
   $('vask').textContent = 'טוען סרטון...';
+  show('s-video');
 
-  const e = embedUrl(v.url);
-  const useIframe = src => {
-    if (tIndex !== ti || vIndex !== vi) return;
-    $('vbox').innerHTML = '<iframe src="' + esc(src) + '" allow="autoplay; fullscreen" allowfullscreen></iframe>';
-    let left = v.minSeconds || 0;
-    const tick = () => {
-      if (left <= 0) { ready(true); clearInterval(vTimer); return; }
-      $('vask').textContent = 'אפשר להתקדם בעוד ' + left + ' שניות';
-      left--;
-    };
-    tick(); vTimer = setInterval(tick, 1000);
-  };
-
+  const e = embedUrl(it.url);
   $('vbox').innerHTML = '<video controls playsinline preload="auto" controlslist="nodownload noplaybackrate noremoteplayback" disablepictureinpicture disableremoteplayback></video>';
   const video = $('vbox').querySelector('video');
   video.addEventListener('contextmenu', ev => ev.preventDefault());
-  let maxT = 0;
-  video.addEventListener('loadedmetadata', () => { if (tIndex === ti && vIndex === vi) $('vask').textContent = 'צפה בסרטון עד הסוף'; });
+  let maxT = 0, done = false;
+  video.addEventListener('loadedmetadata', () => {
+    if (si !== my) return;
+    if (video.videoHeight > video.videoWidth) $('vbox').classList.add('tall');
+    if (!done) $('vask').textContent = 'צפה בסרטון עד הסוף';
+  });
   video.addEventListener('timeupdate', () => { if (!video.seeking && video.currentTime > maxT) maxT = video.currentTime; });
-  video.addEventListener('seeking', () => { if (video.currentTime > maxT + 1) video.currentTime = maxT; });
+  video.addEventListener('seeking', () => { if (!done && video.currentTime > maxT + 1) video.currentTime = maxT; });
   video.addEventListener('ratechange', () => { if (video.playbackRate > 1) video.playbackRate = 1; });
-  video.addEventListener('ended', () => { if (tIndex === ti && vIndex === vi) ready(true); });
+  video.addEventListener('ended', () => { if (si === my) { done = true; ready(true); } });
   video.addEventListener('error', () => {
-    if (e.fallback) useIframe(e.fallback);
-    else if (tIndex === ti && vIndex === vi) $('vask').textContent = 'הסרטון לא נטען — בדוק אינטרנט ורענן';
+    if (si !== my) return;
+    if (e.fallback) {
+      $('vbox').innerHTML = '<iframe src="' + esc(e.fallback) + '" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+      let left = it.minSeconds == null ? 180 : it.minSeconds;
+      const tick = () => {
+        if (left <= 0) { clearInterval(vTimer); return ready(true); }
+        $('vask').textContent = 'אפשר להתקדם בעוד ' + left-- + ' שניות';
+      };
+      tick(); vTimer = setInterval(tick, 1000);
+    } else $('vask').textContent = 'הסרטון לא נטען — בדוק אינטרנט ורענן';
   });
   video.src = await resolveSrc(e.src);
-  preloadNext(ti, vi);
 }
-
-let preloadEl = null;
-function preloadNext(ti, vi) {
-  const t = tList[ti];
-  const nt = tList[ti + 1];
-  const next = t.videos[vi + 1] || (nt && nt.videos[0]);
-  if (preloadEl) { preloadEl.remove(); preloadEl = null; }
-  if (!next) return;
-  preloadEl = document.createElement('video');
-  preloadEl.preload = 'auto'; preloadEl.muted = true; preloadEl.style.display = 'none';
-  document.body.appendChild(preloadEl);
-  Promise.resolve(resolveSrc(embedUrl(next.url).src)).then(src => { if (preloadEl) preloadEl.src = src; });
-}
-
-$('vmore').onclick = () => playTopic(tIndex, vIndex + 1);
-$('vdone').onclick = () => {
-  clearInterval(vTimer);
-  const t = tList[tIndex];
-  if (cur.qMode === 'topic' && t.questions.length) {
-    clearVideo();
-    return goQuestions([cur.topics.indexOf(t)]);
-  }
-  if (tIndex < tList.length - 1) return playTopic(tIndex + 1, 0);
-  clearVideo();
-  if (cur.qMode === 'topic') return afterQuiz();          // כל השאלות כבר נענו
-  $('confirmTitle').textContent = 'סיימת את ההדרכה';
-  show('s-confirm');
+$('vagain').onclick = () => {
+  const s = steps[si];
+  views[s.id] = (views[s.id] || 1) + 1;
+  const v = $('vbox').querySelector('video');
+  if (v) { v.currentTime = 0; v.play().catch(() => {}); }
 };
-function clearVideo() {
-  $('vbox').innerHTML = '';
-  if (preloadEl) { preloadEl.remove(); preloadEl = null; }
-}
-
-// ---------- אישור צפייה (רק במצב "שאלות בסוף") ----------
-$('watched').onchange = () => { $('confirm').disabled = !$('watched').checked; };
-$('confirm').onclick = () => goQuestions(cur.topics.map((_, k) => k));
+$('vdone').onclick = () => { clearInterval(vTimer); $('vbox').innerHTML = ''; runStep(si + 1); };
 
 // ---------- שאלות ----------
-let step = [];            // אינדקסים של הנושאים שמוצגים כרגע
-// סדר תצוגה אקראי לתשובות, כדי שמקום התשובה הנכונה לא יהיה קבוע
 function shuffledIdx(n) {
   const a = Array.from({ length: n }, (_, i) => i);
   for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
   return a;
 }
-function remainingTopics(afterTi) {
-  return tList.findIndex(t => cur.topics.indexOf(t) === afterTi) < tList.length - 1;
-}
-function isLastStepOfQuiz() {
-  if (cur.qMode !== 'topic') return true;
-  const t = cur.topics[step[step.length - 1]];
-  const pos = tList.indexOf(t);
-  return pos === -1 || pos === tList.length - 1;
-}
-function goQuestions(tis) {
-  step = tis.filter(ti => cur.topics[ti].questions.length);
-  if (!step.length) return afterStep();
-  let html = '', n = 0;
-  step.forEach(ti => {
-    const t = cur.topics[ti];
-    if (t.name) { n++; html += '<div class="qh"><span>' + n + '</span>' + esc(t.name) + '</div>'; }
-    t.questions.forEach((q, qi) => {
-      const key = ti + '_' + qi;
-      const body = q.type === 'choice'
-        ? shuffledIdx(q.options.length).map(j => '<label class="opt"><input type="radio" name="q' + key + '" value="' + j + '"> <span>' + esc(q.options[j]) + '</span></label>').join('')
-        : '<textarea name="q' + key + '" placeholder="התשובה שלך"></textarea>';
-      const img = q.image && q.image.url ? '<img src="' + esc(q.image.url) + '" style="max-width:100%;border-radius:14px;margin:0 0 10px;display:block">' : '';
-      html += '<div class="q" id="qq' + key + '"><p><b>' + esc(q.text) + '</b></p>' + img + body + '</div>';
-    });
-  });
-  $('quiz').innerHTML = html;
-  const last = isLastStepOfQuiz() && qIndex === PKG.length - 1;
-  const needConfirm = cur.qMode === 'topic' && isLastStepOfQuiz();
-  $('qconfirm').classList.toggle('hidden', !needConfirm);
-  $('watched2').checked = false;
+let qNum = 0;
+function showQuestions(s) {
+  $('steps2').innerHTML = stepBar();
+  $('quiz').innerHTML = s.items.map(({ it, id }, n) => {
+    const name = 'a' + n;
+    const body = it.type === 'choice'
+      ? shuffledIdx(it.options.length).map(j => '<label class="row"><input type="radio" name="' + name + '" value="' + j + '">' +
+          '<span class="box">' + esc(it.options[j]) + '</span></label>').join('')
+      : '<textarea class="field" name="' + name + '" placeholder="התשובה שלך"></textarea>';
+    const img = it.image && it.image.url ? '<img src="' + esc(it.image.url) + '" alt="">' : '';
+    return '<div class="q" id="qq' + n + '"><p>' + (qNum + n + 1) + '. ' + esc(it.text) +
+           '<small>' + esc(it.cat) + (it.sub && it.sub !== it.cat ? ' ‹ ' + esc(it.sub) : '') + '</small></p>' + img + body + '</div>';
+  }).join('');
+  const last = si === steps.length - 1;
   $('send').textContent = last ? 'שליחת המבחן' : 'המשך';
   $('send').disabled = false;
   $('qerr').textContent = '';
   show('s-quiz');
 }
-
-function collectStep() {
-  const f = $('quiz');
-  let missing = null;
-  step.forEach(ti => cur.topics[ti].questions.forEach((q, qi) => {
-    const key = ti + '_' + qi;
-    $('qq' + key).classList.remove('missing');
-    let answer, ok = null;
-    if (q.type === 'choice') {
-      const sel = f.querySelector('input[name="q' + key + '"]:checked');
-      if (sel) { answer = q.options[+sel.value]; ok = +sel.value === q.correct - 1; }
-    } else {
-      answer = f.elements['q' + key].value.trim();
-    }
-    if (!answer) { $('qq' + key).classList.add('missing'); missing = missing || $('qq' + key); }
-    store[key] = { ti, q, answer, ok };
-  }));
-  return missing;
-}
-
-function afterStep() {
-  // אחרי קבוצת שאלות: ממשיכים לנושא הבא, או מסיימים את המבחן
-  if (cur.qMode === 'topic') {
-    const t = cur.topics[step[step.length - 1]];
-    const pos = tList.indexOf(t);
-    if (pos > -1 && pos < tList.length - 1) { show('s-videos'); return playTopic(pos + 1, 0); }
-  }
-  afterQuiz();
-}
-
-function afterQuiz() {
-  const perTopic = cur.topics.map(() => ({ right: 0, choices: 0 }));
-  const rows = [];
-  cur.topics.forEach((t, ti) => t.questions.forEach((q, qi) => {
-    const r = store[ti + '_' + qi];
-    if (!r) return;
-    if (q.type === 'choice') { perTopic[ti].choices++; if (r.ok) perTopic[ti].right++; }
-    rows.push({ ti, q, answer: r.answer, ok: r.ok });
-  }));
-  results.push({ id: cur.id, title: cur.title, topics: cur.topics, perTopic, rows, seen: Object.assign({}, seen) });
-  if (qIndex < PKG.length - 1) return runQuiz(qIndex + 1);
-  sendAll();
-}
-
 $('send').onclick = () => {
-  const missing = collectStep();
-  $('qerr').textContent = '';
-  if (missing) { $('qerr').textContent = 'יש שאלות שלא נענו (מסומנות באדום).'; missing.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
-  if (!$('qconfirm').classList.contains('hidden') && !$('watched2').checked) {
-    $('qerr').textContent = 'צריך לאשר שצפית בחומר ההדרכה.'; return;
+  if (si >= steps.length) return sendAll();
+  const s = steps[si], f = $('quiz');
+  let missing = null;
+  s.items.forEach(({ it, id }, n) => {
+    const box = $('qq' + n);
+    box.classList.remove('missing');
+    let answer, ok = null;
+    if (it.type === 'choice') {
+      const sel = f.querySelector('input[name="a' + n + '"]:checked');
+      if (sel) { answer = it.options[+sel.value]; ok = +sel.value === it.correct - 1; }
+    } else answer = f.elements['a' + n].value.trim();
+    if (!answer) { box.classList.add('missing'); missing = missing || box; }
+    answers[id] = { answer, ok };
+  });
+  if (missing) {
+    $('qerr').textContent = 'יש שאלות שלא נענו (מסומנות באדום).';
+    missing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
   }
-  afterStep();
+  if (si === steps.length - 1) return sendAll();
+  qNum += s.items.length;
+  runStep(si + 1);
 };
 
-// ---------- שליחה ----------
+// ---------- תוצאות ----------
+function resultsFor(pi) {
+  const q = PKG[pi], cats = {}, rows = [];
+  let right = 0, total = 0;
+  q.list.forEach(it => {
+    const id = pi + ':' + it.key;
+    if (it.k === 'v') { rows.push({ k: 'v', it, views: views[id] || 0 }); return; }
+    const a = answers[id] || {};
+    rows.push({ k: 'q', it, answer: a.answer, ok: a.ok });
+    if (it.type !== 'choice') return;
+    const c = cats[it.cat] = cats[it.cat] || { right: 0, total: 0 };
+    c.total++; total++;
+    if (a.ok) { c.right++; right++; }
+  });
+  return { q, cats, rows, right, total };
+}
+const pct = (r, t) => t ? Math.round(r / t * 100) : 0;
 function buildEmailData(name) {
-  const totals = results.reduce((a, r) => {
-    r.perTopic.forEach(p => { a.right += p.right; a.choices += p.choices; });
-    return a;
-  }, { right: 0, choices: 0 });
-  const pct = totals.choices ? Math.round(totals.right / totals.choices * 100) : 0;
-  const title = results.length > 1 ? results.length + ' מבחנים' : results[0].title;
-
-  const endedAt = Date.now();
-  const mins = startedAt ? Math.max(0, Math.round((endedAt - startedAt) / 60000)) : null;
+  const res = PKG.map((_, pi) => resultsFor(pi));
+  const right = res.reduce((a, r) => a + r.right, 0), total = res.reduce((a, r) => a + r.total, 0);
+  const allCats = {};
+  res.forEach(r => Object.keys(r.cats).forEach(c => {
+    const t = allCats[c] = allCats[c] || { right: 0, total: 0 };
+    t.right += r.cats[c].right; t.total += r.cats[c].total;
+  }));
+  const end = Date.now(), mins = Math.max(0, Math.round((end - startedAt) / 60000));
+  const title = PKG.length > 1 ? PKG.length + ' מבחנים' : PKG[0].title;
   const data = {
-    _subject: title + ': ' + name + (totals.choices ? ' — ' + pct + '%' : ''),
-    _template: 'box',
-    _captcha: 'false',
+    _subject: title + ': ' + name + (total ? ' — ' + pct(right, total) + '%' : ''),
+    _template: 'box', _captcha: 'false',
     'שם': name,
-    'ציון כולל': totals.right + '/' + totals.choices + ' (' + pct + '%)',
-    'זמן התחלה': new Date(startedAt || endedAt).toLocaleString('he-IL'),
-    'זמן סיום': new Date(endedAt).toLocaleString('he-IL') + (mins != null ? ' (' + mins + ' דק\')' : ''),
+    'ציון כולל': right + '/' + total + ' (' + pct(right, total) + '%)',
+    'התחיל': new Date(startedAt).toLocaleString('he-IL'),
+    'משך': mins + ' דקות',
   };
+  Object.keys(allCats).forEach(c => { data['ציון — ' + c] = allCats[c].right + '/' + allCats[c].total + ' (' + pct(allCats[c].right, allCats[c].total) + '%)'; });
   let n = 0;
-  results.forEach(r => {
-    const rt = r.perTopic.reduce((a, p) => ({ right: a.right + p.right, choices: a.choices + p.choices }), { right: 0, choices: 0 });
-    if (results.length > 1) data['— מבחן: ' + r.title] = 'ציון ' + rt.right + '/' + rt.choices;
-    r.topics.forEach((t, ti) => {
-      if (!t.name) return;
-      const watched = r.seen[t.name] || r.seen[ti];
-      const bits = [];
-      if (r.perTopic[ti].choices) bits.push('ציון ' + r.perTopic[ti].right + '/' + r.perTopic[ti].choices);
-      if (watched) bits.push(watched === 1 ? 'הבין אחרי סרטון אחד' : 'נזקק ל-' + watched + ' סרטונים');
-      // הקטגוריה (שם המבחן) מופיעה לפני שם הנושא, גם כשזה מבחן בודד
-      const label = t.name !== r.title ? r.title + ' — ' + t.name : t.name;
-      if (bits.length) data['נושא: ' + label] = bits.join(' · ');
-    });
+  res.forEach(r => {
+    if (res.length > 1) data['— מבחן: ' + r.q.title] = 'ציון ' + r.right + '/' + r.total;
     r.rows.forEach(row => {
       n++;
-      const topic = r.topics[row.ti].name;
-      const tags = [r.title, topic && topic !== r.title ? topic : '']
-        .filter(Boolean).map(x => '[' + x + '] ').join('');
-      data[n + '. ' + tags + row.q.text] =
-        row.answer + (row.ok === true ? '  ✅' : row.ok === false ? '  ❌' : '  (פתוחה — לבדיקה)');
+      const where = '[' + row.it.cat + (row.it.sub && row.it.sub !== row.it.cat ? ' ‹ ' + row.it.sub : '') + '] ';
+      if (row.k === 'v') data[n + '. 🎬 ' + where + row.it.title] = row.views > 1 ? 'צפה ' + row.views + ' פעמים (לא הבין בפעם הראשונה)' : 'צפה פעם אחת';
+      else data[n + '. ' + where + row.it.text] = row.answer + (row.ok === true ? '  ✅' : row.ok === false ? '  ❌' : '  (פתוחה — לבדיקה)');
     });
   });
   return data;
+}
+function subRecord(r, name, mail) {
+  return {
+    name, at: Date.now(), startedAt, right: r.right, total: r.total, pct: pct(r.right, r.total), mail,
+    cats: Object.keys(r.cats).map(c => ({ name: c, right: r.cats[c].right, total: r.cats[c].total })),
+    answers: r.rows.filter(x => x.k === 'q').map(x => ({ cat: x.it.cat, sub: x.it.sub || '', q: x.it.text, a: x.answer,
+                                                        ok: x.ok === null ? 'open' : (x.ok ? 'yes' : 'no') })),
+    views: r.rows.filter(x => x.k === 'v').map(x => ({ title: x.it.title, n: x.views })),
+  };
 }
 
 async function putJSON(url, body) {
   const res = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   if (!res.ok) throw new Error('save ' + res.status);
-  return res;
 }
-function subRecord(r, name, mail) {
-  const rt = r.perTopic.reduce((a, p) => ({ right: a.right + p.right, choices: a.choices + p.choices }), { right: 0, choices: 0 });
-  return {
-    name: name, at: Date.now(), startedAt: startedAt || Date.now(), right: rt.right, total: rt.choices,
-    pct: rt.choices ? Math.round(rt.right / rt.choices * 100) : 0, mail: mail,
-    topics: r.topics.filter(t => t.name).map(t => {
-      const ti = r.topics.indexOf(t);
-      return { name: t.name, right: r.perTopic[ti].right, choices: r.perTopic[ti].choices,
-               watched: r.seen[t.name] || r.seen[ti] || 0 };
-    }),
-    answers: r.rows.map(row => ({ topic: r.topics[row.ti].name || '', q: row.q.text, a: row.answer,
-                                  ok: row.ok === null ? 'open' : (row.ok ? 'yes' : 'no') })),
-  };
-}
-// שמירה: PUT לכל מבחן, עם המתנה לאישור. אותו מפתח בכל ניסיון, לכן לחיצה חוזרת לא מכפילה.
+// שמירה: אותו מפתח בכל ניסיון, לכן לחיצה חוזרת לא מכפילה
 async function saveResults(name, mail) {
   const key = subKeyFor(name);
-  for (const r of results) {
-    await putJSON(DB('/submissions/' + r.id + '/' + encodeURIComponent(key)), subRecord(r, name, mail));
-  }
+  for (let pi = 0; pi < PKG.length; pi++)
+    await putJSON(DB('/submissions/' + PKG[pi].id + '/' + encodeURIComponent(key)), subRecord(resultsFor(pi), name, mail));
 }
-// נעילת הקישור. חד־פעמיות נאכפת ברגע ההגשה, לא רק בפתיחה.
+// נעילת הקישור ברגע ההגשה
 async function lockLink(name) {
-  if (!(code || bundleId)) {
-    await putJSON(DB('/done/' + PKG[0].id + '/' + encodeURIComponent(nameKey(name))), Date.now());
-    return;
-  }
+  if (!(code || bundleId)) return putJSON(DB('/done/' + PKG[0].id + '/' + encodeURIComponent(nameKey(name))), Date.now());
   const res = await fetch(lockUrl(), { method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ used: Date.now(), name: name }) });
+    body: JSON.stringify({ used: Date.now(), name }) });
   if (!res.ok) throw new Error('lock ' + res.status);
 }
 async function markMail(name, mail) {
   const key = subKeyFor(name);
-  for (const r of results) {
+  for (const q of PKG) {
     try {
-      await fetch(DB('/submissions/' + r.id + '/' + encodeURIComponent(key)), {
-        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mail: mail }) });
+      await fetch(DB('/submissions/' + q.id + '/' + encodeURIComponent(key)), {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mail }) });
     } catch (e) {}
   }
 }
 
-let savedOk = false;     // כדי שלחיצה חוזרת אחרי כשל מייל לא תשמור מחדש
-
+// כל שלב נזכר בנפרד: ניסיון חוזר לא שומר שוב (הכללים חוסמים דריסה) אבל כן מנסה לנעול שוב
+let savedOk = false, lockedOk = false;
 async function sendAll() {
   const name = $('name').value.trim();
   const data = buildEmailData(name);
-
+  if ($('s-quiz').classList.contains('hidden')) { $('quiz').innerHTML = ''; show('s-quiz'); }
   $('send').disabled = true; $('send').textContent = 'שולח...';
   $('qerr').textContent = '';
+  const retry = msg => { $('qerr').textContent = msg; $('send').disabled = false; $('send').textContent = 'שליחת המבחן'; };
 
-  // 1. שמירה למסד — קודם כול, ועם המתנה לאישור. בלי זה אין הגשה.
+  // 1. שמירה — קודם כול, עם המתנה לאישור. בלי זה אין הגשה.
   if (!savedOk) {
-    try {
-      await saveResults(name, 'pending');
-      savedOk = true;
-    } catch (err) {
-      $('qerr').textContent = 'ההגשה לא נשמרה. בדוק שיש אינטרנט ולחץ שוב — התשובות שלך נשארו כאן.';
-      $('send').disabled = false; $('send').textContent = 'שליחת המבחן';
-      return;
-    }
-    // 2. נעילת הקישור. אם מישהו אחר הגיש בינתיים — מסך "כבר נוצל".
-    try {
-      await lockLink(name);
-    } catch (err) {
+    try { await saveResults(name, 'pending'); savedOk = true; }
+    catch (err) { return retry('ההגשה לא נשמרה. בדוק שיש אינטרנט ולחץ שוב — התשובות שלך נשארו כאן.'); }
+  }
+  // 2. נעילת הקישור
+  if (!lockedOk) {
+    try { await lockLink(name); lockedOk = true; }
+    catch (err) {
       let used = null;
       if (code || bundleId) { try { used = (await (await fetch(lockUrl(), { cache: 'no-store' })).json()) || null; } catch (e) {} }
       if (used && used.used) return usedScreen(used.name);
-      $('qerr').textContent = 'ההגשה נשמרה אבל לא הושלמה. בדוק שיש אינטרנט ולחץ שוב.';
-      $('send').disabled = false; $('send').textContent = 'שליחת המבחן';
-      return;
+      return retry('ההגשה נשמרה אבל לא הושלמה. בדוק שיש אינטרנט ולחץ שוב.');
     }
     try { localStorage.setItem(DONE_KEY(name), '1'); } catch (e) {}
   }
 
-  // 3. מייל. זה השלב היחיד שמותר לו להיכשל בלי שהעובד ימלא מחדש.
+  // 3. מייל — השלב היחיד שמותר לו להיכשל
   try {
     const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(resultsEmail), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(data),
-    });
+      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) });
     const json = await res.json().catch(() => ({}));
     if (!res.ok || String(json.success) !== 'true') throw new Error(json.message || res.status);
     await markMail(name, 'sent');
-    show('s-done');
   } catch (err) {
     await markMail(name, 'failed');
-    $('doneNote').textContent = 'ההגשה נקלטה ונשמרה. שליחת המייל למנהל לא עברה — המנהל רואה את התוצאות אצלו ויכול לשלוח שוב. אתה לא צריך למלא שוב.';
-    show('s-done');
+    $('doneNote').textContent = 'ההגשה נקלטה ונשמרה. שליחת המייל למנהל לא עברה — המנהל רואה את התוצאות אצלו. אתה לא צריך למלא שוב.';
   }
+  show('s-done');
 }
 </script>
 </body>

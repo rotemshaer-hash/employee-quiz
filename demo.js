@@ -82,20 +82,32 @@
       }
     }
     if (url.startsWith(SETTINGS.databaseURL + '/library')) {
-      mem.lib = mem.lib || { videos: {}, questions: {} };
-      const parts = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean).slice(1);
-      const [kind, key] = parts;
-      if (kind) mem.lib[kind] = mem.lib[kind] || {};
-      if (method === 'PATCH') {
+      // כל עומק של נתיב, כמו בפיירבייס (library/catalog/cats/<id>/subs/<id> וכו')
+      mem.lib = mem.lib || {};
+      const parts = new URL(url).pathname.replace(/\.json$/, '').split('/').filter(Boolean).slice(1).map(decodeURIComponent);
+      const parentOf = create => {
+        let node = mem.lib;
+        for (const p of parts.slice(0, -1)) {
+          if (node[p] == null || typeof node[p] !== 'object') { if (!create) return null; node[p] = {}; }
+          node = node[p];
+        }
+        return node;
+      };
+      const last = parts[parts.length - 1];
+      if (method === 'PUT' || method === 'PATCH') {
         const body = JSON.parse(opts.body);
-        if (key) { const it = mem.lib[kind][key] = mem.lib[kind][key] || {};
-          Object.keys(body).forEach(f => { if (body[f] === null) delete it[f]; else it[f] = body[f]; }); }
-        else Object.assign(mem.lib[kind], body);
+        if (!parts.length) { mem.lib = method === 'PUT' ? body : Object.assign(mem.lib, body); }
+        else {
+          const parent = parentOf(true);
+          if (method === 'PUT') parent[last] = body;
+          else { const it = parent[last] = (parent[last] && typeof parent[last] === 'object') ? parent[last] : {};
+                 Object.keys(body).forEach(f => { if (body[f] === null) delete it[f]; else it[f] = body[f]; }); }
+        }
         write(); return json(body);
       }
-      if (method === 'PUT') { if (key) mem.lib[kind][key] = JSON.parse(opts.body); else if (kind) mem.lib[kind] = JSON.parse(opts.body); else mem.lib = JSON.parse(opts.body); write(); return json(JSON.parse(opts.body)); }
-      if (method === 'DELETE') { if (key) delete mem.lib[kind][key]; else if (kind) delete mem.lib[kind]; else mem.lib = {}; write(); return json(null); }
-      const v = key ? mem.lib[kind][key] : (kind ? mem.lib[kind] : mem.lib);
+      if (method === 'DELETE') { if (!parts.length) mem.lib = {}; else { const p = parentOf(false); if (p) delete p[last]; } write(); return json(null); }
+      const p = parts.length ? parentOf(false) : null;
+      const v = parts.length ? (p ? p[last] : undefined) : mem.lib;
       return json(v === undefined ? null : v);
     }
     if (url.startsWith(SETTINGS.databaseURL + '/settings')) {
