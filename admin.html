@@ -80,6 +80,24 @@
   .bar i{display:block;height:100%;background:var(--purple);width:0}
   .preview img{display:block;width:100%;border-radius:6px;margin-top:6px}
   .btn.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
+  .pane-empty{color:var(--muted);text-align:center;padding:60px 20px;border:3px dashed var(--line);border-radius:9px}
+  .pane h2{font-size:20px;margin:0 0 10px;line-height:1.4}
+  .pane video,.pane img{display:block;width:100%;max-height:70vh;border-radius:9px;background:#000}
+  .pane img{background:transparent}
+  .box.focus{border-color:var(--purple);box-shadow:0 0 0 3px var(--soft)}
+  /* מחשב: רוחב מלא, רשתות, ומסך מפוצל (רשימה מימין, תצוגה משמאל) */
+  @media (min-width:1000px){
+    main{max-width:1320px}
+    .panel{padding:28px 24px 48px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 16px;margin-bottom:8px}
+    .grid.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid .row{margin-bottom:0}
+    .actions{display:flex;flex-wrap:wrap;gap:12px}
+    .actions .btn{width:auto;min-width:240px;padding-inline:28px}
+    .split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;align-items:start}
+    .pane{position:sticky;top:84px}
+    .narrow{max-width:680px}
+  }
   .hidden{display:none!important}
 </style>
 </head>
@@ -120,6 +138,8 @@ const STORAGE = 'https://firebasestorage.googleapis.com/v0/b/' + SETTINGS.storag
 const CHUNK = 2 * 1024 * 1024;
 const resolveSrc = window.resolveVideoSrc || (u => u);
 const isImg = v => (v && v.kind) === 'image';
+const WIDE = matchMedia('(min-width: 1000px)');
+const wide = () => WIDE.matches;
 const fmtDur = s => s ? Math.floor(s / 60) + ':' + String(Math.round(s % 60)).padStart(2, '0') : '';
 
 let token = null, quizzes = {}, globalEmail = '';
@@ -127,7 +147,8 @@ let catalog = { cats: {}, videos: {}, questions: {} };
 let draft = null;                 // מבחן בבנייה: { id, title, email, items: ['v:..'|'q:..'], snap: {key: item} }
 let view = 'login', curCat = null, curSub = null;
 const expanded = new Set();       // פריטים שהתצוגה המקדימה שלהם פתוחה
-let form = null;                  // טופס פתוח: הוספה/עריכה של סרטון־תמונה או של שאלה
+let form = null;
+let focusKey = null;              // במחשב: הפריט שמוצג בחלון התצוגה                  // טופס פתוח: הוספה/עריכה של סרטון־תמונה או של שאלה
 
 function sessionSet(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
 function sessionGet(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
@@ -241,15 +262,15 @@ function renderTests() {
   topbar('', 'הגדרות', 'settings');
   const ids = Object.keys(quizzes).sort((a, b) => (quizzes[b].updated || 0) - (quizzes[a].updated || 0));
   $('panel').innerHTML = '<h1>מבחנים</h1>' +
-    (ids.length ? '' : '<p class="muted">עוד אין מבחנים.</p>') +
+    (ids.length ? '' : '<p class="muted">עוד אין מבחנים.</p>') + '<div class="grid g2">' +
     ids.map(id => {
       const q = quizzes[id], mail = q.email || globalEmail;
       return '<div class="row"><div class="side">' +
         icon('send', 'send', ' data-id="' + id + '"') + icon('pen', 'edit', ' data-id="' + id + '"') + icon('del', 'delete', ' data-id="' + id + '"') +
         '</div><div class="box"><div>' + esc(q.title || 'ללא שם') +
         '<small class="ltr">' + esc(mail || 'לא הוגדר מייל לתוצאות') + '</small></div></div></div>';
-    }).join('') +
-    '<button class="btn" data-act="newTest">הוסף מבחן</button>' +
+    }).join('') + '</div>' +
+    '<div class="actions"><button class="btn" data-act="newTest">הוסף מבחן</button></div>' +
     '<div class="foot"><span class="muted">גרסה 41 · </span><button data-act="logout">יציאה</button></div>';
 }
 
@@ -259,10 +280,10 @@ function renderCats() {
   const list = cats();
   $('panel').innerHTML = '<h1>קטגוריות <span class="ch">‹</span></h1>' + selSummary() +
     (list.length ? '' : '<p class="muted">הקטלוג ריק.</p><button class="btn ghost" data-act="seed">טעינת הקטלוג הראשוני</button>') +
-    list.map(([cid, c]) => '<div class="row"><div class="side">' + icon('pen', 'renameCat', ' data-cid="' + cid + '"') +
+    '<div class="grid">' + list.map(([cid, c]) => '<div class="row"><div class="side">' + icon('pen', 'renameCat', ' data-cid="' + cid + '"') +
       '</div><button class="box" data-act="openCat" data-cid="' + cid + '"><div>' + esc(c.name) +
-      '<small>' + countIn(cid) + '</small></div></button></div>').join('') +
-    '<button class="btn ghost" data-act="addCat">הוסף</button>' + buildButtons();
+      '<small>' + countIn(cid) + '</small></div></button></div>').join('') + '</div>' +
+    '<div class="actions"><button class="btn ghost" data-act="addCat">הוסף</button>' + buildButtons() + '</div>';
 }
 
 // ---------- דף 3: תת־קטגוריות ----------
@@ -270,10 +291,10 @@ function renderSubs() {
   topbar(draftSub(), 'לכל המבחנים', 'toTests');
   $('panel').innerHTML = '<h1><a data-act="toCats">קטגוריות</a> <span class="ch">‹</span> ' + esc(catName(curCat)) + ' <span class="ch">‹</span></h1>' +
     selSummary() +
-    subs(curCat).map(([sid, s]) => '<div class="row"><div class="side">' + icon('pen', 'renameSub', ' data-sid="' + sid + '"') +
+    '<div class="grid">' + subs(curCat).map(([sid, s]) => '<div class="row"><div class="side">' + icon('pen', 'renameSub', ' data-sid="' + sid + '"') +
       '</div><button class="box" data-act="openSub" data-sid="' + sid + '"><div>' + esc(s.name) +
-      '<small>' + countIn(curCat, sid) + '</small></div></button></div>').join('') +
-    '<button class="btn ghost" data-act="addSub">הוסף</button>' + buildButtons();
+      '<small>' + countIn(curCat, sid) + '</small></div></button></div>').join('') + '</div>' +
+    '<div class="actions"><button class="btn ghost" data-act="addSub">הוסף</button>' + buildButtons() + '</div>';
 }
 
 // ---------- דף 3א: הסרטונים והשאלות של תת־קטגוריה ----------
@@ -282,9 +303,10 @@ function itemRow(key, tag, text, extra, preview) {
   const on = draft && draft.items.includes(key);
   const side = draft ? '<button class="chk' + (on ? ' on' : '') + '" data-act="pick" data-key="' + key + '" aria-label="סימון למבחן"></button>'
                      : icon('pen', key[0] === 'v' ? 'editMedia' : 'editQ', ' data-key="' + key + '" aria-label="עריכה"');
-  const open = expanded.has(key);
+  const open = !wide() && expanded.has(key);
+  const focus = wide() && key === focusKey;
   return '<div class="row"><div class="side">' + side + '</div>' +
-    '<div class="box item' + (on ? ' on' : '') + '" data-act="item" data-key="' + key + '" role="button" tabindex="0" aria-expanded="' + open + '">' +
+    '<div class="box item' + (on ? ' on' : '') + (focus ? ' focus' : '') + '" data-act="item" data-key="' + key + '" role="button" tabindex="0" aria-expanded="' + (open || focus) + '">' +
     '<span class="tag">' + tag + '</span><div>' + esc(text) + (extra || '') + '</div>' +
     (open ? '<div class="preview">' + preview + '</div>' : '') + '</div></div>';
 }
@@ -293,11 +315,29 @@ function questionPreview(q) {
     ? '<ol class="opts">' + q.options.map((o, i) => '<li' + (i === q.correct - 1 ? ' class="ok"' : '') + '>' + esc(o) + (i === q.correct - 1 ? ' ✓' : '') + '</li>').join('') + '</ol>'
     : '<p class="opts muted">שאלה פתוחה — העובד כותב תשובה חופשית.</p>';
 }
+// במחשב: חלון התצוגה משמאל לרשימה
+function paneHtml() {
+  const key = focusKey, id = key ? key.slice(2) : null;
+  const v = key && key[0] === 'v' ? catalog.videos[id] : null;
+  const q = key && key[0] === 'q' ? catalog.questions[id] : null;
+  if (!v && !q) return '<div class="pane-empty">לחיצה על סרטון, תמונה או שאלה ברשימה מציגה אותם כאן</div>';
+  const on = draft && draft.items.includes(key);
+  const pick = draft ? '<button class="btn' + (on ? ' ghost' : '') + '" data-act="pick" data-key="' + key + '">' + (on ? 'הסר מהמבחן' : 'הוסף למבחן') + '</button>' : '';
+  const edit = draft ? '' : '<button class="btn ghost" data-act="' + (v ? 'editMedia' : 'editQ') + '" data-key="' + key + '">עריכה</button>';
+  if (v) return '<span class="tag">' + (isImg(v) ? 'תמונה' : 'סרטון') + '</span><h2>' + esc(v.title) + '</h2>' +
+    (isImg(v) ? '<img alt="" data-src="' + esc(v.url) + '">' : '<video controls playsinline preload="metadata" data-src="' + esc(v.url) + '"></video>') +
+    '<p class="muted">' + (v.duration ? fmtDur(v.duration) + ' דקות · ' : '') + questionsOf(id).length + ' שאלות</p>' +
+    '<div class="actions">' + pick + edit + '</div>';
+  const pv = catalog.videos[q.video] || {};
+  return '<span class="tag">' + (q.type === 'choice' ? 'אמריקאית' : 'פתוחה') + '</span><h2>' + esc(q.text) + '</h2>' +
+    questionPreview(q) + '<p class="muted">שייכת ל: ' + esc(pv.title || '') + '</p>' +
+    '<div class="actions">' + pick + edit + '</div>';
+}
 function renderItems() {
   topbar(draftSub(), 'לכל המבחנים', 'toTests');
   const vids = videosIn(curCat, curSub);
-  $('panel').innerHTML = '<h1><a data-act="toCats">קטגוריות</a> <span class="ch">‹</span> <a data-act="toSubs">' +
-    esc(catName(curCat)) + '</a> <span class="ch">‹</span> ' + esc(subName(curCat, curSub)) + '</h1>' + selSummary() +
+  if (focusKey && !itemOf(focusKey)) focusKey = null;
+  const list =
     (vids.length ? '' : '<p class="muted">אין עדיין סרטונים בתת־קטגוריה הזו.</p>') +
     (vids.length ? '<p class="muted">לחיצה על פריט מציגה אותו' + (draft ? ' · הריבוע משמאל מסמן אותו למבחן' : '') + '</p>' : '') +
     vids.map(([vid, v]) => '<div class="group">' + esc(v.title) + '</div>' +
@@ -306,11 +346,14 @@ function renderItems() {
                        : '<video controls playsinline preload="metadata" data-src="' + esc(v.url) + '"></video>') +
       questionsOf(vid).map(([qid, q]) =>
         itemRow('q:' + qid, q.type === 'choice' ? 'אמריקאית' : 'פתוחה', q.text, '', questionPreview(q))).join('')).join('') +
-    '<button class="btn ghost" data-act="newMedia">הוסף סרטון או תמונה</button>' +
+    '<div class="actions"><button class="btn ghost" data-act="newMedia">הוסף סרטון או תמונה</button>' +
     (vids.length ? '<button class="btn ghost" data-act="newQ">הוסף שאלה</button>' : '') +
     (draft && vids.length ? '<button class="btn ghost" data-act="pickAll">סמן את כל מה שבתת־קטגוריה</button>' : '') +
     buildButtons() +
-    (draft ? '<button class="btn ghost" data-act="toCats">הוסף שאלות מקטגוריה אחרת</button>' : '');
+    (draft ? '<button class="btn ghost" data-act="toCats">הוסף שאלות מקטגוריה אחרת</button>' : '') + '</div>';
+  $('panel').innerHTML = '<h1><a data-act="toCats">קטגוריות</a> <span class="ch">‹</span> <a data-act="toSubs">' +
+    esc(catName(curCat)) + '</a> <span class="ch">‹</span> ' + esc(subName(curCat, curSub)) + '</h1>' + selSummary() +
+    (wide() ? '<div class="split"><div>' + list + '</div><div class="pane">' + paneHtml() + '</div></div>' : list);
   hydrateMedia();
 }
 // כתובת הקובץ נקבעת אחרי הציור, כדי שבמצב בדיקה סרטון/תמונה שהועלו ייטענו מהדפדפן
@@ -327,7 +370,7 @@ const crumbs = last => '<h1><a data-act="toCats">קטגוריות</a> <span clas
 function renderMediaForm() {
   topbar(draftSub(), 'לכל המבחנים', 'toTests');
   const editing = !!form.id;
-  $('panel').innerHTML = crumbs(editing ? 'עריכה' : 'סרטון או תמונה') +
+  $('panel').innerHTML = crumbs(editing ? 'עריכה' : 'סרטון או תמונה') + '<div class="narrow">' +
     '<label class="f">שם (מה העובד יראה)</label><input class="field" id="mTitle" value="' + esc(form.title) + '" placeholder="למשל: סדק בשליכט ליד חלון">' +
     (editing ? '' :
       '<label class="f">הקובץ</label><label class="pick"><input type="file" id="mFile" accept="video/*,image/*">' +
@@ -337,7 +380,7 @@ function renderMediaForm() {
     '<p class="err" id="mErr"></p>' +
     '<button class="btn" data-act="saveMedia"' + (form.uploading ? ' disabled' : '') + '>' + (form.uploading ? 'מעלה...' : 'שמירה') + '</button>' +
     (editing ? '<button class="btn danger" data-act="delMedia">מחיקה (כולל השאלות שלו)</button>' : '') +
-    '<button class="btn ghost" data-act="backItems">ביטול</button>';
+    '<button class="btn ghost" data-act="backItems">ביטול</button></div>';
   $('mTitle').oninput = e => { form.title = e.target.value; };
   if (!editing) $('mFile').onchange = e => {
     form.file = e.target.files[0] || null;
@@ -423,7 +466,7 @@ async function saveMedia() {
     if (duration) node.duration = duration;
     await api('PUT', '/library/catalog/videos/' + vid, node);
     catalog.videos[vid] = node;
-    form = null; expanded.add('v:' + vid); go('items');
+    form = null; expanded.add('v:' + vid); focusKey = 'v:' + vid; go('items');
   } catch (e) {
     form.uploading = false; form.msg = ''; renderMediaForm();
     err('ההעלאה נכשלה. בדוק אינטרנט ונסה שוב.');
@@ -448,7 +491,7 @@ async function delMedia() {
 function renderQuestionForm() {
   topbar(draftSub(), 'לכל המבחנים', 'toTests');
   const vids = videosIn(curCat, curSub), editing = !!form.id;
-  $('panel').innerHTML = crumbs(editing ? 'עריכת שאלה' : 'שאלה חדשה') +
+  $('panel').innerHTML = crumbs(editing ? 'עריכת שאלה' : 'שאלה חדשה') + '<div class="narrow">' +
     '<label class="f">שייכת ל</label><select class="field" id="qVideo">' +
       vids.map(([vid, v]) => '<option value="' + vid + '"' + (vid === form.video ? ' selected' : '') + '>' + (isImg(v) ? 'תמונה: ' : 'סרטון: ') + esc(v.title) + '</option>').join('') +
     '</select>' +
@@ -465,7 +508,7 @@ function renderQuestionForm() {
     '<p class="err" id="qErr"></p>' +
     '<button class="btn" data-act="saveQ">שמירה</button>' +
     (editing ? '<button class="btn danger" data-act="delQ">מחיקת השאלה</button>' : '') +
-    '<button class="btn ghost" data-act="backItems">ביטול</button>';
+    '<button class="btn ghost" data-act="backItems">ביטול</button></div>';
   const sync = () => {
     form.video = $('qVideo').value; form.text = $('qText').value;
     document.querySelectorAll('[data-opt]').forEach(el => { form.options[+el.dataset.opt] = el.value; });
@@ -490,7 +533,7 @@ async function saveQ() {
   try { await api('PUT', '/library/catalog/questions/' + qid, node); }
   catch (e) { return err('השמירה נכשלה. בדוק אינטרנט ונסה שוב.'); }
   catalog.questions[qid] = node;
-  expanded.add('q:' + qid);
+  expanded.add('q:' + qid); focusKey = 'q:' + qid;
   form = null; go('items');
 }
 async function delQ() {
@@ -504,9 +547,8 @@ async function delQ() {
 // ---------- סידור המבחן ושמירה ----------
 function renderOrder() {
   topbar(draftSub(), 'לכל המבחנים', 'toTests');
-  $('panel').innerHTML = '<h1>סידור המבחן</h1>' +
-    '<label class="f">שם המבחן</label><input class="field" id="dTitle" value="' + esc(draft.title) + '" placeholder="למשל: מבחן ריצוף — עובדים חדשים">' +
-    '<div class="group">הסדר שהעובד יראה</div><div id="orderList">' +
+  const nameField = '<label class="f">שם המבחן</label><input class="field" id="dTitle" value="' + esc(draft.title) + '" placeholder="למשל: מבחן ריצוף — עובדים חדשים">';
+  const listHtml = '<div class="group">הסדר שהעובד יראה</div><div id="orderList">' +
     draft.items.map(key => {
       const it = itemOf(key);
       if (!it) return '';
@@ -514,11 +556,15 @@ function renderOrder() {
         '<div class="box"><span class="tag">' + (it.k === 'v' ? (it.kind === 'image' ? 'תמונה' : 'סרטון') : it.type === 'choice' ? 'אמריקאית' : 'פתוחה') + '</span><div>' +
         esc(it.k === 'v' ? it.title : it.text) + '<small>' + esc(it.cat + ' ‹ ' + it.sub) + '</small></div></div></div>';
     }).join('') + '</div>' +
-    '<p class="muted">גוררים בסימן ☰ כדי לשנות סדר.</p>' +
+    '<p class="muted">גוררים בסימן ☰ כדי לשנות סדר.</p>';
+  const formHtml = nameField +
     '<label class="f">מייל לתוצאות</label><input class="field ltr" id="dEmail" type="email" value="' + esc(draft.email) + '" placeholder="name@example.com">' +
     '<p class="err" id="saveErr"></p>' +
     '<button class="btn" data-act="save">שמירת המבחן</button>' +
     '<button class="btn ghost" data-act="toCats">חזרה לבחירת שאלות</button>';
+  $('panel').innerHTML = '<h1>סידור המבחן</h1>' + (wide()
+    ? '<div class="split"><div>' + listHtml + '</div><div class="pane">' + formHtml + '</div></div>'
+    : nameField + listHtml + formHtml.slice(nameField.length));
   $('dTitle').oninput = e => { draft.title = e.target.value; $('tbSub').textContent = draftSub(); };
   $('dEmail').oninput = e => { draft.email = e.target.value.trim(); };
 }
@@ -664,7 +710,8 @@ document.addEventListener('click', async e => {
     case 'seed': seed(); break;
     case 'item':
       if (e.target.closest('.preview')) return;   // לחיצה בתוך הנגן/התשובות לא סוגרת
-      expanded.has(d.key) ? expanded.delete(d.key) : expanded.add(d.key);
+      if (wide()) focusKey = d.key;
+      else expanded.has(d.key) ? expanded.delete(d.key) : expanded.add(d.key);
       keepScroll(renderItems); break;
     case 'pick':
       toggleItem(d.key); keepScroll(renderItems); break;
@@ -722,6 +769,7 @@ document.addEventListener('keydown', e => {
 });
 addEventListener('beforeunload', e => { if (draft && draft.items.length) { e.preventDefault(); e.returnValue = ''; } });
 
+WIDE.addEventListener('change', () => { if (['tests', 'cats', 'subs', 'items', 'order'].includes(view)) keepScroll(() => go(view)); });
 go('login');
 (async () => {
   if (!sessionGet('rt')) return;
