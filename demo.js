@@ -34,7 +34,9 @@
     if (typeof n !== 'number') return url;
     const parts = [];
     for (let i = 0; i < n; i++) parts.push(await idbDo('readonly', st => st.get(path + '#' + i)));
-    return URL.createObjectURL(new Blob(parts, { type: 'video/mp4' }));
+    const ext = (path.match(/\.([a-z0-9]+)$/i) || [, ''])[1].toLowerCase();
+    const type = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif', heic: 'image/heic' }[ext] || 'video/mp4';
+    return URL.createObjectURL(new Blob(parts, { type }));
   };
 
   window.fetch = function (url, opts) {

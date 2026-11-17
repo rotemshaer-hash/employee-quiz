@@ -69,6 +69,17 @@
   .err{color:var(--bad);font-weight:700;margin:10px 0 0}
   .foot{margin-top:28px;text-align:center}
   .foot button{color:var(--muted);text-decoration:underline;font-size:14px}
+  .seg{display:flex;gap:8px;margin-top:6px}
+  .seg .btn{margin-top:0}
+  .opt{display:flex;flex-direction:row-reverse;align-items:center;gap:8px;margin-bottom:8px}
+  .opt input[type=radio]{appearance:none;-webkit-appearance:none;width:26px;height:26px;border:3px solid var(--box);border-radius:50%;margin:0;flex:none}
+  .opt input[type=radio]:checked{border-color:var(--purple);box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 12px var(--purple)}
+  .pick{display:block;border:3px dashed var(--box);border-radius:9px;padding:16px;text-align:center;font-size:17px;color:var(--purple);font-weight:700;cursor:pointer}
+  .pick input{display:none}
+  .bar{height:8px;border-radius:9px;background:var(--line);overflow:hidden;margin-top:10px}
+  .bar i{display:block;height:100%;background:var(--purple);width:0}
+  .preview img{display:block;width:100%;border-radius:6px;margin-top:6px}
+  .btn.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
   .hidden{display:none!important}
 </style>
 </head>
@@ -105,13 +116,18 @@ const inviteLink = (id, c) => new URL('index.html?q=' + id + '-' + c, location.h
 const validEmail = s => /^\S+@\S+\.\S+$/.test(s || '');
 const icon = (name, act, data) => '<button class="ic" data-act="' + act + '"' + (data || '') + '><svg><use href="#i-' + name + '"/></svg></button>';
 const keepScroll = fn => { const y = scrollY; fn(); scrollTo(0, y); };
+const STORAGE = 'https://firebasestorage.googleapis.com/v0/b/' + SETTINGS.storageBucket + '/o';
+const CHUNK = 2 * 1024 * 1024;
+const resolveSrc = window.resolveVideoSrc || (u => u);
+const isImg = v => (v && v.kind) === 'image';
 const fmtDur = s => s ? Math.floor(s / 60) + ':' + String(Math.round(s % 60)).padStart(2, '0') : '';
 
 let token = null, quizzes = {}, globalEmail = '';
 let catalog = { cats: {}, videos: {}, questions: {} };
 let draft = null;                 // מבחן בבנייה: { id, title, email, items: ['v:..'|'q:..'], snap: {key: item} }
 let view = 'login', curCat = null, curSub = null;
-const expanded = new Set();       // שאלות שפתוחות לצפייה בתשובות (מצב ניהול)
+const expanded = new Set();       // פריטים שהתצוגה המקדימה שלהם פתוחה
+let form = null;                  // טופס פתוח: הוספה/עריכה של סרטון־תמונה או של שאלה
 
 function sessionSet(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
 function sessionGet(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
@@ -176,7 +192,7 @@ function itemOf(key) {
   const [k, id] = [key[0], key.slice(2)];
   if (k === 'v' && catalog.videos[id]) {
     const v = catalog.videos[id];
-    return { key, k: 'v', title: v.title, url: v.url, duration: v.duration || 0, cat: catName(v.cat), sub: subName(v.cat, v.sub) };
+    return { key, k: 'v', kind: v.kind || 'video', title: v.title, url: v.url, duration: v.duration || 0, cat: catName(v.cat), sub: subName(v.cat, v.sub) };
   }
   if (k === 'q' && catalog.questions[id]) {
     const q = catalog.questions[id], v = catalog.videos[q.video] || {};
@@ -197,7 +213,8 @@ function topbar(sub, linkText, linkAct) {
 }
 function go(v) {
   view = v;
-  ({ login: renderLogin, tests: renderTests, cats: renderCats, subs: renderSubs, items: renderItems, order: renderOrder })[v]();
+  ({ login: renderLogin, tests: renderTests, cats: renderCats, subs: renderSubs, items: renderItems, order: renderOrder,
+     media: renderMediaForm, question: renderQuestionForm })[v]();
   scrollTo(0, 0);
 }
 const draftSub = () => draft ? (draft.title || (draft.id ? 'מבחן' : 'מבחן חדש')) : 'הגדרות';
@@ -263,7 +280,8 @@ function renderSubs() {
 // לחיצה על המסגרת פותחת תצוגה מקדימה (סרטון מתנגן / תשובות); הריבוע משמאל מסמן למבחן.
 function itemRow(key, tag, text, extra, preview) {
   const on = draft && draft.items.includes(key);
-  const side = draft ? '<button class="chk' + (on ? ' on' : '') + '" data-act="pick" data-key="' + key + '" aria-label="סימון למבחן"></button>' : '';
+  const side = draft ? '<button class="chk' + (on ? ' on' : '') + '" data-act="pick" data-key="' + key + '" aria-label="סימון למבחן"></button>'
+                     : icon('pen', key[0] === 'v' ? 'editMedia' : 'editQ', ' data-key="' + key + '" aria-label="עריכה"');
   const open = expanded.has(key);
   return '<div class="row"><div class="side">' + side + '</div>' +
     '<div class="box item' + (on ? ' on' : '') + '" data-act="item" data-key="' + key + '" role="button" tabindex="0" aria-expanded="' + open + '">' +
@@ -283,13 +301,204 @@ function renderItems() {
     (vids.length ? '' : '<p class="muted">אין עדיין סרטונים בתת־קטגוריה הזו.</p>') +
     (vids.length ? '<p class="muted">לחיצה על פריט מציגה אותו' + (draft ? ' · הריבוע משמאל מסמן אותו למבחן' : '') + '</p>' : '') +
     vids.map(([vid, v]) => '<div class="group">' + esc(v.title) + '</div>' +
-      itemRow('v:' + vid, 'סרטון', v.title, v.duration ? '<small>' + fmtDur(v.duration) + ' דקות</small>' : '',
-              '<video controls playsinline preload="metadata" src="' + esc(v.url) + '"></video>') +
+      itemRow('v:' + vid, isImg(v) ? 'תמונה' : 'סרטון', v.title, v.duration ? '<small>' + fmtDur(v.duration) + ' דקות</small>' : '',
+              isImg(v) ? '<img alt="" data-src="' + esc(v.url) + '">'
+                       : '<video controls playsinline preload="metadata" data-src="' + esc(v.url) + '"></video>') +
       questionsOf(vid).map(([qid, q]) =>
         itemRow('q:' + qid, q.type === 'choice' ? 'אמריקאית' : 'פתוחה', q.text, '', questionPreview(q))).join('')).join('') +
+    '<button class="btn ghost" data-act="newMedia">הוסף סרטון או תמונה</button>' +
+    (vids.length ? '<button class="btn ghost" data-act="newQ">הוסף שאלה</button>' : '') +
     (draft && vids.length ? '<button class="btn ghost" data-act="pickAll">סמן את כל מה שבתת־קטגוריה</button>' : '') +
     buildButtons() +
     (draft ? '<button class="btn ghost" data-act="toCats">הוסף שאלות מקטגוריה אחרת</button>' : '');
+  hydrateMedia();
+}
+// כתובת הקובץ נקבעת אחרי הציור, כדי שבמצב בדיקה סרטון/תמונה שהועלו ייטענו מהדפדפן
+function hydrateMedia() {
+  document.querySelectorAll('#panel [data-src]').forEach(async el => {
+    el.src = await resolveSrc(el.dataset.src);
+    el.removeAttribute('data-src');
+  });
+}
+
+// ---------- הוספה ועריכה: סרטון או תמונה ----------
+const crumbs = last => '<h1><a data-act="toCats">קטגוריות</a> <span class="ch">‹</span> <a data-act="toSubs">' + esc(catName(curCat)) +
+  '</a> <span class="ch">‹</span> <a data-act="backItems">' + esc(subName(curCat, curSub)) + '</a> <span class="ch">‹</span> ' + last + '</h1>';
+function renderMediaForm() {
+  topbar(draftSub(), 'לכל המבחנים', 'toTests');
+  const editing = !!form.id;
+  $('panel').innerHTML = crumbs(editing ? 'עריכה' : 'סרטון או תמונה') +
+    '<label class="f">שם (מה העובד יראה)</label><input class="field" id="mTitle" value="' + esc(form.title) + '" placeholder="למשל: סדק בשליכט ליד חלון">' +
+    (editing ? '' :
+      '<label class="f">הקובץ</label><label class="pick"><input type="file" id="mFile" accept="video/*,image/*">' +
+      '<span id="mPickText">' + (form.file ? esc(form.file.name) : 'בחירה מהגלריה') + '</span></label>' +
+      '<div class="bar' + (form.uploading ? '' : ' hidden') + '"><i id="mBar" style="width:' + (form.progress || 0) + '%"></i></div>') +
+    '<p class="muted" id="mMsg">' + esc(form.msg || (editing ? '' : 'סרטון עד 500MB, תמונה עד 10MB. אחרי השמירה מוסיפים לו שאלות.')) + '</p>' +
+    '<p class="err" id="mErr"></p>' +
+    '<button class="btn" data-act="saveMedia"' + (form.uploading ? ' disabled' : '') + '>' + (form.uploading ? 'מעלה...' : 'שמירה') + '</button>' +
+    (editing ? '<button class="btn danger" data-act="delMedia">מחיקה (כולל השאלות שלו)</button>' : '') +
+    '<button class="btn ghost" data-act="backItems">ביטול</button>';
+  $('mTitle').oninput = e => { form.title = e.target.value; };
+  if (!editing) $('mFile').onchange = e => {
+    form.file = e.target.files[0] || null;
+    $('mPickText').textContent = form.file ? form.file.name : 'בחירה מהגלריה';
+    if (form.file && !form.title) { form.title = form.file.name.replace(/\.[^.]+$/, ''); $('mTitle').value = form.title; }
+  };
+}
+async function storageFetch(url, opts) {
+  const go = () => {
+    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 90000);
+    return fetch(url, Object.assign({}, opts, { signal: ctl.signal, headers: Object.assign({ Authorization: 'Firebase ' + token }, opts.headers) }))
+      .finally(() => clearTimeout(timer));
+  };
+  let res = await go();
+  if (res.status === 401) { await relogin(); res = await go(); }
+  return res;
+}
+// העלאה בחתיכות של 2MB; אחרי נפילת רשת שואלים כמה התקבל וממשיכים משם
+async function uploadFile(file, path, onProgress) {
+  const type = file.type || 'application/octet-stream';
+  const start = await storageFetch(STORAGE + '?name=' + encodeURIComponent(path), {
+    method: 'POST',
+    headers: { 'X-Goog-Upload-Protocol': 'resumable', 'X-Goog-Upload-Command': 'start',
+               'X-Goog-Upload-Header-Content-Length': String(file.size), 'X-Goog-Upload-Header-Content-Type': type,
+               'Content-Type': 'application/json; charset=utf-8' },
+    body: JSON.stringify({ name: path, contentType: type }),
+  });
+  const uploadUrl = start.headers.get('X-Goog-Upload-URL');
+  if (!start.ok || !uploadUrl) throw new Error('start ' + start.status);
+  let offset = 0, fails = 0, result = null;
+  while (!result) {
+    const end = Math.min(offset + CHUNK, file.size), last = end === file.size;
+    try {
+      const res = await storageFetch(uploadUrl, {
+        method: 'POST', headers: { 'X-Goog-Upload-Command': last ? 'upload, finalize' : 'upload', 'X-Goog-Upload-Offset': String(offset) },
+        body: file.slice(offset, end),
+      });
+      if (!res.ok) throw new Error('chunk ' + res.status);
+      if (last) result = await res.json();
+      offset = end; fails = 0;
+    } catch (err) {
+      if (++fails > 6) throw err;
+      await new Promise(r => setTimeout(r, 1000 * 2 ** fails));
+      const q = await storageFetch(uploadUrl, { method: 'POST', headers: { 'X-Goog-Upload-Command': 'query' } }).catch(() => null);
+      const got = q && q.headers.get('X-Goog-Upload-Size-Received');
+      if (got != null) offset = +got;
+    }
+    onProgress(Math.floor(offset / file.size * 100));
+  }
+  return STORAGE + '/' + encodeURIComponent(path) + '?alt=media&token=' + result.downloadTokens;
+}
+const videoDuration = file => new Promise(ok => {
+  const v = document.createElement('video'), u = URL.createObjectURL(file);
+  v.preload = 'metadata';
+  v.onloadedmetadata = () => { ok(Math.round(v.duration) || 0); URL.revokeObjectURL(u); };
+  v.onerror = () => { ok(0); URL.revokeObjectURL(u); };
+  v.src = u;
+});
+async function saveMedia() {
+  const err = m => { $('mErr').textContent = m; };
+  form.title = $('mTitle').value.trim();
+  if (!form.title) return err('צריך שם.');
+  if (form.id) {
+    try { await api('PATCH', '/library/catalog/videos/' + form.id, { title: form.title }); }
+    catch (e) { return err('השמירה נכשלה. בדוק אינטרנט ונסה שוב.'); }
+    catalog.videos[form.id].title = form.title;
+    form = null; return go('items');
+  }
+  const f = form.file;
+  if (!f) return err('צריך לבחור קובץ.');
+  const image = /^image\//.test(f.type), video = /^video\//.test(f.type);
+  if (!image && !video) return err('אפשר רק סרטון או תמונה.');
+  if (image && f.size >= 10 * 1024 * 1024) return err('התמונה גדולה מ-10MB.');
+  if (video && f.size >= 500 * 1024 * 1024) return err('הסרטון גדול מ-500MB. צלם ב-720p או קצר אותו.');
+  const ext = (f.name.match(/\.([a-z0-9]+)$/i) || [, image ? 'jpg' : 'mp4'])[1].toLowerCase();
+  const path = (image ? 'images/' : 'videos/') + Date.now() + '-' + newId() + '.' + ext;
+  form.uploading = true; form.progress = 0; form.msg = 'מעלה... אל תסגור את המסך.'; renderMediaForm();
+  try {
+    const duration = video ? await videoDuration(f) : 0;
+    const url = await uploadFile(f, path, pct => { form.progress = pct; const b = $('mBar'); if (b) b.style.width = pct + '%'; });
+    const vid = 'm' + Date.now().toString(36) + newId();
+    const node = { cat: curCat, sub: curSub, title: form.title, url, path, kind: image ? 'image' : 'video', order: Date.now() };
+    if (duration) node.duration = duration;
+    await api('PUT', '/library/catalog/videos/' + vid, node);
+    catalog.videos[vid] = node;
+    form = null; expanded.add('v:' + vid); go('items');
+  } catch (e) {
+    form.uploading = false; form.msg = ''; renderMediaForm();
+    err('ההעלאה נכשלה. בדוק אינטרנט ונסה שוב.');
+  }
+}
+async function delMedia() {
+  const v = catalog.videos[form.id], qs = questionsOf(form.id);
+  if (!confirm('למחוק את "' + v.title + '"' + (qs.length ? ' ואת ' + qs.length + ' השאלות שלו' : '') + '? מבחנים שכבר נשמרו לא ייפגעו.')) return;
+  try {
+    await api('DELETE', '/library/catalog/videos/' + form.id);
+    await Promise.all(qs.map(([qid]) => api('DELETE', '/library/catalog/questions/' + qid)));
+  } catch (e) { return $('mErr').textContent = 'המחיקה נכשלה. נסה שוב.'; }
+  if (v.path && !Object.values(quizzes).some(q => (q.items || []).some(it => it.url === v.url)))
+    storageFetch(STORAGE + '/' + encodeURIComponent(v.path), { method: 'DELETE' }).catch(() => {});
+  delete catalog.videos[form.id];
+  qs.forEach(([qid]) => { delete catalog.questions[qid]; });
+  if (draft) draft.items = draft.items.filter(k => k !== 'v:' + form.id && !qs.some(([qid]) => k === 'q:' + qid));
+  form = null; go('items');
+}
+
+// ---------- הוספה ועריכה: שאלה ----------
+function renderQuestionForm() {
+  topbar(draftSub(), 'לכל המבחנים', 'toTests');
+  const vids = videosIn(curCat, curSub), editing = !!form.id;
+  $('panel').innerHTML = crumbs(editing ? 'עריכת שאלה' : 'שאלה חדשה') +
+    '<label class="f">שייכת ל</label><select class="field" id="qVideo">' +
+      vids.map(([vid, v]) => '<option value="' + vid + '"' + (vid === form.video ? ' selected' : '') + '>' + (isImg(v) ? 'תמונה: ' : 'סרטון: ') + esc(v.title) + '</option>').join('') +
+    '</select>' +
+    '<label class="f">סוג</label><div class="seg">' +
+      '<button class="btn' + (form.type === 'choice' ? '' : ' ghost') + '" data-act="qType" data-type="choice">אמריקאית</button>' +
+      '<button class="btn' + (form.type === 'open' ? '' : ' ghost') + '" data-act="qType" data-type="open">פתוחה</button></div>' +
+    '<label class="f">השאלה</label><textarea class="field" id="qText" rows="3">' + esc(form.text) + '</textarea>' +
+    (form.type === 'choice'
+      ? '<label class="f">תשובות — סמן את הנכונה</label>' +
+        form.options.map((o, i) => '<div class="opt"><input type="radio" name="qOk" value="' + i + '"' + (form.correct === i + 1 ? ' checked' : '') + ' aria-label="תשובה נכונה">' +
+          '<input class="field" data-opt="' + i + '" value="' + esc(o) + '" placeholder="תשובה ' + (i + 1) + '"></div>').join('') +
+        (form.options.length < 6 ? '<button class="btn ghost" data-act="qAddOpt">עוד תשובה</button>' : '')
+      : '<p class="muted">העובד כותב תשובה חופשית, והיא מגיעה אליך במייל לבדיקה.</p>') +
+    '<p class="err" id="qErr"></p>' +
+    '<button class="btn" data-act="saveQ">שמירה</button>' +
+    (editing ? '<button class="btn danger" data-act="delQ">מחיקת השאלה</button>' : '') +
+    '<button class="btn ghost" data-act="backItems">ביטול</button>';
+  const sync = () => {
+    form.video = $('qVideo').value; form.text = $('qText').value;
+    document.querySelectorAll('[data-opt]').forEach(el => { form.options[+el.dataset.opt] = el.value; });
+    const ok = document.querySelector('input[name="qOk"]:checked'); if (ok) form.correct = +ok.value + 1;
+  };
+  $('panel').oninput = $('panel').onchange = () => { if (view === 'question') sync(); };
+}
+async function saveQ() {
+  const err = m => { $('qErr').textContent = m; };
+  const text = (form.text || '').trim();
+  if (!text) return err('צריך לכתוב את השאלה.');
+  const node = { video: form.video, type: form.type, text };
+  if (form.type === 'choice') {
+    const kept = form.options.map((o, i) => [o.trim(), i + 1]).filter(([o]) => o);
+    if (kept.length < 2) return err('צריך לפחות שתי תשובות.');
+    const ci = kept.findIndex(([, i]) => i === form.correct);
+    if (ci < 0) return err('צריך לסמן את התשובה הנכונה.');
+    node.options = kept.map(([o]) => o); node.correct = ci + 1;
+  }
+  const qid = form.id || ('q' + Date.now().toString(36) + newId());
+  node.order = form.id ? (catalog.questions[qid].order || 0) : Date.now();
+  try { await api('PUT', '/library/catalog/questions/' + qid, node); }
+  catch (e) { return err('השמירה נכשלה. בדוק אינטרנט ונסה שוב.'); }
+  catalog.questions[qid] = node;
+  expanded.add('q:' + qid);
+  form = null; go('items');
+}
+async function delQ() {
+  if (!confirm('למחוק את השאלה? מבחנים שכבר נשמרו לא ייפגעו.')) return;
+  try { await api('DELETE', '/library/catalog/questions/' + form.id); } catch (e) { return $('qErr').textContent = 'המחיקה נכשלה. נסה שוב.'; }
+  delete catalog.questions[form.id];
+  if (draft) draft.items = draft.items.filter(k => k !== 'q:' + form.id);
+  form = null; go('items');
 }
 
 // ---------- סידור המבחן ושמירה ----------
@@ -302,7 +511,7 @@ function renderOrder() {
       const it = itemOf(key);
       if (!it) return '';
       return '<div class="row" data-key="' + key + '"><div class="side"><span class="drag" data-drag>☰</span></div>' +
-        '<div class="box"><span class="tag">' + (it.k === 'v' ? 'סרטון' : it.type === 'choice' ? 'אמריקאית' : 'פתוחה') + '</span><div>' +
+        '<div class="box"><span class="tag">' + (it.k === 'v' ? (it.kind === 'image' ? 'תמונה' : 'סרטון') : it.type === 'choice' ? 'אמריקאית' : 'פתוחה') + '</span><div>' +
         esc(it.k === 'v' ? it.title : it.text) + '<small>' + esc(it.cat + ' ‹ ' + it.sub) + '</small></div></div></div>';
     }).join('') + '</div>' +
     '<p class="muted">גוררים בסימן ☰ כדי לשנות סדר.</p>' +
@@ -459,6 +668,26 @@ document.addEventListener('click', async e => {
       keepScroll(renderItems); break;
     case 'pick':
       toggleItem(d.key); keepScroll(renderItems); break;
+    case 'backItems': form = null; go('items'); break;
+    case 'newMedia': form = { id: null, title: '', file: null }; go('media'); break;
+    case 'editMedia': { const id = d.key.slice(2); form = { id, title: catalog.videos[id].title }; go('media'); break; }
+    case 'saveMedia': saveMedia(); break;
+    case 'delMedia': delMedia(); break;
+    case 'newQ': {
+      const vids = videosIn(curCat, curSub);
+      const open = vids.find(([vid]) => expanded.has('v:' + vid));
+      form = { id: null, video: (open || vids[0])[0], type: 'choice', text: '', options: ['', '', '', ''], correct: 0 };
+      go('question'); break;
+    }
+    case 'editQ': {
+      const id = d.key.slice(2), q = catalog.questions[id];
+      form = { id, video: q.video, type: q.type, text: q.text, options: (q.options || ['', '', '', '']).slice(), correct: q.correct || 0 };
+      go('question'); break;
+    }
+    case 'qType': form.type = d.type; keepScroll(renderQuestionForm); break;
+    case 'qAddOpt': form.options.push(''); keepScroll(renderQuestionForm); break;
+    case 'saveQ': saveQ(); break;
+    case 'delQ': delQ(); break;
     case 'pickAll':
       videosIn(curCat, curSub).forEach(([vid]) => {
         ['v:' + vid].concat(questionsOf(vid).map(([qid]) => 'q:' + qid))

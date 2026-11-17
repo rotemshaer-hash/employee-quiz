@@ -49,6 +49,8 @@
 
   .video{position:relative;border:3px solid var(--box);border-radius:9px;overflow:hidden;background:#000;aspect-ratio:16/9}
   .video.tall{aspect-ratio:9/16;max-height:70vh;margin:0 auto}
+  .video.img{aspect-ratio:auto;background:var(--bg)}
+  .video.img img{display:block;width:100%}
   .video video,.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
   .vname{font-weight:700;font-size:17px;margin:12px 0 0}
   .ask{font-weight:700;text-align:center;margin:14px 0 2px;min-height:1.4em}
@@ -281,6 +283,17 @@ async function playVideo(s) {
   $('vask').textContent = 'טוען סרטון...';
   show('s-video');
 
+  // תמונה: מוצגת מיד, ואפשר להמשיך אחרי שהעובד ראה אותה
+  $('vbox').classList.toggle('img', it.kind === 'image');
+  if (it.kind === 'image') {
+    $('vbox').innerHTML = '<img alt="">';
+    $('vbox').querySelector('img').src = await resolveSrc(it.url);
+    ready(true);
+    $('vagain').classList.add('hidden');
+    $('vask').textContent = 'הבנת?';
+    return;
+  }
+
   const e = embedUrl(it.url);
   $('vbox').innerHTML = '<video controls playsinline preload="auto" controlslist="nodownload noplaybackrate noremoteplayback" disablepictureinpicture disableremoteplayback></video>';
   const video = $('vbox').querySelector('video');
@@ -409,7 +422,8 @@ function buildEmailData(name) {
     r.rows.forEach(row => {
       n++;
       const where = '[' + row.it.cat + (row.it.sub && row.it.sub !== row.it.cat ? ' ‹ ' + row.it.sub : '') + '] ';
-      if (row.k === 'v') data[n + '. 🎬 ' + where + row.it.title] = row.views > 1 ? 'צפה ' + row.views + ' פעמים (לא הבין בפעם הראשונה)' : 'צפה פעם אחת';
+      if (row.k === 'v' && row.it.kind === 'image') data[n + '. 🖼️ ' + where + row.it.title] = 'ראה את התמונה';
+      else if (row.k === 'v') data[n + '. 🎬 ' + where + row.it.title] = row.views > 1 ? 'צפה ' + row.views + ' פעמים (לא הבין בפעם הראשונה)' : 'צפה פעם אחת';
       else data[n + '. ' + where + row.it.text] = row.answer + (row.ok === true ? '  ✅' : row.ok === false ? '  ❌' : '  (פתוחה — לבדיקה)');
     });
   });
