@@ -9,8 +9,16 @@
 import json, os, sys
 map_path, up_path, out = sys.argv[1:4]
 qfiles = sys.argv[4:]
-SKIP = {'n202', 'n204', 'n253', 'n281'}   # no usable speech (owner approved removing them, 18.11)
-TITLES = {'n327': 'גובה מעבר ראש במדרגות'}   # file name was "WhatsApp Video ..."
+SKIP = {'n202', 'n204', 'n253', 'n281',   # no usable speech (owner approved removing them, 18.11)
+        # removed in the owner's review of the flagged videos (18.11)
+        'n001', 'n008', 'n017', 'n132', 'n278', 'n279', 'n306', 'n327'}
+TITLES = {   # renamed in the owner's review (18.11)
+    'n103': 'תריס הגלילה החשמלי אינו נפתח במלואו',
+    'n149': 'הסבר כללי לחלקי הדלת',
+    'n287': 'אף מים בקופינג 4',
+    'n138': 'רוחב פתח מינימלי לדלתות 3',
+    'n037': 'מאריך לקופסאות ביקורת',
+}
 GENERAL = 'כללי'
 TO_SORT = 'מיום 9.11 סרטונים לשיוך בתיקיות'
 

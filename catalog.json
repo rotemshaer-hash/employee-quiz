@@ -255,35 +255,35 @@
    }
   },
   "c16": {
-   "name": "סוגי בניה",
+   "name": "צבע וטיח",
    "order": 16,
    "subs": {
     "s042": {
-     "name": "כללי",
-     "order": 1
-    }
-   }
-  },
-  "c17": {
-   "name": "צבע וטיח",
-   "order": 17,
-   "subs": {
-    "s043": {
      "name": "צבע ברזל",
      "order": 1
     },
-    "s044": {
+    "s043": {
      "name": "שליכט צבעוני וטיח חוץ",
      "order": 2
     },
-    "s045": {
+    "s044": {
      "name": "כללי",
      "order": 3
     }
    }
   },
-  "c18": {
+  "c17": {
    "name": "ציפוי קירות חוץ",
+   "order": 17,
+   "subs": {
+    "s045": {
+     "name": "כללי",
+     "order": 1
+    }
+   }
+  },
+  "c18": {
+   "name": "רטיבות",
    "order": 18,
    "subs": {
     "s046": {
@@ -293,44 +293,24 @@
    }
   },
   "c19": {
-   "name": "רטיבות",
+   "name": "ריצוף",
    "order": 19,
    "subs": {
     "s047": {
-     "name": "כללי",
-     "order": 1
-    }
-   }
-  },
-  "c20": {
-   "name": "ריצוף",
-   "order": 20,
-   "subs": {
-    "s048": {
      "name": "רובה",
      "order": 1
     },
-    "s049": {
+    "s048": {
      "name": "ריצוף",
      "order": 2
     }
    }
   },
-  "c21": {
-   "name": "רכוש משותף",
-   "order": 21,
-   "subs": {
-    "s050": {
-     "name": "כללי",
-     "order": 1
-    }
-   }
-  },
-  "c22": {
+  "c20": {
    "name": "כללי",
-   "order": 22,
+   "order": 20,
    "subs": {
-    "s051": {
+    "s049": {
      "name": "כללי",
      "order": 1
     }
@@ -392,15 +372,6 @@
    "duration": 333,
    "order": 6
   },
-  "n008": {
-   "cat": "c01",
-   "sub": "s001",
-   "title": "בדיקת לחצים 3",
-   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n008.mp4?alt=media",
-   "path": "videos/lib-n008.mp4",
-   "duration": 90,
-   "order": 7
-  },
   "n009": {
    "cat": "c01",
    "sub": "s001",
@@ -408,7 +379,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n009.mp4?alt=media",
    "path": "videos/lib-n009.mp4",
    "duration": 369,
-   "order": 8
+   "order": 7
   },
   "n010": {
    "cat": "c01",
@@ -417,7 +388,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n010.mp4?alt=media",
    "path": "videos/lib-n010.mp4",
    "duration": 81,
-   "order": 9
+   "order": 8
   },
   "n013": {
    "cat": "c01",
@@ -426,7 +397,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n013.mp4?alt=media",
    "path": "videos/lib-n013.mp4",
    "duration": 99,
-   "order": 10
+   "order": 9
   },
   "n011": {
    "cat": "c01",
@@ -435,7 +406,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n011.mp4?alt=media",
    "path": "videos/lib-n011.mp4",
    "duration": 28,
-   "order": 11
+   "order": 10
   },
   "n012": {
    "cat": "c01",
@@ -444,7 +415,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n012.mp4?alt=media",
    "path": "videos/lib-n012.mp4",
    "duration": 23,
-   "order": 12
+   "order": 11
   },
   "n014": {
    "cat": "c01",
@@ -453,7 +424,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n014.mp4?alt=media",
    "path": "videos/lib-n014.mp4",
    "duration": 174,
-   "order": 13
+   "order": 12
   },
   "n015": {
    "cat": "c01",
@@ -462,7 +433,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n015.mp4?alt=media",
    "path": "videos/lib-n015.mp4",
    "duration": 139,
-   "order": 14
+   "order": 13
   },
   "n016": {
    "cat": "c01",
@@ -471,16 +442,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n016.mp4?alt=media",
    "path": "videos/lib-n016.mp4",
    "duration": 41,
-   "order": 15
-  },
-  "n017": {
-   "cat": "c01",
-   "sub": "s001",
-   "title": "לא בוצע בידוד תרמי לצנרת מים חמים 1",
-   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n017.mp4?alt=media",
-   "path": "videos/lib-n017.mp4",
-   "duration": 9,
-   "order": 16
+   "order": 14
   },
   "n018": {
    "cat": "c01",
@@ -489,7 +451,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n018.mp4?alt=media",
    "path": "videos/lib-n018.mp4",
    "duration": 65,
-   "order": 17
+   "order": 15
   },
   "n019": {
    "cat": "c01",
@@ -498,7 +460,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n019.mp4?alt=media",
    "path": "videos/lib-n019.mp4",
    "duration": 30,
-   "order": 18
+   "order": 16
   },
   "n021": {
    "cat": "c01",
@@ -507,7 +469,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n021.mp4?alt=media",
    "path": "videos/lib-n021.mp4",
    "duration": 367,
-   "order": 19
+   "order": 17
   },
   "n020": {
    "cat": "c01",
@@ -516,7 +478,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n020.mp4?alt=media",
    "path": "videos/lib-n020.mp4",
    "duration": 112,
-   "order": 20
+   "order": 18
   },
   "n022": {
    "cat": "c01",
@@ -525,7 +487,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n022.mp4?alt=media",
    "path": "videos/lib-n022.mp4",
    "duration": 49,
-   "order": 21
+   "order": 19
   },
   "n024": {
    "cat": "c01",
@@ -534,7 +496,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n024.mp4?alt=media",
    "path": "videos/lib-n024.mp4",
    "duration": 49,
-   "order": 22
+   "order": 20
   },
   "n023": {
    "cat": "c01",
@@ -543,7 +505,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n023.mp4?alt=media",
    "path": "videos/lib-n023.mp4",
    "duration": 30,
-   "order": 23
+   "order": 21
   },
   "n025": {
    "cat": "c01",
@@ -552,7 +514,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n025.mp4?alt=media",
    "path": "videos/lib-n025.mp4",
    "duration": 40,
-   "order": 24
+   "order": 22
   },
   "v01": {
    "cat": "c01",
@@ -561,7 +523,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v01.mp4?alt=media",
    "path": "videos/lib-v01.mp4",
    "duration": 64,
-   "order": 25
+   "order": 23
   },
   "n026": {
    "cat": "c01",
@@ -570,7 +532,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n026.mp4?alt=media",
    "path": "videos/lib-n026.mp4",
    "duration": 32,
-   "order": 26
+   "order": 24
   },
   "n027": {
    "cat": "c01",
@@ -579,7 +541,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n027.mp4?alt=media",
    "path": "videos/lib-n027.mp4",
    "duration": 94,
-   "order": 27
+   "order": 25
   },
   "n028": {
    "cat": "c01",
@@ -588,7 +550,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n028.mp4?alt=media",
    "path": "videos/lib-n028.mp4",
    "duration": 58,
-   "order": 28
+   "order": 26
   },
   "n029": {
    "cat": "c01",
@@ -597,7 +559,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n029.mp4?alt=media",
    "path": "videos/lib-n029.mp4",
    "duration": 103,
-   "order": 29
+   "order": 27
   },
   "n031": {
    "cat": "c01",
@@ -606,7 +568,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n031.mp4?alt=media",
    "path": "videos/lib-n031.mp4",
    "duration": 64,
-   "order": 30
+   "order": 28
   },
   "n030": {
    "cat": "c01",
@@ -615,7 +577,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n030.mp4?alt=media",
    "path": "videos/lib-n030.mp4",
    "duration": 29,
-   "order": 31
+   "order": 29
   },
   "n032": {
    "cat": "c01",
@@ -624,7 +586,16 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n032.mp4?alt=media",
    "path": "videos/lib-n032.mp4",
    "duration": 38,
-   "order": 32
+   "order": 30
+  },
+  "n037": {
+   "cat": "c01",
+   "sub": "s002",
+   "title": "מאריך לקופסאות ביקורת",
+   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n037.mp4?alt=media",
+   "path": "videos/lib-n037.mp4",
+   "duration": 112,
+   "order": 31
   },
   "n033": {
    "cat": "c01",
@@ -633,7 +604,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n033.mp4?alt=media",
    "path": "videos/lib-n033.mp4",
    "duration": 236,
-   "order": 33
+   "order": 32
   },
   "n034": {
    "cat": "c01",
@@ -642,7 +613,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n034.mp4?alt=media",
    "path": "videos/lib-n034.mp4",
    "duration": 86,
-   "order": 34
+   "order": 33
   },
   "n035": {
    "cat": "c01",
@@ -651,7 +622,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n035.mp4?alt=media",
    "path": "videos/lib-n035.mp4",
    "duration": 117,
-   "order": 35
+   "order": 34
   },
   "n036": {
    "cat": "c01",
@@ -660,16 +631,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n036.mp4?alt=media",
    "path": "videos/lib-n036.mp4",
    "duration": 91,
-   "order": 36
-  },
-  "n037": {
-   "cat": "c01",
-   "sub": "s002",
-   "title": "רום קופסאות ביקורת",
-   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n037.mp4?alt=media",
-   "path": "videos/lib-n037.mp4",
-   "duration": 112,
-   "order": 37
+   "order": 35
   },
   "n038": {
    "cat": "c01",
@@ -678,7 +640,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n038.mp4?alt=media",
    "path": "videos/lib-n038.mp4",
    "duration": 37,
-   "order": 38
+   "order": 36
   },
   "n039": {
    "cat": "c01",
@@ -687,7 +649,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n039.mp4?alt=media",
    "path": "videos/lib-n039.mp4",
    "duration": 22,
-   "order": 39
+   "order": 37
   },
   "n047": {
    "cat": "c01",
@@ -696,7 +658,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n047.mp4?alt=media",
    "path": "videos/lib-n047.mp4",
    "duration": 14,
-   "order": 40
+   "order": 38
   },
   "n048": {
    "cat": "c01",
@@ -705,7 +667,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n048.mp4?alt=media",
    "path": "videos/lib-n048.mp4",
    "duration": 53,
-   "order": 41
+   "order": 39
   },
   "n049": {
    "cat": "c01",
@@ -714,7 +676,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n049.mp4?alt=media",
    "path": "videos/lib-n049.mp4",
    "duration": 54,
-   "order": 42
+   "order": 40
   },
   "n051": {
    "cat": "c01",
@@ -723,7 +685,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n051.mp4?alt=media",
    "path": "videos/lib-n051.mp4",
    "duration": 27,
-   "order": 43
+   "order": 41
   },
   "n050": {
    "cat": "c01",
@@ -732,7 +694,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n050.mp4?alt=media",
    "path": "videos/lib-n050.mp4",
    "duration": 34,
-   "order": 44
+   "order": 42
   },
   "n040": {
    "cat": "c01",
@@ -741,7 +703,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n040.mp4?alt=media",
    "path": "videos/lib-n040.mp4",
    "duration": 104,
-   "order": 45
+   "order": 43
   },
   "n041": {
    "cat": "c01",
@@ -750,7 +712,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n041.mp4?alt=media",
    "path": "videos/lib-n041.mp4",
    "duration": 73,
-   "order": 46
+   "order": 44
   },
   "n042": {
    "cat": "c01",
@@ -759,7 +721,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n042.mp4?alt=media",
    "path": "videos/lib-n042.mp4",
    "duration": 84,
-   "order": 47
+   "order": 45
   },
   "n043": {
    "cat": "c01",
@@ -768,7 +730,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n043.mp4?alt=media",
    "path": "videos/lib-n043.mp4",
    "duration": 50,
-   "order": 48
+   "order": 46
   },
   "n045": {
    "cat": "c01",
@@ -777,7 +739,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n045.mp4?alt=media",
    "path": "videos/lib-n045.mp4",
    "duration": 186,
-   "order": 49
+   "order": 47
   },
   "n044": {
    "cat": "c01",
@@ -786,7 +748,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n044.mp4?alt=media",
    "path": "videos/lib-n044.mp4",
    "duration": 286,
-   "order": 50
+   "order": 48
   },
   "n046": {
    "cat": "c01",
@@ -795,7 +757,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n046.mp4?alt=media",
    "path": "videos/lib-n046.mp4",
    "duration": 73,
-   "order": 51
+   "order": 49
   },
   "n052": {
    "cat": "c02",
@@ -804,7 +766,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n052.mp4?alt=media",
    "path": "videos/lib-n052.mp4",
    "duration": 68,
-   "order": 52
+   "order": 50
   },
   "n053": {
    "cat": "c02",
@@ -813,7 +775,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n053.mp4?alt=media",
    "path": "videos/lib-n053.mp4",
    "duration": 53,
-   "order": 53
+   "order": 51
   },
   "n054": {
    "cat": "c02",
@@ -822,7 +784,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n054.mp4?alt=media",
    "path": "videos/lib-n054.mp4",
    "duration": 27,
-   "order": 54
+   "order": 52
   },
   "v02": {
    "cat": "c02",
@@ -831,7 +793,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v02.mp4?alt=media",
    "path": "videos/lib-v02.mp4",
    "duration": 60,
-   "order": 55
+   "order": 53
   },
   "n055": {
    "cat": "c02",
@@ -840,7 +802,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n055.mp4?alt=media",
    "path": "videos/lib-n055.mp4",
    "duration": 153,
-   "order": 56
+   "order": 54
   },
   "n056": {
    "cat": "c02",
@@ -849,7 +811,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n056.mp4?alt=media",
    "path": "videos/lib-n056.mp4",
    "duration": 23,
-   "order": 57
+   "order": 55
   },
   "n057": {
    "cat": "c02",
@@ -858,7 +820,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n057.mp4?alt=media",
    "path": "videos/lib-n057.mp4",
    "duration": 63,
-   "order": 58
+   "order": 56
   },
   "n058": {
    "cat": "c02",
@@ -867,7 +829,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n058.mp4?alt=media",
    "path": "videos/lib-n058.mp4",
    "duration": 163,
-   "order": 59
+   "order": 57
   },
   "n059": {
    "cat": "c02",
@@ -876,7 +838,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n059.mp4?alt=media",
    "path": "videos/lib-n059.mp4",
    "duration": 259,
-   "order": 60
+   "order": 58
   },
   "n060": {
    "cat": "c02",
@@ -885,7 +847,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n060.mp4?alt=media",
    "path": "videos/lib-n060.mp4",
    "duration": 91,
-   "order": 61
+   "order": 59
   },
   "n061": {
    "cat": "c02",
@@ -894,7 +856,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n061.mp4?alt=media",
    "path": "videos/lib-n061.mp4",
    "duration": 135,
-   "order": 62
+   "order": 60
   },
   "n062": {
    "cat": "c02",
@@ -903,7 +865,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n062.mp4?alt=media",
    "path": "videos/lib-n062.mp4",
    "duration": 57,
-   "order": 63
+   "order": 61
   },
   "n063": {
    "cat": "c02",
@@ -912,7 +874,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n063.mp4?alt=media",
    "path": "videos/lib-n063.mp4",
    "duration": 59,
-   "order": 64
+   "order": 62
   },
   "n064": {
    "cat": "c02",
@@ -921,7 +883,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n064.mp4?alt=media",
    "path": "videos/lib-n064.mp4",
    "duration": 87,
-   "order": 65
+   "order": 63
   },
   "n066": {
    "cat": "c02",
@@ -930,7 +892,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n066.mp4?alt=media",
    "path": "videos/lib-n066.mp4",
    "duration": 151,
-   "order": 66
+   "order": 64
   },
   "n065": {
    "cat": "c02",
@@ -939,7 +901,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n065.mp4?alt=media",
    "path": "videos/lib-n065.mp4",
    "duration": 38,
-   "order": 67
+   "order": 65
   },
   "v03": {
    "cat": "c02",
@@ -948,7 +910,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v03.mp4?alt=media",
    "path": "videos/lib-v03.mp4",
    "duration": 18,
-   "order": 68
+   "order": 66
   },
   "n067": {
    "cat": "c02",
@@ -957,7 +919,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n067.mp4?alt=media",
    "path": "videos/lib-n067.mp4",
    "duration": 113,
-   "order": 69
+   "order": 67
   },
   "n068": {
    "cat": "c02",
@@ -966,7 +928,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n068.mp4?alt=media",
    "path": "videos/lib-n068.mp4",
    "duration": 166,
-   "order": 70
+   "order": 68
   },
   "v04": {
    "cat": "c02",
@@ -975,7 +937,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v04.mp4?alt=media",
    "path": "videos/lib-v04.mp4",
    "duration": 37,
-   "order": 71
+   "order": 69
   },
   "n069": {
    "cat": "c02",
@@ -984,7 +946,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n069.mp4?alt=media",
    "path": "videos/lib-n069.mp4",
    "duration": 57,
-   "order": 72
+   "order": 70
   },
   "v05": {
    "cat": "c02",
@@ -993,7 +955,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v05.mp4?alt=media",
    "path": "videos/lib-v05.mp4",
    "duration": 79,
-   "order": 73
+   "order": 71
   },
   "n070": {
    "cat": "c02",
@@ -1002,7 +964,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n070.mp4?alt=media",
    "path": "videos/lib-n070.mp4",
    "duration": 165,
-   "order": 74
+   "order": 72
   },
   "n071": {
    "cat": "c02",
@@ -1011,7 +973,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n071.mp4?alt=media",
    "path": "videos/lib-n071.mp4",
    "duration": 112,
-   "order": 75
+   "order": 73
   },
   "n072": {
    "cat": "c02",
@@ -1020,7 +982,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n072.mp4?alt=media",
    "path": "videos/lib-n072.mp4",
    "duration": 250,
-   "order": 76
+   "order": 74
   },
   "n073": {
    "cat": "c02",
@@ -1029,7 +991,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n073.mp4?alt=media",
    "path": "videos/lib-n073.mp4",
    "duration": 38,
-   "order": 77
+   "order": 75
   },
   "n075": {
    "cat": "c02",
@@ -1038,7 +1000,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n075.mp4?alt=media",
    "path": "videos/lib-n075.mp4",
    "duration": 102,
-   "order": 78
+   "order": 76
   },
   "n074": {
    "cat": "c02",
@@ -1047,7 +1009,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n074.mp4?alt=media",
    "path": "videos/lib-n074.mp4",
    "duration": 36,
-   "order": 79
+   "order": 77
   },
   "v06": {
    "cat": "c02",
@@ -1056,7 +1018,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v06.mp4?alt=media",
    "path": "videos/lib-v06.mp4",
    "duration": 87,
-   "order": 80
+   "order": 78
   },
   "n076": {
    "cat": "c02",
@@ -1065,7 +1027,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n076.mp4?alt=media",
    "path": "videos/lib-n076.mp4",
    "duration": 62,
-   "order": 81
+   "order": 79
   },
   "n079": {
    "cat": "c02",
@@ -1074,7 +1036,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n079.mp4?alt=media",
    "path": "videos/lib-n079.mp4",
    "duration": 94,
-   "order": 82
+   "order": 80
   },
   "n077": {
    "cat": "c02",
@@ -1083,7 +1045,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n077.mp4?alt=media",
    "path": "videos/lib-n077.mp4",
    "duration": 86,
-   "order": 83
+   "order": 81
   },
   "n078": {
    "cat": "c02",
@@ -1092,7 +1054,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n078.mp4?alt=media",
    "path": "videos/lib-n078.mp4",
    "duration": 130,
-   "order": 84
+   "order": 82
   },
   "n081": {
    "cat": "c02",
@@ -1101,7 +1063,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n081.mp4?alt=media",
    "path": "videos/lib-n081.mp4",
    "duration": 24,
-   "order": 85
+   "order": 83
   },
   "n080": {
    "cat": "c02",
@@ -1110,7 +1072,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n080.mp4?alt=media",
    "path": "videos/lib-n080.mp4",
    "duration": 129,
-   "order": 86
+   "order": 84
   },
   "n082": {
    "cat": "c02",
@@ -1119,7 +1081,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n082.mp4?alt=media",
    "path": "videos/lib-n082.mp4",
    "duration": 24,
-   "order": 87
+   "order": 85
   },
   "n083": {
    "cat": "c02",
@@ -1128,7 +1090,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n083.mp4?alt=media",
    "path": "videos/lib-n083.mp4",
    "duration": 178,
-   "order": 88
+   "order": 86
   },
   "n084": {
    "cat": "c02",
@@ -1137,7 +1099,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n084.mp4?alt=media",
    "path": "videos/lib-n084.mp4",
    "duration": 109,
-   "order": 89
+   "order": 87
   },
   "v07": {
    "cat": "c02",
@@ -1146,7 +1108,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v07.mp4?alt=media",
    "path": "videos/lib-v07.mp4",
    "duration": 54,
-   "order": 90
+   "order": 88
   },
   "n085": {
    "cat": "c02",
@@ -1155,7 +1117,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n085.mp4?alt=media",
    "path": "videos/lib-n085.mp4",
    "duration": 70,
-   "order": 91
+   "order": 89
   },
   "n086": {
    "cat": "c02",
@@ -1164,7 +1126,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n086.mp4?alt=media",
    "path": "videos/lib-n086.mp4",
    "duration": 88,
-   "order": 92
+   "order": 90
   },
   "n088": {
    "cat": "c02",
@@ -1173,7 +1135,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n088.mp4?alt=media",
    "path": "videos/lib-n088.mp4",
    "duration": 262,
-   "order": 93
+   "order": 91
   },
   "n087": {
    "cat": "c02",
@@ -1182,7 +1144,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n087.mp4?alt=media",
    "path": "videos/lib-n087.mp4",
    "duration": 72,
-   "order": 94
+   "order": 92
   },
   "n090": {
    "cat": "c02",
@@ -1191,7 +1153,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n090.mp4?alt=media",
    "path": "videos/lib-n090.mp4",
    "duration": 160,
-   "order": 95
+   "order": 93
   },
   "n089": {
    "cat": "c02",
@@ -1200,7 +1162,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n089.mp4?alt=media",
    "path": "videos/lib-n089.mp4",
    "duration": 66,
-   "order": 96
+   "order": 94
   },
   "n091": {
    "cat": "c02",
@@ -1209,7 +1171,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n091.mp4?alt=media",
    "path": "videos/lib-n091.mp4",
    "duration": 95,
-   "order": 97
+   "order": 95
   },
   "n093": {
    "cat": "c02",
@@ -1218,7 +1180,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n093.mp4?alt=media",
    "path": "videos/lib-n093.mp4",
    "duration": 82,
-   "order": 98
+   "order": 96
   },
   "n092": {
    "cat": "c02",
@@ -1227,7 +1189,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n092.mp4?alt=media",
    "path": "videos/lib-n092.mp4",
    "duration": 52,
-   "order": 99
+   "order": 97
   },
   "n095": {
    "cat": "c02",
@@ -1236,7 +1198,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n095.mp4?alt=media",
    "path": "videos/lib-n095.mp4",
    "duration": 50,
-   "order": 100
+   "order": 98
   },
   "n094": {
    "cat": "c02",
@@ -1245,7 +1207,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n094.mp4?alt=media",
    "path": "videos/lib-n094.mp4",
    "duration": 59,
-   "order": 101
+   "order": 99
   },
   "n096": {
    "cat": "c02",
@@ -1254,7 +1216,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n096.mp4?alt=media",
    "path": "videos/lib-n096.mp4",
    "duration": 65,
-   "order": 102
+   "order": 100
   },
   "n100": {
    "cat": "c02",
@@ -1263,7 +1225,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n100.mp4?alt=media",
    "path": "videos/lib-n100.mp4",
    "duration": 28,
-   "order": 103
+   "order": 101
   },
   "n099": {
    "cat": "c02",
@@ -1272,7 +1234,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n099.mp4?alt=media",
    "path": "videos/lib-n099.mp4",
    "duration": 47,
-   "order": 104
+   "order": 102
   },
   "n101": {
    "cat": "c02",
@@ -1281,7 +1243,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n101.mp4?alt=media",
    "path": "videos/lib-n101.mp4",
    "duration": 59,
-   "order": 105
+   "order": 103
   },
   "n102": {
    "cat": "c02",
@@ -1290,7 +1252,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n102.mp4?alt=media",
    "path": "videos/lib-n102.mp4",
    "duration": 32,
-   "order": 106
+   "order": 104
   },
   "v08": {
    "cat": "c02",
@@ -1299,16 +1261,16 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v08.mp4?alt=media",
    "path": "videos/lib-v08.mp4",
    "duration": 107,
-   "order": 107
+   "order": 105
   },
   "n103": {
    "cat": "c02",
    "sub": "s009",
-   "title": "תריס הגלילה החשמלי אינו נסגר במלואו",
+   "title": "תריס הגלילה החשמלי אינו נפתח במלואו",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n103.mp4?alt=media",
    "path": "videos/lib-n103.mp4",
    "duration": 79,
-   "order": 108
+   "order": 106
   },
   "n104": {
    "cat": "c02",
@@ -1317,7 +1279,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n104.mp4?alt=media",
    "path": "videos/lib-n104.mp4",
    "duration": 30,
-   "order": 109
+   "order": 107
   },
   "n105": {
    "cat": "c02",
@@ -1326,7 +1288,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n105.mp4?alt=media",
    "path": "videos/lib-n105.mp4",
    "duration": 86,
-   "order": 110
+   "order": 108
   },
   "n107": {
    "cat": "c02",
@@ -1335,7 +1297,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n107.mp4?alt=media",
    "path": "videos/lib-n107.mp4",
    "duration": 28,
-   "order": 111
+   "order": 109
   },
   "n106": {
    "cat": "c02",
@@ -1344,7 +1306,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n106.mp4?alt=media",
    "path": "videos/lib-n106.mp4",
    "duration": 26,
-   "order": 112
+   "order": 110
   },
   "n108": {
    "cat": "c02",
@@ -1353,7 +1315,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n108.mp4?alt=media",
    "path": "videos/lib-n108.mp4",
    "duration": 46,
-   "order": 113
+   "order": 111
   },
   "n109": {
    "cat": "c02",
@@ -1362,7 +1324,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n109.mp4?alt=media",
    "path": "videos/lib-n109.mp4",
    "duration": 69,
-   "order": 114
+   "order": 112
   },
   "n098": {
    "cat": "c02",
@@ -1371,7 +1333,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n098.mp4?alt=media",
    "path": "videos/lib-n098.mp4",
    "duration": 15,
-   "order": 115
+   "order": 113
   },
   "n097": {
    "cat": "c02",
@@ -1380,7 +1342,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n097.mp4?alt=media",
    "path": "videos/lib-n097.mp4",
    "duration": 32,
-   "order": 116
+   "order": 114
   },
   "n110": {
    "cat": "c03",
@@ -1389,7 +1351,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n110.mp4?alt=media",
    "path": "videos/lib-n110.mp4",
    "duration": 110,
-   "order": 117
+   "order": 115
   },
   "n111": {
    "cat": "c03",
@@ -1398,7 +1360,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n111.mp4?alt=media",
    "path": "videos/lib-n111.mp4",
    "duration": 43,
-   "order": 118
+   "order": 116
   },
   "n112": {
    "cat": "c03",
@@ -1407,7 +1369,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n112.mp4?alt=media",
    "path": "videos/lib-n112.mp4",
    "duration": 59,
-   "order": 119
+   "order": 117
   },
   "n113": {
    "cat": "c03",
@@ -1416,7 +1378,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n113.mp4?alt=media",
    "path": "videos/lib-n113.mp4",
    "duration": 63,
-   "order": 120
+   "order": 118
   },
   "n114": {
    "cat": "c03",
@@ -1425,7 +1387,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n114.mp4?alt=media",
    "path": "videos/lib-n114.mp4",
    "duration": 75,
-   "order": 121
+   "order": 119
   },
   "n115": {
    "cat": "c03",
@@ -1434,7 +1396,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n115.mp4?alt=media",
    "path": "videos/lib-n115.mp4",
    "duration": 152,
-   "order": 122
+   "order": 120
   },
   "n116": {
    "cat": "c03",
@@ -1443,7 +1405,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n116.mp4?alt=media",
    "path": "videos/lib-n116.mp4",
    "duration": 173,
-   "order": 123
+   "order": 121
   },
   "n118": {
    "cat": "c04",
@@ -1452,7 +1414,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n118.mp4?alt=media",
    "path": "videos/lib-n118.mp4",
    "duration": 288,
-   "order": 124
+   "order": 122
   },
   "n119": {
    "cat": "c04",
@@ -1461,7 +1423,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n119.mp4?alt=media",
    "path": "videos/lib-n119.mp4",
    "duration": 62,
-   "order": 125
+   "order": 123
   },
   "n120": {
    "cat": "c04",
@@ -1470,7 +1432,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n120.mp4?alt=media",
    "path": "videos/lib-n120.mp4",
    "duration": 66,
-   "order": 126
+   "order": 124
   },
   "n124": {
    "cat": "c05",
@@ -1479,7 +1441,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n124.mp4?alt=media",
    "path": "videos/lib-n124.mp4",
    "duration": 69,
-   "order": 127
+   "order": 125
   },
   "n122": {
    "cat": "c05",
@@ -1488,7 +1450,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n122.mp4?alt=media",
    "path": "videos/lib-n122.mp4",
    "duration": 29,
-   "order": 128
+   "order": 126
   },
   "n121": {
    "cat": "c05",
@@ -1497,7 +1459,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n121.mp4?alt=media",
    "path": "videos/lib-n121.mp4",
    "duration": 72,
-   "order": 129
+   "order": 127
   },
   "n123": {
    "cat": "c05",
@@ -1506,7 +1468,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n123.mp4?alt=media",
    "path": "videos/lib-n123.mp4",
    "duration": 21,
-   "order": 130
+   "order": 128
   },
   "v09": {
    "cat": "c06",
@@ -1515,7 +1477,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v09.mp4?alt=media",
    "path": "videos/lib-v09.mp4",
    "duration": 57,
-   "order": 131
+   "order": 129
   },
   "v10": {
    "cat": "c06",
@@ -1524,7 +1486,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v10.mp4?alt=media",
    "path": "videos/lib-v10.mp4",
    "duration": 36,
-   "order": 132
+   "order": 130
   },
   "n125": {
    "cat": "c06",
@@ -1533,7 +1495,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n125.mp4?alt=media",
    "path": "videos/lib-n125.mp4",
    "duration": 65,
-   "order": 133
+   "order": 131
   },
   "n126": {
    "cat": "c07",
@@ -1542,7 +1504,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n126.mp4?alt=media",
    "path": "videos/lib-n126.mp4",
    "duration": 40,
-   "order": 134
+   "order": 132
   },
   "n127": {
    "cat": "c07",
@@ -1551,7 +1513,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n127.mp4?alt=media",
    "path": "videos/lib-n127.mp4",
    "duration": 24,
-   "order": 135
+   "order": 133
   },
   "n128": {
    "cat": "c07",
@@ -1560,7 +1522,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n128.mp4?alt=media",
    "path": "videos/lib-n128.mp4",
    "duration": 100,
-   "order": 136
+   "order": 134
   },
   "n129": {
    "cat": "c08",
@@ -1569,7 +1531,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n129.mp4?alt=media",
    "path": "videos/lib-n129.mp4",
    "duration": 27,
-   "order": 137
+   "order": 135
   },
   "n130": {
    "cat": "c08",
@@ -1578,7 +1540,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n130.mp4?alt=media",
    "path": "videos/lib-n130.mp4",
    "duration": 60,
-   "order": 138
+   "order": 136
   },
   "n131": {
    "cat": "c08",
@@ -1587,16 +1549,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n131.mp4?alt=media",
    "path": "videos/lib-n131.mp4",
    "duration": 13,
-   "order": 139
-  },
-  "n132": {
-   "cat": "c08",
-   "sub": "s020",
-   "title": "לא הותקן אביזר נעילה קבוע בחלקה הפנימי של הדלת",
-   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n132.mp4?alt=media",
-   "path": "videos/lib-n132.mp4",
-   "duration": 43,
-   "order": 140
+   "order": 137
   },
   "n133": {
    "cat": "c08",
@@ -1605,7 +1558,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n133.mp4?alt=media",
    "path": "videos/lib-n133.mp4",
    "duration": 56,
-   "order": 141
+   "order": 138
   },
   "n134": {
    "cat": "c08",
@@ -1614,7 +1567,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n134.mp4?alt=media",
    "path": "videos/lib-n134.mp4",
    "duration": 18,
-   "order": 142
+   "order": 139
   },
   "n135": {
    "cat": "c08",
@@ -1623,7 +1576,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n135.mp4?alt=media",
    "path": "videos/lib-n135.mp4",
    "duration": 42,
-   "order": 143
+   "order": 140
   },
   "n136": {
    "cat": "c08",
@@ -1632,7 +1585,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n136.mp4?alt=media",
    "path": "videos/lib-n136.mp4",
    "duration": 78,
-   "order": 144
+   "order": 141
   },
   "n139": {
    "cat": "c08",
@@ -1641,7 +1594,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n139.mp4?alt=media",
    "path": "videos/lib-n139.mp4",
    "duration": 134,
-   "order": 145
+   "order": 142
   },
   "n137": {
    "cat": "c08",
@@ -1650,16 +1603,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n137.mp4?alt=media",
    "path": "videos/lib-n137.mp4",
    "duration": 49,
-   "order": 146
-  },
-  "n138": {
-   "cat": "c08",
-   "sub": "s021",
-   "title": "אין סימון תו תקן (2)",
-   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n138.mp4?alt=media",
-   "path": "videos/lib-n138.mp4",
-   "duration": 162,
-   "order": 147
+   "order": 143
   },
   "n140": {
    "cat": "c08",
@@ -1668,7 +1612,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n140.mp4?alt=media",
    "path": "videos/lib-n140.mp4",
    "duration": 142,
-   "order": 148
+   "order": 144
   },
   "n141": {
    "cat": "c08",
@@ -1677,7 +1621,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n141.mp4?alt=media",
    "path": "videos/lib-n141.mp4",
    "duration": 56,
-   "order": 149
+   "order": 145
   },
   "n142": {
    "cat": "c08",
@@ -1686,7 +1630,16 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n142.mp4?alt=media",
    "path": "videos/lib-n142.mp4",
    "duration": 52,
-   "order": 150
+   "order": 146
+  },
+  "n149": {
+   "cat": "c08",
+   "sub": "s021",
+   "title": "הסבר כללי לחלקי הדלת",
+   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n149.mp4?alt=media",
+   "path": "videos/lib-n149.mp4",
+   "duration": 58,
+   "order": 147
   },
   "n143": {
    "cat": "c08",
@@ -1695,7 +1648,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n143.mp4?alt=media",
    "path": "videos/lib-n143.mp4",
    "duration": 82,
-   "order": 151
+   "order": 148
   },
   "n144": {
    "cat": "c08",
@@ -1704,7 +1657,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n144.mp4?alt=media",
    "path": "videos/lib-n144.mp4",
    "duration": 64,
-   "order": 152
+   "order": 149
   },
   "n146": {
    "cat": "c08",
@@ -1713,7 +1666,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n146.mp4?alt=media",
    "path": "videos/lib-n146.mp4",
    "duration": 47,
-   "order": 153
+   "order": 150
   },
   "n145": {
    "cat": "c08",
@@ -1722,7 +1675,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n145.mp4?alt=media",
    "path": "videos/lib-n145.mp4",
    "duration": 52,
-   "order": 154
+   "order": 151
   },
   "n147": {
    "cat": "c08",
@@ -1731,7 +1684,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n147.mp4?alt=media",
    "path": "videos/lib-n147.mp4",
    "duration": 55,
-   "order": 155
+   "order": 152
   },
   "v11": {
    "cat": "c08",
@@ -1740,7 +1693,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v11.mp4?alt=media",
    "path": "videos/lib-v11.mp4",
    "duration": 61,
-   "order": 156
+   "order": 153
   },
   "n148": {
    "cat": "c08",
@@ -1749,7 +1702,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n148.mp4?alt=media",
    "path": "videos/lib-n148.mp4",
    "duration": 36,
-   "order": 157
+   "order": 154
   },
   "n150": {
    "cat": "c08",
@@ -1758,16 +1711,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n150.mp4?alt=media",
    "path": "videos/lib-n150.mp4",
    "duration": 40,
-   "order": 158
-  },
-  "n149": {
-   "cat": "c08",
-   "sub": "s021",
-   "title": "מילוי סביב הלבשות 2",
-   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n149.mp4?alt=media",
-   "path": "videos/lib-n149.mp4",
-   "duration": 58,
-   "order": 159
+   "order": 155
   },
   "n151": {
    "cat": "c08",
@@ -1776,7 +1720,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n151.mp4?alt=media",
    "path": "videos/lib-n151.mp4",
    "duration": 63,
-   "order": 160
+   "order": 156
   },
   "n152": {
    "cat": "c08",
@@ -1785,7 +1729,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n152.mp4?alt=media",
    "path": "videos/lib-n152.mp4",
    "duration": 91,
-   "order": 161
+   "order": 157
   },
   "n153": {
    "cat": "c08",
@@ -1794,7 +1738,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n153.mp4?alt=media",
    "path": "videos/lib-n153.mp4",
    "duration": 24,
-   "order": 162
+   "order": 158
   },
   "n154": {
    "cat": "c08",
@@ -1803,7 +1747,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n154.mp4?alt=media",
    "path": "videos/lib-n154.mp4",
    "duration": 46,
-   "order": 163
+   "order": 159
   },
   "n155": {
    "cat": "c08",
@@ -1812,7 +1756,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n155.mp4?alt=media",
    "path": "videos/lib-n155.mp4",
    "duration": 22,
-   "order": 164
+   "order": 160
   },
   "n156": {
    "cat": "c08",
@@ -1821,7 +1765,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n156.mp4?alt=media",
    "path": "videos/lib-n156.mp4",
    "duration": 58,
-   "order": 165
+   "order": 161
   },
   "n157": {
    "cat": "c08",
@@ -1830,7 +1774,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n157.mp4?alt=media",
    "path": "videos/lib-n157.mp4",
    "duration": 67,
-   "order": 166
+   "order": 162
   },
   "n158": {
    "cat": "c08",
@@ -1839,7 +1783,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n158.mp4?alt=media",
    "path": "videos/lib-n158.mp4",
    "duration": 32,
-   "order": 167
+   "order": 163
   },
   "n159": {
    "cat": "c08",
@@ -1848,7 +1792,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n159.mp4?alt=media",
    "path": "videos/lib-n159.mp4",
    "duration": 67,
-   "order": 168
+   "order": 164
   },
   "n160": {
    "cat": "c08",
@@ -1857,7 +1801,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n160.mp4?alt=media",
    "path": "videos/lib-n160.mp4",
    "duration": 42,
-   "order": 169
+   "order": 165
   },
   "n162": {
    "cat": "c08",
@@ -1866,7 +1810,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n162.mp4?alt=media",
    "path": "videos/lib-n162.mp4",
    "duration": 52,
-   "order": 170
+   "order": 166
   },
   "n161": {
    "cat": "c08",
@@ -1875,7 +1819,16 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n161.mp4?alt=media",
    "path": "videos/lib-n161.mp4",
    "duration": 162,
-   "order": 171
+   "order": 167
+  },
+  "n138": {
+   "cat": "c08",
+   "sub": "s021",
+   "title": "רוחב פתח מינימלי לדלתות 3",
+   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n138.mp4?alt=media",
+   "path": "videos/lib-n138.mp4",
+   "duration": 162,
+   "order": 168
   },
   "n163": {
    "cat": "c08",
@@ -1884,7 +1837,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n163.mp4?alt=media",
    "path": "videos/lib-n163.mp4",
    "duration": 59,
-   "order": 172
+   "order": 169
   },
   "n164": {
    "cat": "c09",
@@ -1893,7 +1846,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n164.mp4?alt=media",
    "path": "videos/lib-n164.mp4",
    "duration": 38,
-   "order": 173
+   "order": 170
   },
   "n165": {
    "cat": "c09",
@@ -1902,7 +1855,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n165.mp4?alt=media",
    "path": "videos/lib-n165.mp4",
    "duration": 191,
-   "order": 174
+   "order": 171
   },
   "n166": {
    "cat": "c09",
@@ -1911,7 +1864,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n166.mp4?alt=media",
    "path": "videos/lib-n166.mp4",
    "duration": 27,
-   "order": 175
+   "order": 172
   },
   "v12": {
    "cat": "c09",
@@ -1920,7 +1873,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v12.mp4?alt=media",
    "path": "videos/lib-v12.mp4",
    "duration": 112,
-   "order": 176
+   "order": 173
   },
   "n167": {
    "cat": "c09",
@@ -1929,7 +1882,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n167.mp4?alt=media",
    "path": "videos/lib-n167.mp4",
    "duration": 105,
-   "order": 177
+   "order": 174
   },
   "n168": {
    "cat": "c09",
@@ -1938,7 +1891,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n168.mp4?alt=media",
    "path": "videos/lib-n168.mp4",
    "duration": 47,
-   "order": 178
+   "order": 175
   },
   "n169": {
    "cat": "c09",
@@ -1947,7 +1900,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n169.mp4?alt=media",
    "path": "videos/lib-n169.mp4",
    "duration": 159,
-   "order": 179
+   "order": 176
   },
   "n170": {
    "cat": "c09",
@@ -1956,7 +1909,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n170.mp4?alt=media",
    "path": "videos/lib-n170.mp4",
    "duration": 107,
-   "order": 180
+   "order": 177
   },
   "v13": {
    "cat": "c09",
@@ -1965,7 +1918,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v13.mp4?alt=media",
    "path": "videos/lib-v13.mp4",
    "duration": 107,
-   "order": 181
+   "order": 178
   },
   "v14": {
    "cat": "c09",
@@ -1974,7 +1927,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v14.mp4?alt=media",
    "path": "videos/lib-v14.mp4",
    "duration": 76,
-   "order": 182
+   "order": 179
   },
   "n171": {
    "cat": "c09",
@@ -1983,7 +1936,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n171.mp4?alt=media",
    "path": "videos/lib-n171.mp4",
    "duration": 50,
-   "order": 183
+   "order": 180
   },
   "n172": {
    "cat": "c09",
@@ -1992,7 +1945,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n172.mp4?alt=media",
    "path": "videos/lib-n172.mp4",
    "duration": 135,
-   "order": 184
+   "order": 181
   },
   "n173": {
    "cat": "c09",
@@ -2001,7 +1954,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n173.mp4?alt=media",
    "path": "videos/lib-n173.mp4",
    "duration": 135,
-   "order": 185
+   "order": 182
   },
   "n174": {
    "cat": "c09",
@@ -2010,7 +1963,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n174.mp4?alt=media",
    "path": "videos/lib-n174.mp4",
    "duration": 65,
-   "order": 186
+   "order": 183
   },
   "v16": {
    "cat": "c09",
@@ -2019,7 +1972,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v16.mp4?alt=media",
    "path": "videos/lib-v16.mp4",
    "duration": 71,
-   "order": 187
+   "order": 184
   },
   "v17": {
    "cat": "c09",
@@ -2028,7 +1981,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v17.mp4?alt=media",
    "path": "videos/lib-v17.mp4",
    "duration": 110,
-   "order": 188
+   "order": 185
   },
   "n175": {
    "cat": "c09",
@@ -2037,7 +1990,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n175.mp4?alt=media",
    "path": "videos/lib-n175.mp4",
    "duration": 34,
-   "order": 189
+   "order": 186
   },
   "n176": {
    "cat": "c09",
@@ -2046,7 +1999,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n176.mp4?alt=media",
    "path": "videos/lib-n176.mp4",
    "duration": 14,
-   "order": 190
+   "order": 187
   },
   "n177": {
    "cat": "c09",
@@ -2055,7 +2008,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n177.mp4?alt=media",
    "path": "videos/lib-n177.mp4",
    "duration": 52,
-   "order": 191
+   "order": 188
   },
   "n178": {
    "cat": "c09",
@@ -2064,7 +2017,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n178.mp4?alt=media",
    "path": "videos/lib-n178.mp4",
    "duration": 52,
-   "order": 192
+   "order": 189
   },
   "n180": {
    "cat": "c09",
@@ -2073,7 +2026,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n180.mp4?alt=media",
    "path": "videos/lib-n180.mp4",
    "duration": 18,
-   "order": 193
+   "order": 190
   },
   "n179": {
    "cat": "c09",
@@ -2082,7 +2035,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n179.mp4?alt=media",
    "path": "videos/lib-n179.mp4",
    "duration": 22,
-   "order": 194
+   "order": 191
   },
   "v18": {
    "cat": "c09",
@@ -2091,7 +2044,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v18.mp4?alt=media",
    "path": "videos/lib-v18.mp4",
    "duration": 33,
-   "order": 195
+   "order": 192
   },
   "n181": {
    "cat": "c10",
@@ -2100,7 +2053,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n181.mp4?alt=media",
    "path": "videos/lib-n181.mp4",
    "duration": 101,
-   "order": 196
+   "order": 193
   },
   "n182": {
    "cat": "c10",
@@ -2109,7 +2062,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n182.mp4?alt=media",
    "path": "videos/lib-n182.mp4",
    "duration": 49,
-   "order": 197
+   "order": 194
   },
   "n185": {
    "cat": "c10",
@@ -2118,7 +2071,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n185.mp4?alt=media",
    "path": "videos/lib-n185.mp4",
    "duration": 160,
-   "order": 198
+   "order": 195
   },
   "n183": {
    "cat": "c10",
@@ -2127,7 +2080,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n183.mp4?alt=media",
    "path": "videos/lib-n183.mp4",
    "duration": 118,
-   "order": 199
+   "order": 196
   },
   "n184": {
    "cat": "c10",
@@ -2136,7 +2089,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n184.mp4?alt=media",
    "path": "videos/lib-n184.mp4",
    "duration": 38,
-   "order": 200
+   "order": 197
   },
   "n186": {
    "cat": "c11",
@@ -2145,7 +2098,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n186.mp4?alt=media",
    "path": "videos/lib-n186.mp4",
    "duration": 49,
-   "order": 201
+   "order": 198
   },
   "n187": {
    "cat": "c11",
@@ -2154,7 +2107,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n187.mp4?alt=media",
    "path": "videos/lib-n187.mp4",
    "duration": 19,
-   "order": 202
+   "order": 199
   },
   "n188": {
    "cat": "c11",
@@ -2163,7 +2116,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n188.mp4?alt=media",
    "path": "videos/lib-n188.mp4",
    "duration": 35,
-   "order": 203
+   "order": 200
   },
   "n190": {
    "cat": "c11",
@@ -2172,7 +2125,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n190.mp4?alt=media",
    "path": "videos/lib-n190.mp4",
    "duration": 62,
-   "order": 204
+   "order": 201
   },
   "n189": {
    "cat": "c11",
@@ -2181,7 +2134,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n189.mp4?alt=media",
    "path": "videos/lib-n189.mp4",
    "duration": 65,
-   "order": 205
+   "order": 202
   },
   "n191": {
    "cat": "c11",
@@ -2190,7 +2143,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n191.mp4?alt=media",
    "path": "videos/lib-n191.mp4",
    "duration": 33,
-   "order": 206
+   "order": 203
   },
   "n192": {
    "cat": "c11",
@@ -2199,7 +2152,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n192.mp4?alt=media",
    "path": "videos/lib-n192.mp4",
    "duration": 44,
-   "order": 207
+   "order": 204
   },
   "n207": {
    "cat": "c11",
@@ -2208,7 +2161,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n207.mp4?alt=media",
    "path": "videos/lib-n207.mp4",
    "duration": 55,
-   "order": 208
+   "order": 205
   },
   "v20": {
    "cat": "c11",
@@ -2217,7 +2170,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v20.mp4?alt=media",
    "path": "videos/lib-v20.mp4",
    "duration": 36,
-   "order": 209
+   "order": 206
   },
   "n208": {
    "cat": "c11",
@@ -2226,7 +2179,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n208.mp4?alt=media",
    "path": "videos/lib-n208.mp4",
    "duration": 27,
-   "order": 210
+   "order": 207
   },
   "n209": {
    "cat": "c11",
@@ -2235,7 +2188,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n209.mp4?alt=media",
    "path": "videos/lib-n209.mp4",
    "duration": 71,
-   "order": 211
+   "order": 208
   },
   "n211": {
    "cat": "c11",
@@ -2244,7 +2197,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n211.mp4?alt=media",
    "path": "videos/lib-n211.mp4",
    "duration": 46,
-   "order": 212
+   "order": 209
   },
   "n210": {
    "cat": "c11",
@@ -2253,7 +2206,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n210.mp4?alt=media",
    "path": "videos/lib-n210.mp4",
    "duration": 74,
-   "order": 213
+   "order": 210
   },
   "n212": {
    "cat": "c11",
@@ -2262,7 +2215,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n212.mp4?alt=media",
    "path": "videos/lib-n212.mp4",
    "duration": 93,
-   "order": 214
+   "order": 211
   },
   "n213": {
    "cat": "c11",
@@ -2271,7 +2224,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n213.mp4?alt=media",
    "path": "videos/lib-n213.mp4",
    "duration": 141,
-   "order": 215
+   "order": 212
   },
   "n214": {
    "cat": "c11",
@@ -2280,7 +2233,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n214.mp4?alt=media",
    "path": "videos/lib-n214.mp4",
    "duration": 39,
-   "order": 216
+   "order": 213
   },
   "n215": {
    "cat": "c11",
@@ -2289,7 +2242,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n215.mp4?alt=media",
    "path": "videos/lib-n215.mp4",
    "duration": 122,
-   "order": 217
+   "order": 214
   },
   "n216": {
    "cat": "c11",
@@ -2298,7 +2251,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n216.mp4?alt=media",
    "path": "videos/lib-n216.mp4",
    "duration": 122,
-   "order": 218
+   "order": 215
   },
   "n217": {
    "cat": "c11",
@@ -2307,7 +2260,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n217.mp4?alt=media",
    "path": "videos/lib-n217.mp4",
    "duration": 55,
-   "order": 219
+   "order": 216
   },
   "n218": {
    "cat": "c11",
@@ -2316,7 +2269,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n218.mp4?alt=media",
    "path": "videos/lib-n218.mp4",
    "duration": 42,
-   "order": 220
+   "order": 217
   },
   "n219": {
    "cat": "c11",
@@ -2325,7 +2278,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n219.mp4?alt=media",
    "path": "videos/lib-n219.mp4",
    "duration": 24,
-   "order": 221
+   "order": 218
   },
   "n220": {
    "cat": "c11",
@@ -2334,7 +2287,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n220.mp4?alt=media",
    "path": "videos/lib-n220.mp4",
    "duration": 32,
-   "order": 222
+   "order": 219
   },
   "n221": {
    "cat": "c11",
@@ -2343,7 +2296,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n221.mp4?alt=media",
    "path": "videos/lib-n221.mp4",
    "duration": 75,
-   "order": 223
+   "order": 220
   },
   "n193": {
    "cat": "c11",
@@ -2352,7 +2305,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n193.mp4?alt=media",
    "path": "videos/lib-n193.mp4",
    "duration": 136,
-   "order": 224
+   "order": 221
   },
   "n194": {
    "cat": "c11",
@@ -2361,7 +2314,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n194.mp4?alt=media",
    "path": "videos/lib-n194.mp4",
    "duration": 117,
-   "order": 225
+   "order": 222
   },
   "v19": {
    "cat": "c11",
@@ -2370,7 +2323,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v19.mp4?alt=media",
    "path": "videos/lib-v19.mp4",
    "duration": 48,
-   "order": 226
+   "order": 223
   },
   "n195": {
    "cat": "c11",
@@ -2379,7 +2332,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n195.mp4?alt=media",
    "path": "videos/lib-n195.mp4",
    "duration": 35,
-   "order": 227
+   "order": 224
   },
   "n196": {
    "cat": "c11",
@@ -2388,7 +2341,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n196.mp4?alt=media",
    "path": "videos/lib-n196.mp4",
    "duration": 86,
-   "order": 228
+   "order": 225
   },
   "n198": {
    "cat": "c11",
@@ -2397,7 +2350,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n198.mp4?alt=media",
    "path": "videos/lib-n198.mp4",
    "duration": 93,
-   "order": 229
+   "order": 226
   },
   "n197": {
    "cat": "c11",
@@ -2406,7 +2359,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n197.mp4?alt=media",
    "path": "videos/lib-n197.mp4",
    "duration": 80,
-   "order": 230
+   "order": 227
   },
   "n200": {
    "cat": "c11",
@@ -2415,7 +2368,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n200.mp4?alt=media",
    "path": "videos/lib-n200.mp4",
    "duration": 28,
-   "order": 231
+   "order": 228
   },
   "n199": {
    "cat": "c11",
@@ -2424,7 +2377,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n199.mp4?alt=media",
    "path": "videos/lib-n199.mp4",
    "duration": 28,
-   "order": 232
+   "order": 229
   },
   "n201": {
    "cat": "c11",
@@ -2433,7 +2386,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n201.mp4?alt=media",
    "path": "videos/lib-n201.mp4",
    "duration": 54,
-   "order": 233
+   "order": 230
   },
   "n205": {
    "cat": "c11",
@@ -2442,7 +2395,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n205.mp4?alt=media",
    "path": "videos/lib-n205.mp4",
    "duration": 448,
-   "order": 234
+   "order": 231
   },
   "n203": {
    "cat": "c11",
@@ -2451,7 +2404,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n203.mp4?alt=media",
    "path": "videos/lib-n203.mp4",
    "duration": 300,
-   "order": 235
+   "order": 232
   },
   "n206": {
    "cat": "c11",
@@ -2460,7 +2413,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n206.mp4?alt=media",
    "path": "videos/lib-n206.mp4",
    "duration": 333,
-   "order": 236
+   "order": 233
   },
   "v21": {
    "cat": "c12",
@@ -2469,7 +2422,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v21.mp4?alt=media",
    "path": "videos/lib-v21.mp4",
    "duration": 79,
-   "order": 237
+   "order": 234
   },
   "n222": {
    "cat": "c12",
@@ -2478,7 +2431,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n222.mp4?alt=media",
    "path": "videos/lib-n222.mp4",
    "duration": 23,
-   "order": 238
+   "order": 235
   },
   "n223": {
    "cat": "c12",
@@ -2487,7 +2440,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n223.mp4?alt=media",
    "path": "videos/lib-n223.mp4",
    "duration": 44,
-   "order": 239
+   "order": 236
   },
   "v22": {
    "cat": "c12",
@@ -2496,7 +2449,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v22.mp4?alt=media",
    "path": "videos/lib-v22.mp4",
    "duration": 104,
-   "order": 240
+   "order": 237
   },
   "n224": {
    "cat": "c12",
@@ -2505,7 +2458,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n224.mp4?alt=media",
    "path": "videos/lib-n224.mp4",
    "duration": 143,
-   "order": 241
+   "order": 238
   },
   "n225": {
    "cat": "c12",
@@ -2514,7 +2467,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n225.mp4?alt=media",
    "path": "videos/lib-n225.mp4",
    "duration": 137,
-   "order": 242
+   "order": 239
   },
   "n226": {
    "cat": "c12",
@@ -2523,7 +2476,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n226.mp4?alt=media",
    "path": "videos/lib-n226.mp4",
    "duration": 76,
-   "order": 243
+   "order": 240
   },
   "n227": {
    "cat": "c12",
@@ -2532,7 +2485,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n227.mp4?alt=media",
    "path": "videos/lib-n227.mp4",
    "duration": 60,
-   "order": 244
+   "order": 241
   },
   "n228": {
    "cat": "c12",
@@ -2541,7 +2494,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n228.mp4?alt=media",
    "path": "videos/lib-n228.mp4",
    "duration": 59,
-   "order": 245
+   "order": 242
   },
   "n229": {
    "cat": "c12",
@@ -2550,7 +2503,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n229.mp4?alt=media",
    "path": "videos/lib-n229.mp4",
    "duration": 27,
-   "order": 246
+   "order": 243
   },
   "n230": {
    "cat": "c12",
@@ -2559,7 +2512,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n230.mp4?alt=media",
    "path": "videos/lib-n230.mp4",
    "duration": 32,
-   "order": 247
+   "order": 244
   },
   "n231": {
    "cat": "c12",
@@ -2568,7 +2521,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n231.mp4?alt=media",
    "path": "videos/lib-n231.mp4",
    "duration": 95,
-   "order": 248
+   "order": 245
   },
   "n232": {
    "cat": "c12",
@@ -2577,7 +2530,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n232.mp4?alt=media",
    "path": "videos/lib-n232.mp4",
    "duration": 149,
-   "order": 249
+   "order": 246
   },
   "n233": {
    "cat": "c12",
@@ -2586,7 +2539,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n233.mp4?alt=media",
    "path": "videos/lib-n233.mp4",
    "duration": 28,
-   "order": 250
+   "order": 247
   },
   "n234": {
    "cat": "c12",
@@ -2595,7 +2548,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n234.mp4?alt=media",
    "path": "videos/lib-n234.mp4",
    "duration": 112,
-   "order": 251
+   "order": 248
   },
   "n235": {
    "cat": "c12",
@@ -2604,7 +2557,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n235.mp4?alt=media",
    "path": "videos/lib-n235.mp4",
    "duration": 41,
-   "order": 252
+   "order": 249
   },
   "n236": {
    "cat": "c12",
@@ -2613,7 +2566,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n236.mp4?alt=media",
    "path": "videos/lib-n236.mp4",
    "duration": 87,
-   "order": 253
+   "order": 250
   },
   "v23": {
    "cat": "c12",
@@ -2622,7 +2575,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v23.mp4?alt=media",
    "path": "videos/lib-v23.mp4",
    "duration": 41,
-   "order": 254
+   "order": 251
   },
   "n237": {
    "cat": "c12",
@@ -2631,7 +2584,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n237.mp4?alt=media",
    "path": "videos/lib-n237.mp4",
    "duration": 160,
-   "order": 255
+   "order": 252
   },
   "n238": {
    "cat": "c12",
@@ -2640,7 +2593,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n238.mp4?alt=media",
    "path": "videos/lib-n238.mp4",
    "duration": 44,
-   "order": 256
+   "order": 253
   },
   "n245": {
    "cat": "c12",
@@ -2649,7 +2602,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n245.mp4?alt=media",
    "path": "videos/lib-n245.mp4",
    "duration": 41,
-   "order": 257
+   "order": 254
   },
   "n246": {
    "cat": "c12",
@@ -2658,7 +2611,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n246.mp4?alt=media",
    "path": "videos/lib-n246.mp4",
    "duration": 44,
-   "order": 258
+   "order": 255
   },
   "n247": {
    "cat": "c12",
@@ -2667,7 +2620,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n247.mp4?alt=media",
    "path": "videos/lib-n247.mp4",
    "duration": 66,
-   "order": 259
+   "order": 256
   },
   "n248": {
    "cat": "c12",
@@ -2676,7 +2629,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n248.mp4?alt=media",
    "path": "videos/lib-n248.mp4",
    "duration": 128,
-   "order": 260
+   "order": 257
   },
   "n249": {
    "cat": "c12",
@@ -2685,7 +2638,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n249.mp4?alt=media",
    "path": "videos/lib-n249.mp4",
    "duration": 132,
-   "order": 261
+   "order": 258
   },
   "n250": {
    "cat": "c12",
@@ -2694,7 +2647,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n250.mp4?alt=media",
    "path": "videos/lib-n250.mp4",
    "duration": 56,
-   "order": 262
+   "order": 259
   },
   "n251": {
    "cat": "c12",
@@ -2703,7 +2656,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n251.mp4?alt=media",
    "path": "videos/lib-n251.mp4",
    "duration": 99,
-   "order": 263
+   "order": 260
   },
   "n252": {
    "cat": "c12",
@@ -2712,7 +2665,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n252.mp4?alt=media",
    "path": "videos/lib-n252.mp4",
    "duration": 40,
-   "order": 264
+   "order": 261
   },
   "n240": {
    "cat": "c12",
@@ -2721,7 +2674,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n240.mp4?alt=media",
    "path": "videos/lib-n240.mp4",
    "duration": 99,
-   "order": 265
+   "order": 262
   },
   "n239": {
    "cat": "c12",
@@ -2730,7 +2683,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n239.mp4?alt=media",
    "path": "videos/lib-n239.mp4",
    "duration": 50,
-   "order": 266
+   "order": 263
   },
   "n241": {
    "cat": "c12",
@@ -2739,7 +2692,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n241.mp4?alt=media",
    "path": "videos/lib-n241.mp4",
    "duration": 336,
-   "order": 267
+   "order": 264
   },
   "n242": {
    "cat": "c12",
@@ -2748,7 +2701,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n242.mp4?alt=media",
    "path": "videos/lib-n242.mp4",
    "duration": 168,
-   "order": 268
+   "order": 265
   },
   "n243": {
    "cat": "c12",
@@ -2757,7 +2710,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n243.mp4?alt=media",
    "path": "videos/lib-n243.mp4",
    "duration": 35,
-   "order": 269
+   "order": 266
   },
   "n244": {
    "cat": "c12",
@@ -2766,7 +2719,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n244.mp4?alt=media",
    "path": "videos/lib-n244.mp4",
    "duration": 104,
-   "order": 270
+   "order": 267
   },
   "n254": {
    "cat": "c13",
@@ -2775,7 +2728,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n254.mp4?alt=media",
    "path": "videos/lib-n254.mp4",
    "duration": 30,
-   "order": 271
+   "order": 268
   },
   "n255": {
    "cat": "c13",
@@ -2784,7 +2737,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n255.mp4?alt=media",
    "path": "videos/lib-n255.mp4",
    "duration": 46,
-   "order": 272
+   "order": 269
   },
   "n257": {
    "cat": "c13",
@@ -2793,7 +2746,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n257.mp4?alt=media",
    "path": "videos/lib-n257.mp4",
    "duration": 112,
-   "order": 273
+   "order": 270
   },
   "n256": {
    "cat": "c13",
@@ -2802,7 +2755,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n256.mp4?alt=media",
    "path": "videos/lib-n256.mp4",
    "duration": 125,
-   "order": 274
+   "order": 271
   },
   "n258": {
    "cat": "c14",
@@ -2811,7 +2764,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n258.mp4?alt=media",
    "path": "videos/lib-n258.mp4",
    "duration": 124,
-   "order": 275
+   "order": 272
   },
   "n260": {
    "cat": "c14",
@@ -2820,7 +2773,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n260.mp4?alt=media",
    "path": "videos/lib-n260.mp4",
    "duration": 38,
-   "order": 276
+   "order": 273
   },
   "n259": {
    "cat": "c14",
@@ -2829,7 +2782,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n259.mp4?alt=media",
    "path": "videos/lib-n259.mp4",
    "duration": 52,
-   "order": 277
+   "order": 274
   },
   "n261": {
    "cat": "c14",
@@ -2838,7 +2791,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n261.mp4?alt=media",
    "path": "videos/lib-n261.mp4",
    "duration": 51,
-   "order": 278
+   "order": 275
   },
   "n262": {
    "cat": "c14",
@@ -2847,7 +2800,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n262.mp4?alt=media",
    "path": "videos/lib-n262.mp4",
    "duration": 42,
-   "order": 279
+   "order": 276
   },
   "v24": {
    "cat": "c14",
@@ -2856,7 +2809,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v24.mp4?alt=media",
    "path": "videos/lib-v24.mp4",
    "duration": 18,
-   "order": 280
+   "order": 277
   },
   "n263": {
    "cat": "c15",
@@ -2865,7 +2818,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n263.mp4?alt=media",
    "path": "videos/lib-n263.mp4",
    "duration": 59,
-   "order": 281
+   "order": 278
   },
   "n264": {
    "cat": "c15",
@@ -2874,7 +2827,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n264.mp4?alt=media",
    "path": "videos/lib-n264.mp4",
    "duration": 33,
-   "order": 282
+   "order": 279
   },
   "n265": {
    "cat": "c15",
@@ -2883,7 +2836,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n265.mp4?alt=media",
    "path": "videos/lib-n265.mp4",
    "duration": 58,
-   "order": 283
+   "order": 280
   },
   "n266": {
    "cat": "c15",
@@ -2892,7 +2845,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n266.mp4?alt=media",
    "path": "videos/lib-n266.mp4",
    "duration": 53,
-   "order": 284
+   "order": 281
   },
   "n267": {
    "cat": "c15",
@@ -2901,7 +2854,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n267.mp4?alt=media",
    "path": "videos/lib-n267.mp4",
    "duration": 14,
-   "order": 285
+   "order": 282
   },
   "n268": {
    "cat": "c15",
@@ -2910,7 +2863,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n268.mp4?alt=media",
    "path": "videos/lib-n268.mp4",
    "duration": 19,
-   "order": 286
+   "order": 283
   },
   "n269": {
    "cat": "c15",
@@ -2919,7 +2872,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n269.mp4?alt=media",
    "path": "videos/lib-n269.mp4",
    "duration": 67,
-   "order": 287
+   "order": 284
   },
   "n270": {
    "cat": "c15",
@@ -2928,7 +2881,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n270.mp4?alt=media",
    "path": "videos/lib-n270.mp4",
    "duration": 46,
-   "order": 288
+   "order": 285
   },
   "n271": {
    "cat": "c15",
@@ -2937,7 +2890,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n271.mp4?alt=media",
    "path": "videos/lib-n271.mp4",
    "duration": 125,
-   "order": 289
+   "order": 286
   },
   "n272": {
    "cat": "c15",
@@ -2946,7 +2899,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n272.mp4?alt=media",
    "path": "videos/lib-n272.mp4",
    "duration": 125,
-   "order": 290
+   "order": 287
   },
   "n273": {
    "cat": "c15",
@@ -2955,7 +2908,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n273.mp4?alt=media",
    "path": "videos/lib-n273.mp4",
    "duration": 26,
-   "order": 291
+   "order": 288
   },
   "n274": {
    "cat": "c15",
@@ -2964,7 +2917,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n274.mp4?alt=media",
    "path": "videos/lib-n274.mp4",
    "duration": 51,
-   "order": 292
+   "order": 289
   },
   "n275": {
    "cat": "c15",
@@ -2973,7 +2926,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n275.mp4?alt=media",
    "path": "videos/lib-n275.mp4",
    "duration": 50,
-   "order": 293
+   "order": 290
   },
   "n276": {
    "cat": "c15",
@@ -2982,7 +2935,7 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n276.mp4?alt=media",
    "path": "videos/lib-n276.mp4",
    "duration": 55,
-   "order": 294
+   "order": 291
   },
   "n277": {
    "cat": "c15",
@@ -2991,556 +2944,511 @@
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n277.mp4?alt=media",
    "path": "videos/lib-n277.mp4",
    "duration": 44,
-   "order": 295
-  },
-  "n278": {
-   "cat": "c16",
-   "sub": "s042",
-   "title": "בניה בשיטת ברנוביץ",
-   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n278.mp4?alt=media",
-   "path": "videos/lib-n278.mp4",
-   "duration": 51,
-   "order": 296
-  },
-  "n279": {
-   "cat": "c16",
-   "sub": "s042",
-   "title": "בניה טרומית",
-   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n279.mp4?alt=media",
-   "path": "videos/lib-n279.mp4",
-   "duration": 57,
-   "order": 297
+   "order": 292
   },
   "v28": {
-   "cat": "c17",
-   "sub": "s043",
+   "cat": "c16",
+   "sub": "s042",
    "title": "מעיכות מסגרת דלתות וחלונות",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v28.mp4?alt=media",
    "path": "videos/lib-v28.mp4",
    "duration": 31,
-   "order": 298
+   "order": 293
   },
   "n284": {
-   "cat": "c17",
-   "sub": "s044",
+   "cat": "c16",
+   "sub": "s043",
    "title": "סדקי קורי עכביש",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n284.mp4?alt=media",
    "path": "videos/lib-n284.mp4",
    "duration": 72,
-   "order": 299
+   "order": 294
   },
   "n282": {
-   "cat": "c17",
-   "sub": "s044",
+   "cat": "c16",
+   "sub": "s043",
    "title": "סדקי קורי עכביש (1)",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n282.mp4?alt=media",
    "path": "videos/lib-n282.mp4",
    "duration": 48,
-   "order": 300
+   "order": 295
   },
   "n283": {
-   "cat": "c17",
-   "sub": "s044",
+   "cat": "c16",
+   "sub": "s043",
    "title": "סדקי קורי עכביש (2)",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n283.mp4?alt=media",
    "path": "videos/lib-n283.mp4",
    "duration": 48,
-   "order": 301
+   "order": 296
   },
   "v29": {
-   "cat": "c17",
-   "sub": "s044",
+   "cat": "c16",
+   "sub": "s043",
    "title": "סדקים בשליכט צבעוני",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v29.mp4?alt=media",
    "path": "videos/lib-v29.mp4",
    "duration": 71,
-   "order": 302
+   "order": 297
   },
   "n285": {
-   "cat": "c17",
-   "sub": "s044",
+   "cat": "c16",
+   "sub": "s043",
    "title": "פגמים בשליכט צבעוני",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n285.mp4?alt=media",
    "path": "videos/lib-n285.mp4",
    "duration": 43,
-   "order": 303
+   "order": 298
   },
   "n286": {
-   "cat": "c17",
-   "sub": "s044",
+   "cat": "c16",
+   "sub": "s043",
    "title": "שליכט צבעוני",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n286.mp4?alt=media",
    "path": "videos/lib-n286.mp4",
    "duration": 70,
-   "order": 304
+   "order": 299
   },
   "v25": {
-   "cat": "c17",
-   "sub": "s045",
+   "cat": "c16",
+   "sub": "s044",
    "title": "סדקים נימיים",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v25.mp4?alt=media",
    "path": "videos/lib-v25.mp4",
    "duration": 82,
-   "order": 305
+   "order": 300
   },
   "n280": {
-   "cat": "c17",
-   "sub": "s045",
+   "cat": "c16",
+   "sub": "s044",
    "title": "שקעים וחספוסים בטיח",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n280.mp4?alt=media",
    "path": "videos/lib-n280.mp4",
    "duration": 37,
-   "order": 306
+   "order": 301
   },
   "v27": {
-   "cat": "c17",
-   "sub": "s045",
+   "cat": "c16",
+   "sub": "s044",
    "title": "תיקוני טיח",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v27.mp4?alt=media",
    "path": "videos/lib-v27.mp4",
    "duration": 17,
-   "order": 307
+   "order": 302
   },
   "v26": {
-   "cat": "c17",
-   "sub": "s045",
+   "cat": "c16",
+   "sub": "s044",
    "title": "תיקוני טיח 2",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v26.mp4?alt=media",
    "path": "videos/lib-v26.mp4",
    "duration": 13,
-   "order": 308
-  },
-  "n287": {
-   "cat": "c18",
-   "sub": "s046",
-   "title": "אטימה בסף חלון",
-   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n287.mp4?alt=media",
-   "path": "videos/lib-n287.mp4",
-   "duration": 70,
-   "order": 309
+   "order": 303
   },
   "n288": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "אף מים בקופינג",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n288.mp4?alt=media",
    "path": "videos/lib-n288.mp4",
    "duration": 119,
-   "order": 310
+   "order": 304
+  },
+  "n287": {
+   "cat": "c17",
+   "sub": "s045",
+   "title": "אף מים בקופינג 4",
+   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n287.mp4?alt=media",
+   "path": "videos/lib-n287.mp4",
+   "duration": 70,
+   "order": 305
   },
   "n289": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "אף מים בקופינג2",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n289.mp4?alt=media",
    "path": "videos/lib-n289.mp4",
    "duration": 89,
-   "order": 311
+   "order": 306
   },
   "n290": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "אף מים בקופינג3",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n290.mp4?alt=media",
    "path": "videos/lib-n290.mp4",
    "duration": 53,
-   "order": 312
+   "order": 307
   },
   "n291": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "ווי עיגון",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n291.mp4?alt=media",
    "path": "videos/lib-n291.mp4",
    "duration": 31,
-   "order": 313
+   "order": 308
   },
   "n292": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "טבעות עיגון בקירות חוץ",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n292.mp4?alt=media",
    "path": "videos/lib-n292.mp4",
    "duration": 15,
-   "order": 314
+   "order": 309
   },
   "v30": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "כתמי לכלוך",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v30.mp4?alt=media",
    "path": "videos/lib-v30.mp4",
    "duration": 51,
-   "order": 315
+   "order": 310
   },
   "n293": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "כתמי לכלוך (1)",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n293.mp4?alt=media",
    "path": "videos/lib-n293.mp4",
    "duration": 20,
-   "order": 316
+   "order": 311
   },
   "n294": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "כתמי לכלוך2",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n294.mp4?alt=media",
    "path": "videos/lib-n294.mp4",
    "duration": 65,
-   "order": 317
+   "order": 312
   },
   "v32": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "סדקים ושברים באבן",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v32.mp4?alt=media",
    "path": "videos/lib-v32.mp4",
    "duration": 93,
-   "order": 318
+   "order": 313
   },
   "n295": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "סדקים ושברים באבן (1)",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n295.mp4?alt=media",
    "path": "videos/lib-n295.mp4",
    "duration": 26,
-   "order": 319
+   "order": 314
   },
   "v31": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "סדקים ושברים באבן 2",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v31.mp4?alt=media",
    "path": "videos/lib-v31.mp4",
    "duration": 40,
-   "order": 320
+   "order": 315
   },
   "n296": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "פגמים באבן",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n296.mp4?alt=media",
    "path": "videos/lib-n296.mp4",
    "duration": 58,
-   "order": 321
+   "order": 316
   },
   "n300": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "קיבוע מכני",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n300.mp4?alt=media",
    "path": "videos/lib-n300.mp4",
    "duration": 29,
-   "order": 322
+   "order": 317
   },
   "n297": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "קיבוע מכני (1)",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n297.mp4?alt=media",
    "path": "videos/lib-n297.mp4",
    "duration": 8,
-   "order": 323
+   "order": 318
   },
   "n298": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "קיבוע מכני (2)",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n298.mp4?alt=media",
    "path": "videos/lib-n298.mp4",
    "duration": 70,
-   "order": 324
+   "order": 319
   },
   "n299": {
-   "cat": "c18",
-   "sub": "s046",
+   "cat": "c17",
+   "sub": "s045",
    "title": "קיבוע מכני 2",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n299.mp4?alt=media",
    "path": "videos/lib-n299.mp4",
    "duration": 21,
-   "order": 325
+   "order": 320
   },
   "n301": {
-   "cat": "c19",
-   "sub": "s047",
+   "cat": "c18",
+   "sub": "s046",
    "title": "רטיבות מצינור שופכין",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n301.mp4?alt=media",
    "path": "videos/lib-n301.mp4",
    "duration": 123,
-   "order": 326
+   "order": 321
   },
   "n302": {
-   "cat": "c19",
-   "sub": "s047",
+   "cat": "c18",
+   "sub": "s046",
    "title": "תפרחת בחדר רחצה בלבד",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n302.mp4?alt=media",
    "path": "videos/lib-n302.mp4",
    "duration": 126,
-   "order": 327
+   "order": 322
   },
   "n303": {
-   "cat": "c20",
-   "sub": "s048",
+   "cat": "c19",
+   "sub": "s047",
    "title": "לא בוצע רובה",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n303.mp4?alt=media",
    "path": "videos/lib-n303.mp4",
    "duration": 24,
-   "order": 328
+   "order": 323
   },
   "n305": {
-   "cat": "c20",
-   "sub": "s048",
+   "cat": "c19",
+   "sub": "s047",
    "title": "לא הוסרו שומרי מרחק לאחר מילוי הרובה",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n305.mp4?alt=media",
    "path": "videos/lib-n305.mp4",
    "duration": 45,
-   "order": 329
+   "order": 324
   },
   "n304": {
-   "cat": "c20",
-   "sub": "s048",
+   "cat": "c19",
+   "sub": "s047",
    "title": "לא הוסרו שומרי מרחק לאחר מילוי הרובה (1)",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n304.mp4?alt=media",
    "path": "videos/lib-n304.mp4",
    "duration": 25,
-   "order": 330
-  },
-  "n306": {
-   "cat": "c20",
-   "sub": "s048",
-   "title": "לחות שכלואה מתחת לרצפה",
-   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n306.mp4?alt=media",
-   "path": "videos/lib-n306.mp4",
-   "duration": 134,
-   "order": 331
+   "order": 325
   },
   "n307": {
-   "cat": "c20",
-   "sub": "s048",
+   "cat": "c19",
+   "sub": "s047",
    "title": "רובה סדוקה ומתפוררת",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n307.mp4?alt=media",
    "path": "videos/lib-n307.mp4",
    "duration": 34,
-   "order": 332
+   "order": 326
   },
   "n308": {
-   "cat": "c20",
-   "sub": "s048",
+   "cat": "c19",
+   "sub": "s047",
    "title": "שינויי גוון ברובה",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n308.mp4?alt=media",
    "path": "videos/lib-n308.mp4",
    "duration": 105,
-   "order": 333
+   "order": 327
   },
   "n309": {
-   "cat": "c20",
-   "sub": "s048",
+   "cat": "c19",
+   "sub": "s047",
    "title": "תפרי ביניים במרפסת 2",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n309.mp4?alt=media",
    "path": "videos/lib-n309.mp4",
    "duration": 87,
-   "order": 334
+   "order": 328
   },
   "v33": {
-   "cat": "c20",
-   "sub": "s048",
+   "cat": "c19",
+   "sub": "s047",
    "title": "תפרי בניים במרפסת",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v33.mp4?alt=media",
    "path": "videos/lib-v33.mp4",
    "duration": 60,
-   "order": 335
+   "order": 329
   },
   "n310": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "הדבקת פנלים בשכבת דבק עבה",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n310.mp4?alt=media",
    "path": "videos/lib-n310.mp4",
    "duration": 151,
-   "order": 336
+   "order": 330
   },
   "v34": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "השלמת פנלים חסרים 3",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-v34.mp4?alt=media",
    "path": "videos/lib-v34.mp4",
    "duration": 38,
-   "order": 337
+   "order": 331
   },
   "n311": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "חוסר באריחים רזרביים",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n311.mp4?alt=media",
    "path": "videos/lib-n311.mp4",
    "duration": 73,
-   "order": 338
+   "order": 332
   },
   "n312": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "חיתוך",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n312.mp4?alt=media",
    "path": "videos/lib-n312.mp4",
    "duration": 46,
-   "order": 339
+   "order": 333
   },
   "n313": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "כתמים באריחי ריצוף",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n313.mp4?alt=media",
    "path": "videos/lib-n313.mp4",
    "duration": 36,
-   "order": 340
+   "order": 334
   },
   "n314": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "ניקיון למשטח הריצוף לפני מסירה",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n314.mp4?alt=media",
    "path": "videos/lib-n314.mp4",
    "duration": 181,
-   "order": 341
+   "order": 335
   },
   "n315": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "ניקיון למשטח הריצוף פני מסירה",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n315.mp4?alt=media",
    "path": "videos/lib-n315.mp4",
    "duration": 67,
-   "order": 342
+   "order": 336
   },
   "n316": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "סף אלומיניום",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n316.mp4?alt=media",
    "path": "videos/lib-n316.mp4",
    "duration": 49,
-   "order": 343
+   "order": 337
   },
   "n317": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "ערבוב אריחים 2",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n317.mp4?alt=media",
    "path": "videos/lib-n317.mp4",
    "duration": 24,
-   "order": 344
+   "order": 338
   },
   "n320": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "פגמים באריחי ריצוף",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n320.mp4?alt=media",
    "path": "videos/lib-n320.mp4",
    "duration": 40,
-   "order": 345
+   "order": 339
   },
   "n318": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "פגמים באריחי ריצוף (1)",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n318.mp4?alt=media",
    "path": "videos/lib-n318.mp4",
    "duration": 57,
-   "order": 346
+   "order": 340
   },
   "n319": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "פגמים באריחי ריצוף (2)",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n319.mp4?alt=media",
    "path": "videos/lib-n319.mp4",
    "duration": 47,
-   "order": 347
+   "order": 341
   },
   "n321": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "פרופילי פינות",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n321.mp4?alt=media",
    "path": "videos/lib-n321.mp4",
    "duration": 86,
-   "order": 348
+   "order": 342
   },
   "n322": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "רוחב מישקים 3 מ״מ",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n322.mp4?alt=media",
    "path": "videos/lib-n322.mp4",
    "duration": 166,
-   "order": 349
+   "order": 343
   },
   "n323": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "ריצוף בולט מסף דלת",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n323.mp4?alt=media",
    "path": "videos/lib-n323.mp4",
    "duration": 61,
-   "order": 350
+   "order": 344
   },
   "n324": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "רצפת הנכס מכוסה",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n324.mp4?alt=media",
    "path": "videos/lib-n324.mp4",
    "duration": 68,
-   "order": 351
+   "order": 345
   },
   "n326": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "שיפוע לקוי בתא מקלחת",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n326.mp4?alt=media",
    "path": "videos/lib-n326.mp4",
    "duration": 117,
-   "order": 352
+   "order": 346
   },
   "n325": {
-   "cat": "c20",
-   "sub": "s049",
+   "cat": "c19",
+   "sub": "s048",
    "title": "שיפוע לקוי בתא מקלחת (1)",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n325.mp4?alt=media",
    "path": "videos/lib-n325.mp4",
    "duration": 40,
-   "order": 353
-  },
-  "n327": {
-   "cat": "c21",
-   "sub": "s050",
-   "title": "גובה מעבר ראש במדרגות",
-   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n327.mp4?alt=media",
-   "path": "videos/lib-n327.mp4",
-   "duration": 50,
-   "order": 354
-  },
-  "n001": {
-   "cat": "c22",
-   "sub": "s051",
-   "title": "איך בודקים דירה",
-   "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n001.mp4?alt=media",
-   "path": "videos/lib-n001.mp4",
-   "duration": 607,
-   "order": 355
+   "order": 347
   },
   "n117": {
-   "cat": "c22",
-   "sub": "s051",
+   "cat": "c20",
+   "sub": "s049",
    "title": "בניה טרומית",
    "url": "https://firebasestorage.googleapis.com/v0/b/employee-quiz-81499.firebasestorage.app/o/videos%2Flib-n117.mp4?alt=media",
    "path": "videos/lib-n117.mp4",
    "duration": 86,
-   "order": 356
+   "order": 348
   }
  },
  "questions": {
@@ -4075,82 +3983,6 @@
    "type": "open",
    "text": "מה קורה כשהדוד ריק ופותחים את המים החמים, ומה עושים כדי לזרז את יציאת האוויר?",
    "order": 10
-  },
-  "n008q1": {
-   "video": "n008",
-   "type": "choice",
-   "text": "באיזו טמפרטורה צריכים להיות המים בזמן בדיקת הלחצים?",
-   "order": 1,
-   "options": [
-    "מים קרים",
-    "מים חמים",
-    "מים פושרים",
-    "לא משנה מה הטמפרטורה"
-   ],
-   "correct": 1
-  },
-  "n008q2": {
-   "video": "n008",
-   "type": "choice",
-   "text": "למה אסור לבצע בדיקת לחצים עם מים חמים?",
-   "order": 2,
-   "options": [
-    "המים החמים מעלים את הלחץ בצנרת ונותנים קריאה לא נכונה במד הלחצים",
-    "המים החמים עלולים להמיס את הצנרת",
-    "המים החמים מורידים את הלחץ ומסתירים נזילות",
-    "מד הלחצים לא עובד בטמפרטורה גבוהה"
-   ],
-   "correct": 1
-  },
-  "n008q3": {
-   "video": "n008",
-   "type": "choice",
-   "text": "מה עושים אם פותחים את המים בחדר הרחצה ויוצאים מים חמים?",
-   "order": 3,
-   "options": [
-    "קודם כל מרוקנים את הדוד ורק אז מבצעים את הבדיקה",
-    "מבצעים את הבדיקה כרגיל",
-    "מוסיפים לתוצאה תיקון של הלחץ",
-    "מבטלים את הבדיקה ורושמים ליקוי"
-   ],
-   "correct": 1
-  },
-  "n008q4": {
-   "video": "n008",
-   "type": "choice",
-   "text": "איך מוודאים שהמים קרים לפני הבדיקה?",
-   "order": 4,
-   "options": [
-    "פותחים את ברז המים החמים, שמים יד ומרגישים שהמים שיוצאים קרים",
-    "מסתכלים על התצוגה של הדוד",
-    "שואלים את בעל הדירה מתי הדליק את הדוד",
-    "מודדים את הלחץ בכניסה לדירה"
-   ],
-   "correct": 1
-  },
-  "n008q5": {
-   "video": "n008",
-   "type": "open",
-   "text": "הסבר למה בדיקה עם מים חמים נותנת אינדיקציה לא נכונה במד הלחצים.",
-   "order": 5
-  },
-  "n008q6": {
-   "video": "n008",
-   "type": "open",
-   "text": "הגעת לדירה, פתחת את המים החמים בחדר הרחצה ויצאו מים חמים. מה תעשה לפני בדיקת הלחצים?",
-   "order": 6
-  },
-  "n008q7": {
-   "video": "n008",
-   "type": "open",
-   "text": "תאר איך בודקים בפועל את טמפרטורת המים לפני הבדיקה.",
-   "order": 7
-  },
-  "n008q8": {
-   "video": "n008",
-   "type": "open",
-   "text": "בעל הדירה מבקש להתחיל מיד את בדיקת הלחצים, כשהדוד מלא במים חמים. מה תסביר לו?",
-   "order": 8
   },
   "n009q1": {
    "video": "n009",
@@ -4797,63 +4629,6 @@
    "type": "open",
    "text": "מה תרשום בדוח כתיקון נדרש לחיבור הפוך של חמים וקרים?",
    "order": 8
-  },
-  "n017q1": {
-   "video": "n017",
-   "type": "choice",
-   "text": "מה הליקוי שמוצג בסרטון?",
-   "order": 1,
-   "options": [
-    "לא בוצע בידוד תרמי לצנרת המים החמים",
-    "לא בוצע איטום סביב הצנרת",
-    "הצנרת לא מחוברת לניקוז",
-    "לא הותקן מד מים"
-   ],
-   "correct": 1
-  },
-  "n017q2": {
-   "video": "n017",
-   "type": "choice",
-   "text": "לאיזו צנרת חסר הבידוד בסרטון?",
-   "order": 2,
-   "options": [
-    "צנרת המים החמים",
-    "צנרת הניקוז",
-    "צנרת הגז",
-    "צנרת המזגן"
-   ],
-   "correct": 1
-  },
-  "n017q3": {
-   "video": "n017",
-   "type": "choice",
-   "text": "איזה סוג בידוד חסר לצנרת בסרטון?",
-   "order": 3,
-   "options": [
-    "בידוד תרמי",
-    "בידוד אקוסטי",
-    "איטום נגד רטיבות",
-    "הארקה חשמלית"
-   ],
-   "correct": 1
-  },
-  "n017q4": {
-   "video": "n017",
-   "type": "open",
-   "text": "תאר את הליקוי שמוצג בסרטון.",
-   "order": 4
-  },
-  "n017q5": {
-   "video": "n017",
-   "type": "open",
-   "text": "על מה צריך לשים לב בצנרת המים החמים בזמן הבדיקה?",
-   "order": 5
-  },
-  "n017q6": {
-   "video": "n017",
-   "type": "open",
-   "text": "איך תרשום את הליקוי הזה בדוח?",
-   "order": 6
   },
   "n018q1": {
    "video": "n018",
@@ -6033,6 +5808,101 @@
    "text": "אילו נקודות ברצפה צריך לבדוק שיש להן מכסים ורשתות?",
    "order": 6
   },
+  "n037q1": {
+   "video": "n037",
+   "type": "choice",
+   "text": "איפה מסתכלים כדי לבדוק אם יש קופסת ביקורת במטבח?",
+   "order": 1,
+   "options": [
+    "מתחת לצוקל של ארונות המטבח",
+    "מעל הכיור",
+    "מאחורי המקרר",
+    "בתוך ארון החשמל"
+   ],
+   "correct": 1
+  },
+  "n037q2": {
+   "video": "n037",
+   "type": "choice",
+   "text": "עד איזה גובה צריכה להגיע ההגבהה של קופסת הביקורת במטבח?",
+   "order": 2,
+   "options": [
+    "עד החלק העליון של הארון",
+    "עד גובה הצוקל",
+    "עד גובה הרצפה",
+    "עד מחצית גובה הארון"
+   ],
+   "correct": 1
+  },
+  "n037q3": {
+   "video": "n037",
+   "type": "choice",
+   "text": "מה צריך להיות על ההגבהה של קופסת הביקורת?",
+   "order": 3,
+   "options": [
+    "מכסה קבוע",
+    "מכסה זמני",
+    "רשת",
+    "אריח"
+   ],
+   "correct": 1
+  },
+  "n037q4": {
+   "video": "n037",
+   "type": "choice",
+   "text": "מה צריך להיות בארון כדי שקופסת הביקורת תעבור כלפי מעלה?",
+   "order": 4,
+   "options": [
+    "חור בחלק העליון של הארון",
+    "דלת נפרדת בצוקל",
+    "פתח בצד הארון",
+    "שום דבר, הקופסה נשארת מתחת לארון"
+   ],
+   "correct": 1
+  },
+  "n037q5": {
+   "video": "n037",
+   "type": "choice",
+   "text": "האם בכל מטבח יש קופסת ביקורת מתחת לארונות?",
+   "order": 5,
+   "options": [
+    "לא תמיד, אבל אם יש — היא חייבת להגיע עד החלק העליון עם מכסה קבוע",
+    "כן, תמיד",
+    "אף פעם, קופסאות ביקורת יש רק בחדרי רחצה",
+    "רק במטבחים עם מדיח כלים"
+   ],
+   "correct": 1
+  },
+  "n037q6": {
+   "video": "n037",
+   "type": "open",
+   "text": "תאר את הליקוי שמוצג בסרטון: מה בוצע ומה לא בוצע?",
+   "order": 6
+  },
+  "n037q7": {
+   "video": "n037",
+   "type": "open",
+   "text": "מה בודקים מתחת לארונות המטבח, ואיך?",
+   "order": 7
+  },
+  "n037q8": {
+   "video": "n037",
+   "type": "open",
+   "text": "למה ההגבהה צריכה להגיע עד החלק העליון של הארון ולא להישאר מתחת לגובה הארון?",
+   "order": 8
+  },
+  "n037q9": {
+   "video": "n037",
+   "type": "open",
+   "text": "מהם שני הדברים שבודקים כשיש קופסת ביקורת מתחת לארון המטבח?",
+   "order": 9
+  },
+  "n037q10": {
+   "video": "n037",
+   "type": "open",
+   "text": "מה תדרוש מהקבלן כשקופסת הביקורת במטבח לא הוגבהה ואין עליה מכסה?",
+   "order": 10
+  },
   "n033q1": {
    "video": "n033",
    "type": "choice",
@@ -6392,101 +6262,6 @@
    "video": "n036",
    "type": "open",
    "text": "לאן מוביל צינור הניקוז של הכיור, ואיך רואים את זה בסרטון?",
-   "order": 10
-  },
-  "n037q1": {
-   "video": "n037",
-   "type": "choice",
-   "text": "איפה מסתכלים כדי לבדוק אם יש קופסת ביקורת במטבח?",
-   "order": 1,
-   "options": [
-    "מתחת לצוקל של ארונות המטבח",
-    "מעל הכיור",
-    "מאחורי המקרר",
-    "בתוך ארון החשמל"
-   ],
-   "correct": 1
-  },
-  "n037q2": {
-   "video": "n037",
-   "type": "choice",
-   "text": "עד איזה גובה צריכה להגיע ההגבהה של קופסת הביקורת במטבח?",
-   "order": 2,
-   "options": [
-    "עד החלק העליון של הארון",
-    "עד גובה הצוקל",
-    "עד גובה הרצפה",
-    "עד מחצית גובה הארון"
-   ],
-   "correct": 1
-  },
-  "n037q3": {
-   "video": "n037",
-   "type": "choice",
-   "text": "מה צריך להיות על ההגבהה של קופסת הביקורת?",
-   "order": 3,
-   "options": [
-    "מכסה קבוע",
-    "מכסה זמני",
-    "רשת",
-    "אריח"
-   ],
-   "correct": 1
-  },
-  "n037q4": {
-   "video": "n037",
-   "type": "choice",
-   "text": "מה צריך להיות בארון כדי שקופסת הביקורת תעבור כלפי מעלה?",
-   "order": 4,
-   "options": [
-    "חור בחלק העליון של הארון",
-    "דלת נפרדת בצוקל",
-    "פתח בצד הארון",
-    "שום דבר, הקופסה נשארת מתחת לארון"
-   ],
-   "correct": 1
-  },
-  "n037q5": {
-   "video": "n037",
-   "type": "choice",
-   "text": "האם בכל מטבח יש קופסת ביקורת מתחת לארונות?",
-   "order": 5,
-   "options": [
-    "לא תמיד, אבל אם יש — היא חייבת להגיע עד החלק העליון עם מכסה קבוע",
-    "כן, תמיד",
-    "אף פעם, קופסאות ביקורת יש רק בחדרי רחצה",
-    "רק במטבחים עם מדיח כלים"
-   ],
-   "correct": 1
-  },
-  "n037q6": {
-   "video": "n037",
-   "type": "open",
-   "text": "תאר את הליקוי שמוצג בסרטון: מה בוצע ומה לא בוצע?",
-   "order": 6
-  },
-  "n037q7": {
-   "video": "n037",
-   "type": "open",
-   "text": "מה בודקים מתחת לארונות המטבח, ואיך?",
-   "order": 7
-  },
-  "n037q8": {
-   "video": "n037",
-   "type": "open",
-   "text": "למה ההגבהה צריכה להגיע עד החלק העליון של הארון ולא להישאר מתחת לגובה הארון?",
-   "order": 8
-  },
-  "n037q9": {
-   "video": "n037",
-   "type": "open",
-   "text": "מהם שני הדברים שבודקים כשיש קופסת ביקורת מתחת לארון המטבח?",
-   "order": 9
-  },
-  "n037q10": {
-   "video": "n037",
-   "type": "open",
-   "text": "מה תדרוש מהקבלן כשקופסת הביקורת במטבח לא הוגבהה ואין עליה מכסה?",
    "order": 10
   },
   "n038q1": {
@@ -14241,82 +14016,6 @@
    "text": "למה חשוב לבדוק את פעולת הנועל ביטחון בדלת הכניסה?",
    "order": 6
   },
-  "n132q1": {
-   "video": "n132",
-   "type": "choice",
-   "text": "איזה אביזר נעילה חייב להיות בצד הפנימי של דלת הכניסה?",
-   "order": 1,
-   "options": [
-    "מנגנון פרפר קבוע",
-    "מנעול שנפתח רק במפתח",
-    "שרשרת ביטחון",
-    "בריח עליון"
-   ],
-   "correct": 1
-  },
-  "n132q2": {
-   "video": "n132",
-   "type": "choice",
-   "text": "מה הדין כשבצד הפנימי של דלת הכניסה יש מנעול שנפתח ונסגר במפתח במקום פרפר קבוע?",
-   "order": 2,
-   "options": [
-    "זה אוטומטית ליקוי",
-    "זה תקין",
-    "זה ליקוי רק בדלת ממ\"ד",
-    "זו המלצה בלבד, לא ליקוי"
-   ],
-   "correct": 1
-  },
-  "n132q3": {
-   "video": "n132",
-   "type": "choice",
-   "text": "על אילו דלתות חל הסעיף?",
-   "order": 3,
-   "options": [
-    "דלתות כניסה לדירות וכל דלת חיצונית",
-    "רק דלתות פנים",
-    "רק דלתות חדרי רחצה",
-    "רק דלת ממ\"ד"
-   ],
-   "correct": 1
-  },
-  "n132q4": {
-   "video": "n132",
-   "type": "choice",
-   "text": "באיזה צד של הדלת צריך להיות אביזר הנעילה הקבוע?",
-   "order": 4,
-   "options": [
-    "בצד הפנימי",
-    "בצד החיצוני",
-    "בשני הצדדים",
-    "אין חשיבות לצד"
-   ],
-   "correct": 1
-  },
-  "n132q5": {
-   "video": "n132",
-   "type": "open",
-   "text": "מה בודקים במנעול של דלת הכניסה מבפנים?",
-   "order": 5
-  },
-  "n132q6": {
-   "video": "n132",
-   "type": "open",
-   "text": "מה ההבדל בין פרפר קבוע לבין מנעול זמני שנפתח במפתח?",
-   "order": 6
-  },
-  "n132q7": {
-   "video": "n132",
-   "type": "open",
-   "text": "מתי רושמים ליקוי \"לא הותקן אביזר נעילה קבוע בחלקה הפנימי של הדלת\"?",
-   "order": 7
-  },
-  "n132q8": {
-   "video": "n132",
-   "type": "open",
-   "text": "מה הקבלן צריך להתקין בצד הפנימי של דלת הכניסה כדי לתקן את הליקוי?",
-   "order": 8
-  },
   "n133q1": {
    "video": "n133",
    "type": "choice",
@@ -14773,101 +14472,6 @@
    "text": "מה רושמים בדוח כשלא מוצאים על הדלת סימון של תו תקן?",
    "order": 8
   },
-  "n138q1": {
-   "video": "n138",
-   "type": "choice",
-   "text": "מה הרוחב המינימלי של דלת חדר שינה?",
-   "order": 1,
-   "options": [
-    "70 ס\"מ",
-    "60 ס\"מ",
-    "65 ס\"מ",
-    "80 ס\"מ"
-   ],
-   "correct": 1
-  },
-  "n138q2": {
-   "video": "n138",
-   "type": "choice",
-   "text": "מה הרוחב המינימלי של דלת לחדרי שירות, מקלחות ומחסנים?",
-   "order": 2,
-   "options": [
-    "60 ס\"מ",
-    "50 ס\"מ",
-    "55 ס\"מ",
-    "70 ס\"מ"
-   ],
-   "correct": 1
-  },
-  "n138q3": {
-   "video": "n138",
-   "type": "choice",
-   "text": "מה הכלל לגבי דלתות חדרי הרחצה והשירותים בדירה?",
-   "order": 3,
-   "options": [
-    "דלת אחת שמובילה לשירותים חייבת להיות 70 ס\"מ, השאר יכולות להיות 60 ס\"מ",
-    "כל הדלתות חייבות להיות 70 ס\"מ",
-    "כל הדלתות יכולות להיות 60 ס\"מ",
-    "כל הדלתות חייבות להיות 80 ס\"מ"
-   ],
-   "correct": 1
-  },
-  "n138q4": {
-   "video": "n138",
-   "type": "choice",
-   "text": "איזה סימן בצירים מרמז שהדלת אינה תקנית?",
-   "order": 4,
-   "options": [
-    "צירים שמחוברים רק בהברגות",
-    "צירים צבועים בצבע הדלת",
-    "שלושה צירים במקום שניים",
-    "צירים שנכנסים זה לתוך זה"
-   ],
-   "correct": 1
-  },
-  "n138q5": {
-   "video": "n138",
-   "type": "choice",
-   "text": "בסרטון נמדד בחדר השינה של הילדים רוחב של 65 ס\"מ. מה המסקנה?",
-   "order": 5,
-   "options": [
-    "הדלת צרה מהמינימום הנדרש לחדר שינה",
-    "הדלת תקינה",
-    "הדלת רחבה מדי",
-    "אין דרישת רוחב לדלת חדר ילדים"
-   ],
-   "correct": 1
-  },
-  "n138q6": {
-   "video": "n138",
-   "type": "open",
-   "text": "אילו שני סעיפים נבדקים יחד בסרטון, ומה הקשר ביניהם?",
-   "order": 6
-  },
-  "n138q7": {
-   "video": "n138",
-   "type": "open",
-   "text": "הסבר איך מודדים נכון את רוחב הדלת, ולמה מודדים דווקא כך.",
-   "order": 7
-  },
-  "n138q8": {
-   "video": "n138",
-   "type": "open",
-   "text": "פרט את רוחבי הדלתות המינימליים לפי סוגי החדרים.",
-   "order": 8
-  },
-  "n138q9": {
-   "video": "n138",
-   "type": "open",
-   "text": "איך הצירים יכולים לרמוז שהדלת אינה תקנית?",
-   "order": 9
-  },
-  "n138q10": {
-   "video": "n138",
-   "type": "open",
-   "text": "מה אפשר להסיק על דלת שאין עליה תו תקן מבחינת הרוחב שלה?",
-   "order": 10
-  },
   "n140q1": {
    "video": "n140",
    "type": "choice",
@@ -15113,6 +14717,82 @@
    "video": "n142",
    "type": "open",
    "text": "איך מזהים בבדיקה שהדלת עדיין מכוסה בהגנה?",
+   "order": 8
+  },
+  "n149q1": {
+   "video": "n149",
+   "type": "choice",
+   "text": "איך נקרא החלק העליון האופקי של מלבן הדלת?",
+   "order": 1,
+   "options": [
+    "משקוף",
+    "מזוזה",
+    "כנף",
+    "הלבשה"
+   ],
+   "correct": 1
+  },
+  "n149q2": {
+   "video": "n149",
+   "type": "choice",
+   "text": "מה יחד יוצרים את מלבן הדלת?",
+   "order": 2,
+   "options": [
+    "שתי מזוזות ומשקוף",
+    "כנף וידית",
+    "הלבשות בלבד",
+    "כנף ומשקוף"
+   ],
+   "correct": 1
+  },
+  "n149q3": {
+   "video": "n149",
+   "type": "choice",
+   "text": "איך נקרא החלק של הדלת שנפתח ונסגר?",
+   "order": 3,
+   "options": [
+    "כנף",
+    "מזוזה",
+    "משקוף",
+    "הלבשה"
+   ],
+   "correct": 1
+  },
+  "n149q4": {
+   "video": "n149",
+   "type": "choice",
+   "text": "מה נקרא \"מכלול הדלת\"?",
+   "order": 4,
+   "options": [
+    "כל החלקים יחד: מלבן, הלבשות וכנף",
+    "הכנף בלבד",
+    "ההלבשות בלבד",
+    "המשקוף והמזוזות בלבד"
+   ],
+   "correct": 1
+  },
+  "n149q5": {
+   "video": "n149",
+   "type": "open",
+   "text": "מנה את חלקי מכלול הדלת שהוסברו בסרטון.",
+   "order": 5
+  },
+  "n149q6": {
+   "video": "n149",
+   "type": "open",
+   "text": "מה ההבדל בין מזוזה למשקוף?",
+   "order": 6
+  },
+  "n149q7": {
+   "video": "n149",
+   "type": "open",
+   "text": "מה זה מלבן דלת ומאילו חלקים הוא מורכב?",
+   "order": 7
+  },
+  "n149q8": {
+   "video": "n149",
+   "type": "open",
+   "text": "איפה נמצאות ההלבשות ביחס למלבן הדלת?",
    "order": 8
   },
   "n143q1": {
@@ -15684,82 +15364,6 @@
    "type": "open",
    "text": "מה צריך להיות לאורך החיבור בין הקיר להלבשה?",
    "order": 6
-  },
-  "n149q1": {
-   "video": "n149",
-   "type": "choice",
-   "text": "איך נקרא החלק העליון האופקי של מלבן הדלת?",
-   "order": 1,
-   "options": [
-    "משקוף",
-    "מזוזה",
-    "כנף",
-    "הלבשה"
-   ],
-   "correct": 1
-  },
-  "n149q2": {
-   "video": "n149",
-   "type": "choice",
-   "text": "מה יחד יוצרים את מלבן הדלת?",
-   "order": 2,
-   "options": [
-    "שתי מזוזות ומשקוף",
-    "כנף וידית",
-    "הלבשות בלבד",
-    "כנף ומשקוף"
-   ],
-   "correct": 1
-  },
-  "n149q3": {
-   "video": "n149",
-   "type": "choice",
-   "text": "איך נקרא החלק של הדלת שנפתח ונסגר?",
-   "order": 3,
-   "options": [
-    "כנף",
-    "מזוזה",
-    "משקוף",
-    "הלבשה"
-   ],
-   "correct": 1
-  },
-  "n149q4": {
-   "video": "n149",
-   "type": "choice",
-   "text": "מה נקרא \"מכלול הדלת\"?",
-   "order": 4,
-   "options": [
-    "כל החלקים יחד: מלבן, הלבשות וכנף",
-    "הכנף בלבד",
-    "ההלבשות בלבד",
-    "המשקוף והמזוזות בלבד"
-   ],
-   "correct": 1
-  },
-  "n149q5": {
-   "video": "n149",
-   "type": "open",
-   "text": "מנה את חלקי מכלול הדלת שהוסברו בסרטון.",
-   "order": 5
-  },
-  "n149q6": {
-   "video": "n149",
-   "type": "open",
-   "text": "מה ההבדל בין מזוזה למשקוף?",
-   "order": 6
-  },
-  "n149q7": {
-   "video": "n149",
-   "type": "open",
-   "text": "מה זה מלבן דלת ומאילו חלקים הוא מורכב?",
-   "order": 7
-  },
-  "n149q8": {
-   "video": "n149",
-   "type": "open",
-   "text": "איפה נמצאות ההלבשות ביחס למלבן הדלת?",
-   "order": 8
   },
   "n151q1": {
    "video": "n151",
@@ -16652,6 +16256,101 @@
    "video": "n161",
    "type": "open",
    "text": "הסבר את הכלל של \"דלת אחת של 70\" בחדרי הרחצה והשירות.",
+   "order": 10
+  },
+  "n138q1": {
+   "video": "n138",
+   "type": "choice",
+   "text": "מה הרוחב המינימלי של דלת חדר שינה?",
+   "order": 1,
+   "options": [
+    "70 ס\"מ",
+    "60 ס\"מ",
+    "65 ס\"מ",
+    "80 ס\"מ"
+   ],
+   "correct": 1
+  },
+  "n138q2": {
+   "video": "n138",
+   "type": "choice",
+   "text": "מה הרוחב המינימלי של דלת לחדרי שירות, מקלחות ומחסנים?",
+   "order": 2,
+   "options": [
+    "60 ס\"מ",
+    "50 ס\"מ",
+    "55 ס\"מ",
+    "70 ס\"מ"
+   ],
+   "correct": 1
+  },
+  "n138q3": {
+   "video": "n138",
+   "type": "choice",
+   "text": "מה הכלל לגבי דלתות חדרי הרחצה והשירותים בדירה?",
+   "order": 3,
+   "options": [
+    "דלת אחת שמובילה לשירותים חייבת להיות 70 ס\"מ, השאר יכולות להיות 60 ס\"מ",
+    "כל הדלתות חייבות להיות 70 ס\"מ",
+    "כל הדלתות יכולות להיות 60 ס\"מ",
+    "כל הדלתות חייבות להיות 80 ס\"מ"
+   ],
+   "correct": 1
+  },
+  "n138q4": {
+   "video": "n138",
+   "type": "choice",
+   "text": "איזה סימן בצירים מרמז שהדלת אינה תקנית?",
+   "order": 4,
+   "options": [
+    "צירים שמחוברים רק בהברגות",
+    "צירים צבועים בצבע הדלת",
+    "שלושה צירים במקום שניים",
+    "צירים שנכנסים זה לתוך זה"
+   ],
+   "correct": 1
+  },
+  "n138q5": {
+   "video": "n138",
+   "type": "choice",
+   "text": "בסרטון נמדד בחדר השינה של הילדים רוחב של 65 ס\"מ. מה המסקנה?",
+   "order": 5,
+   "options": [
+    "הדלת צרה מהמינימום הנדרש לחדר שינה",
+    "הדלת תקינה",
+    "הדלת רחבה מדי",
+    "אין דרישת רוחב לדלת חדר ילדים"
+   ],
+   "correct": 1
+  },
+  "n138q6": {
+   "video": "n138",
+   "type": "open",
+   "text": "אילו שני סעיפים נבדקים יחד בסרטון, ומה הקשר ביניהם?",
+   "order": 6
+  },
+  "n138q7": {
+   "video": "n138",
+   "type": "open",
+   "text": "הסבר איך מודדים נכון את רוחב הדלת, ולמה מודדים דווקא כך.",
+   "order": 7
+  },
+  "n138q8": {
+   "video": "n138",
+   "type": "open",
+   "text": "פרט את רוחבי הדלתות המינימליים לפי סוגי החדרים.",
+   "order": 8
+  },
+  "n138q9": {
+   "video": "n138",
+   "type": "open",
+   "text": "איך הצירים יכולים לרמוז שהדלת אינה תקנית?",
+   "order": 9
+  },
+  "n138q10": {
+   "video": "n138",
+   "type": "open",
+   "text": "מה אפשר להסיק על דלת שאין עליה תו תקן מבחינת הרוחב שלה?",
    "order": 10
   },
   "n163q1": {
@@ -26230,158 +25929,6 @@
    "text": "על מה מעידה שלולית שנשארת ברצפת המסתור אחרי ההרטבה?",
    "order": 8
   },
-  "n278q1": {
-   "video": "n278",
-   "type": "choice",
-   "text": "מה יש על גב האבן בקיר בשיטת ברנוביץ'?",
-   "order": 1,
-   "options": [
-    "איטום",
-    "בידוד תרמי",
-    "טיח",
-    "רשת פלסטיק"
-   ],
-   "correct": 1
-  },
-  "n278q2": {
-   "video": "n278",
-   "type": "choice",
-   "text": "מה מוצב בין השכבות בקיר לפני סגירת התבנית?",
-   "order": 2,
-   "options": [
-    "ספייסרים שחורים קטנים",
-    "קורות עץ",
-    "בלוקים",
-    "יריעות ניילון"
-   ],
-   "correct": 1
-  },
-  "n278q3": {
-   "video": "n278",
-   "type": "choice",
-   "text": "כמה רשתות זיון רואים בקיר?",
-   "order": 3,
-   "options": [
-    "שתיים – חיצונית ופנימית",
-    "אחת",
-    "שלוש",
-    "אין רשתות זיון"
-   ],
-   "correct": 1
-  },
-  "n278q4": {
-   "video": "n278",
-   "type": "choice",
-   "text": "מה עושים אחרי שהרשתות והספייסרים במקומם?",
-   "order": 4,
-   "options": [
-    "סוגרים את התבנית",
-    "מטייחים את הקיר",
-    "מדביקים אבן נוספת",
-    "צובעים את רשת הזיון"
-   ],
-   "correct": 1
-  },
-  "n278q5": {
-   "video": "n278",
-   "type": "open",
-   "text": "תאר את סדר השכבות בקיר בשיטת ברנוביץ' כפי שמוצג בסרטון.",
-   "order": 5
-  },
-  "n278q6": {
-   "video": "n278",
-   "type": "open",
-   "text": "היכן ממוקמים הספייסרים בקיר, ולפי איזה סדר?",
-   "order": 6
-  },
-  "n278q7": {
-   "video": "n278",
-   "type": "open",
-   "text": "הסבר בקצרה מהי בנייה בשיטת ברנוביץ' לפי מה שרואים בסרטון.",
-   "order": 7
-  },
-  "n278q8": {
-   "video": "n278",
-   "type": "open",
-   "text": "מה רואים בסרטון לגבי היציקה והתבניות?",
-   "order": 8
-  },
-  "n279q1": {
-   "video": "n279",
-   "type": "choice",
-   "text": "מה רואים בצד אחד של הקיר בבנייה הטרומית?",
-   "order": 1,
-   "options": [
-    "ברזלי זיון",
-    "בלוקים",
-    "לוחות גבס",
-    "אריחים"
-   ],
-   "correct": 1
-  },
-  "n279q2": {
-   "video": "n279",
-   "type": "choice",
-   "text": "מה נמצא מאחורי ברזלי הזיון בקיר הטרומי, לפי הסרטון?",
-   "order": 2,
-   "options": [
-    "האיטום",
-    "הטיח",
-    "צנרת המים",
-    "חיפוי האבן"
-   ],
-   "correct": 1
-  },
-  "n279q3": {
-   "video": "n279",
-   "type": "choice",
-   "text": "אילו רשתות מניחים בקיר הטרומי?",
-   "order": 3,
-   "options": [
-    "רשת פנימית ורשת חיצונית",
-    "רק רשת חיצונית",
-    "רשת אחת באמצע הקיר",
-    "לא מניחים רשתות"
-   ],
-   "correct": 1
-  },
-  "n279q4": {
-   "video": "n279",
-   "type": "choice",
-   "text": "מה המנוף מביא בשלב שמוצג בסרטון?",
-   "order": 4,
-   "options": [
-    "את התבנית השנייה",
-    "את הבטון",
-    "את האיטום",
-    "את הפסולת לפינוי"
-   ],
-   "correct": 1
-  },
-  "n279q5": {
-   "video": "n279",
-   "type": "open",
-   "text": "תאר בקצרה את שלבי הבנייה של קיר טרומי כפי שהוצגו בסרטון.",
-   "order": 5
-  },
-  "n279q6": {
-   "video": "n279",
-   "type": "open",
-   "text": "מה מניחים בתוך התבנית לפני שסוגרים אותה?",
-   "order": 6
-  },
-  "n279q7": {
-   "video": "n279",
-   "type": "open",
-   "text": "מה התפקיד של שתי התבניות בבנייה טרומית?",
-   "order": 7
-  },
-  "n279q8": {
-   "video": "n279",
-   "type": "open",
-   "text": "מתי סוגרים לגמרי את התבניות, ואחרי אילו שלבים?",
-   "order": 8
-  },
   "v28q1": {
    "video": "v28",
    "type": "choice",
@@ -27142,82 +26689,6 @@
    "text": "איך תזהה בקיר שבוצע תיקון טיח?",
    "order": 6
   },
-  "n287q1": {
-   "video": "n287",
-   "type": "choice",
-   "text": "מה גורם לסימנים הלבנים לאורך הבניין שרואים בסרטון?",
-   "order": 1,
-   "options": [
-    "חסר אף מים לאורך לוחות הקופינג",
-    "צבע באיכות ירודה",
-    "רטיבות מהקרקע",
-    "חוסר באיטום בגג"
-   ],
-   "correct": 1
-  },
-  "n287q2": {
-   "video": "n287",
-   "type": "choice",
-   "text": "מה זה אף מים?",
-   "order": 2,
-   "options": [
-    "חריץ בחלק התחתון של הקופינג",
-    "פס סיליקון על הקיר",
-    "צינור ניקוז בקיר",
-    "בליטה בראש המעקה"
-   ],
-   "correct": 1
-  },
-  "n287q3": {
-   "video": "n287",
-   "type": "choice",
-   "text": "מה התפקיד של אף המים?",
-   "order": 3,
-   "options": [
-    "למנוע ממים לזרום על הקירות",
-    "לחזק את הקופינג",
-    "לאוורר את הקיר",
-    "להסתיר את חיבורי האבן"
-   ],
-   "correct": 1
-  },
-  "n287q4": {
-   "video": "n287",
-   "type": "choice",
-   "text": "איפה צריך להיות אף המים?",
-   "order": 4,
-   "options": [
-    "מתחת ללוחות הקופינג",
-    "מעל לוחות הקופינג",
-    "בתוך הקיר",
-    "על הרצפה ליד הקיר"
-   ],
-   "correct": 1
-  },
-  "n287q5": {
-   "video": "n287",
-   "type": "open",
-   "text": "מה זה אף מים, ואיפה הוא נמצא?",
-   "order": 5
-  },
-  "n287q6": {
-   "video": "n287",
-   "type": "open",
-   "text": "מה קורה לחזית הבניין כשאין אף מים בקופינג?",
-   "order": 6
-  },
-  "n287q7": {
-   "video": "n287",
-   "type": "open",
-   "text": "איך תבדוק אם יש אף מים בלוחות הקופינג?",
-   "order": 7
-  },
-  "n287q8": {
-   "video": "n287",
-   "type": "open",
-   "text": "מה תדרוש מהקבלן כשרואים סימנים לבנים לאורך הקירות מתחת לקופינג?",
-   "order": 8
-  },
   "n288q1": {
    "video": "n288",
    "type": "choice",
@@ -27312,6 +26783,82 @@
    "type": "open",
    "text": "מה המידות של אף המים לפי הסרטון?",
    "order": 10
+  },
+  "n287q1": {
+   "video": "n287",
+   "type": "choice",
+   "text": "מה גורם לסימנים הלבנים לאורך הבניין שרואים בסרטון?",
+   "order": 1,
+   "options": [
+    "חסר אף מים לאורך לוחות הקופינג",
+    "צבע באיכות ירודה",
+    "רטיבות מהקרקע",
+    "חוסר באיטום בגג"
+   ],
+   "correct": 1
+  },
+  "n287q2": {
+   "video": "n287",
+   "type": "choice",
+   "text": "מה זה אף מים?",
+   "order": 2,
+   "options": [
+    "חריץ בחלק התחתון של הקופינג",
+    "פס סיליקון על הקיר",
+    "צינור ניקוז בקיר",
+    "בליטה בראש המעקה"
+   ],
+   "correct": 1
+  },
+  "n287q3": {
+   "video": "n287",
+   "type": "choice",
+   "text": "מה התפקיד של אף המים?",
+   "order": 3,
+   "options": [
+    "למנוע ממים לזרום על הקירות",
+    "לחזק את הקופינג",
+    "לאוורר את הקיר",
+    "להסתיר את חיבורי האבן"
+   ],
+   "correct": 1
+  },
+  "n287q4": {
+   "video": "n287",
+   "type": "choice",
+   "text": "איפה צריך להיות אף המים?",
+   "order": 4,
+   "options": [
+    "מתחת ללוחות הקופינג",
+    "מעל לוחות הקופינג",
+    "בתוך הקיר",
+    "על הרצפה ליד הקיר"
+   ],
+   "correct": 1
+  },
+  "n287q5": {
+   "video": "n287",
+   "type": "open",
+   "text": "מה זה אף מים, ואיפה הוא נמצא?",
+   "order": 5
+  },
+  "n287q6": {
+   "video": "n287",
+   "type": "open",
+   "text": "מה קורה לחזית הבניין כשאין אף מים בקופינג?",
+   "order": 6
+  },
+  "n287q7": {
+   "video": "n287",
+   "type": "open",
+   "text": "איך תבדוק אם יש אף מים בלוחות הקופינג?",
+   "order": 7
+  },
+  "n287q8": {
+   "video": "n287",
+   "type": "open",
+   "text": "מה תדרוש מהקבלן כשרואים סימנים לבנים לאורך הקירות מתחת לקופינג?",
+   "order": 8
   },
   "n289q1": {
    "video": "n289",
@@ -28699,101 +28246,6 @@
    "type": "open",
    "text": "תאר מה רואים בסרטון כשעושים זום על המישקים בחלק התחתון.",
    "order": 6
-  },
-  "n306q1": {
-   "video": "n306",
-   "type": "choice",
-   "text": "איך נראה בסרטון שינוי הגוון שנגרם מלחות כלואה מתחת לרצפה?",
-   "order": 1,
-   "options": [
-    "שינוי גוון שמתחיל ונגמר לסירוגין לאורך אותו קו",
-    "פס אחיד לכל אורך האריח",
-    "כל האריח בגוון אחר",
-    "סדקים ברובה"
-   ],
-   "correct": 1
-  },
-  "n306q2": {
-   "video": "n306",
-   "type": "choice",
-   "text": "איך צריך להיראות שינוי גוון אמיתי באריחים?",
-   "order": 2,
-   "options": [
-    "סימטרי: כל האריח או פס לכל האורך",
-    "כתמים שמופיעים ונעלמים לסירוגין",
-    "רק בפינות החדר",
-    "רק ליד הקירות"
-   ],
-   "correct": 1
-  },
-  "n306q3": {
-   "video": "n306",
-   "type": "choice",
-   "text": "מה גורם לשינוי הגוון ברובה במקרה שבסרטון?",
-   "order": 3,
-   "options": [
-    "לחות כלואה מתחת לרצפה, שהאדים שלה עולים ומגיעים לרובה",
-    "אריחים פגומים מהמפעל",
-    "ניקוי בחומר חזק",
-    "רובה בצבע לא נכון"
-   ],
-   "correct": 1
-  },
-  "n306q4": {
-   "video": "n306",
-   "type": "choice",
-   "text": "מה מחמם את המילוי שמתחת לרצפה?",
-   "order": 4,
-   "options": [
-    "חום השמש שמגיע מבחוץ",
-    "צנרת מים חמים",
-    "חימום תת רצפתי",
-    "מכשירי חשמל"
-   ],
-   "correct": 1
-  },
-  "n306q5": {
-   "video": "n306",
-   "type": "choice",
-   "text": "מה המילוי שנמצא מתחת לרצפה לפי הסרטון?",
-   "order": 5,
-   "options": [
-    "סומסום או חול",
-    "בטון",
-    "קלקר",
-    "יריעת איטום"
-   ],
-   "correct": 1
-  },
-  "n306q6": {
-   "video": "n306",
-   "type": "open",
-   "text": "הסבר איך מבחינים בין שינוי גוון באריחים לבין לחות כלואה מתחת לרצפה.",
-   "order": 6
-  },
-  "n306q7": {
-   "video": "n306",
-   "type": "open",
-   "text": "תאר את התהליך שבו לחות כלואה מתחת לרצפה גורמת לשינוי גוון ברובה.",
-   "order": 7
-  },
-  "n306q8": {
-   "video": "n306",
-   "type": "open",
-   "text": "למה דפוס של \"מתחיל ונגמר\" לא יכול להיות שינוי גוון באריחים?",
-   "order": 8
-  },
-  "n306q9": {
-   "video": "n306",
-   "type": "open",
-   "text": "איך תבדוק בשטח, לאורך קו הרובה, אם מדובר בלחות כלואה?",
-   "order": 9
-  },
-  "n306q10": {
-   "video": "n306",
-   "type": "open",
-   "text": "תחת איזה סעיף תרשום כתמים ברובה שמופיעים ונעלמים לסירוגין, ולמה?",
-   "order": 10
   },
   "n307q1": {
    "video": "n307",
@@ -30447,177 +29899,6 @@
    "type": "open",
    "text": "מה דורשים מהקבלן כשהשיפוע במקלחון לא תקין, ולמה?",
    "order": 6
-  },
-  "n327q1": {
-   "video": "n327",
-   "type": "choice",
-   "text": "מה הגובה המינימלי למעבר ראש מעל מדרגות?",
-   "order": 1,
-   "options": [
-    "2.10 מטר",
-    "1.90 מטר",
-    "2.00 מטר",
-    "2.50 מטר"
-   ],
-   "correct": 1
-  },
-  "n327q2": {
-   "video": "n327",
-   "type": "choice",
-   "text": "מאיפה עד איפה מודדים מעבר ראש?",
-   "order": 2,
-   "options": [
-    "מהמדרגה ועד התקרה שמעליה",
-    "מהרצפה בתחתית המדרגות ועד התקרה",
-    "מהמעקה ועד התקרה",
-    "מהמדרגה העליונה ועד הקיר"
-   ],
-   "correct": 1
-  },
-  "n327q3": {
-   "video": "n327",
-   "type": "choice",
-   "text": "בסרטון נמדד גובה 196 ס\"מ. מה המסקנה?",
-   "order": 3,
-   "options": [
-    "לא תקין",
-    "תקין",
-    "תקין רק בבניין ישן",
-    "תקין אם יש מעקה"
-   ],
-   "correct": 1
-  },
-  "n327q4": {
-   "video": "n327",
-   "type": "choice",
-   "text": "מה רושמים כשהחריגה קטנה ואפשר לתקן?",
-   "order": 4,
-   "options": [
-    "לפרק ולבצע תיקון מקומי",
-    "שאין צורך לטפל",
-    "להחליף את כל המדרגות",
-    "להוסיף שילוט אזהרה"
-   ],
-   "correct": 1
-  },
-  "n327q5": {
-   "video": "n327",
-   "type": "open",
-   "text": "מה זה \"מעבר ראש\" ומה הגובה המינימלי שלו?",
-   "order": 5
-  },
-  "n327q6": {
-   "video": "n327",
-   "type": "open",
-   "text": "הסבר איך מודדים מעבר ראש במדרגות.",
-   "order": 6
-  },
-  "n327q7": {
-   "video": "n327",
-   "type": "open",
-   "text": "מדדת מעבר ראש של 196 ס\"מ. מה תרשום בדוח?",
-   "order": 7
-  },
-  "n327q8": {
-   "video": "n327",
-   "type": "open",
-   "text": "מתי נדרוש מהקבלן פירוק ותיקון מקומי של מעבר ראש נמוך?",
-   "order": 8
-  },
-  "n001q1": {
-   "video": "n001",
-   "type": "choice",
-   "text": "מה הדבר הראשון שעושים כשנכנסים לדירה לבדיקה?",
-   "order": 1,
-   "options": [
-    "מציגים את עצמנו בפני הדייר",
-    "פותחים את המים בכל הדירה",
-    "בודקים את לוח החשמל",
-    "מחברים צינורות לניקוזים"
-   ],
-   "correct": 1
-  },
-  "n001q2": {
-   "video": "n001",
-   "type": "choice",
-   "text": "מה עושים כשהלקוח מצביע על בעיה שמטרידה אותו?",
-   "order": 2,
-   "options": [
-    "מכניסים אותה לדוח באותו רגע, או מסבירים לו למה היא לא תיכנס",
-    "רושמים אותה בסוף הבדיקה אם נשאר זמן",
-    "ממשיכים בבדיקה ומתעלמים ממנה",
-    "מבקשים ממנו לשלוח אותה בהודעה אחרי הבדיקה"
-   ],
-   "correct": 1
-  },
-  "n001q3": {
-   "video": "n001",
-   "type": "choice",
-   "text": "איך יודעים בלוח החשמל אם הדירה מחוברת לחשמל?",
-   "order": 3,
-   "options": [
-    "לוחצים על כפתור הבדיקה (טסט) – אם המפסק לא קופץ, הדירה לא מחוברת",
-    "מדליקים את כל האורות בדירה",
-    "בודקים אם יש מים חמים בברזים",
-    "סופרים את מספר המפסקים בלוח"
-   ],
-   "correct": 1
-  },
-  "n001q4": {
-   "video": "n001",
-   "type": "choice",
-   "text": "כמה זמן לפחות משאירים את המים פתוחים וזורמים בכל הדירה?",
-   "order": 4,
-   "options": [
-    "10 דקות",
-    "2 דקות",
-    "5 דקות",
-    "שעה"
-   ],
-   "correct": 1
-  },
-  "n001q5": {
-   "video": "n001",
-   "type": "choice",
-   "text": "כמה זמן יש לבודק לבדוק דירה?",
-   "order": 5,
-   "options": [
-    "בין שעתיים לשעתיים וחצי",
-    "חצי שעה",
-    "שעה אחת",
-    "יום עבודה שלם"
-   ],
-   "correct": 1
-  },
-  "n001q6": {
-   "video": "n001",
-   "type": "open",
-   "text": "למה חשוב לשאול את הדייר בתחילת הבדיקה מה הליקויים שהוא ראה בדירה?",
-   "order": 6
-  },
-  "n001q7": {
-   "video": "n001",
-   "type": "open",
-   "text": "הסבר את שיטת הבדיקה \"צעד אחרי צעד\" לאורך קירות הדירה.",
-   "order": 7
-  },
-  "n001q8": {
-   "video": "n001",
-   "type": "open",
-   "text": "למה התנועה שלנו בדירה חייבת להיות אחידה ומסודרת, ולא לקפוץ מנקודה לנקודה?",
-   "order": 8
-  },
-  "n001q9": {
-   "video": "n001",
-   "type": "open",
-   "text": "אילו צינורות מחברים ומה פותחים לפני תחילת הבדיקה, ולמה עושים את זה?",
-   "order": 9
-  },
-  "n001q10": {
-   "video": "n001",
-   "type": "open",
-   "text": "איך בודקים בחדר רחצה – מה עושים עם הידיים, עם הקרמיקה, עם המדף ועם הכיור?",
-   "order": 10
   },
   "n117q1": {
    "video": "n117",
