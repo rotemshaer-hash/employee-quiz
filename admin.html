@@ -190,8 +190,8 @@
 </div>
 <main><nav class="tabs hidden" id="tabs"></nav><div class="panel" id="panel"></div></main>
 
-<script src="settings.js?v=46"></script>
-<script src="demo.js?v=46"></script>
+<script src="settings.js?v=47"></script>
+<script src="demo.js?v=47"></script>
 <script>
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
@@ -338,7 +338,7 @@ function renderTabs() {
   const t = draft ? null : TAB_OF[view];
   $('tabs').classList.toggle('hidden', !t);
   if (!t) return;
-  $('tabs').innerHTML = [['tests', 'מבחנים', 'toTests'], ['results', 'תוצאות', 'results'], ['lib', 'מאגר סרטונים', 'settings']]
+  $('tabs').innerHTML = [['tests', 'מבחנים', 'toTests'], ['results', 'תוצאות', 'results'], ['lib', 'קטגוריות', 'settings']]
     .map(([k, label, act]) => '<button class="' + (k === t ? 'on' : '') + '" data-act="' + act + '">' + label + '</button>').join('');
 }
 // "חזרה" למעלה, ובבניית מבחן גם "לכל המבחנים" ליציאה מהבנייה
@@ -403,7 +403,7 @@ function renderTests() {
         '<button class="ta" data-act="edit"' + d + '><svg><use href="#i-pen"/></svg>עריכה</button></div></div>';
     }).join('') + '</div>' +
     '<div class="actions"><button class="btn" data-act="newTest">הוסף מבחן</button></div>' +
-    '<div class="foot"><span class="muted">גרסה 46 · </span><button data-act="logout">יציאה</button></div>';
+    '<div class="foot"><span class="muted">גרסה 47 · </span><button data-act="logout">יציאה</button></div>';
 }
 
 // ---------- תוצאות: כל ההגשות, ופירוט של הגשה אחת ----------
