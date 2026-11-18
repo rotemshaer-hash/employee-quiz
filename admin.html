@@ -9,12 +9,17 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
+  /* Arimo — אותו מראה כמו Arial, מאוחסן באתר עצמו (בלי שרת גופנים חיצוני). בלעדיו טלפוני אנדרואיד מציגים גופן אחר */
+  @font-face{font-family:Arimo;font-weight:400;font-display:swap;src:url(fonts/arimo-hebrew-400-normal.woff2) format('woff2');unicode-range:U+0307-0308,U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F}
+  @font-face{font-family:Arimo;font-weight:700;font-display:swap;src:url(fonts/arimo-hebrew-700-normal.woff2) format('woff2');unicode-range:U+0307-0308,U+0590-05FF,U+200C-2010,U+20AA,U+25CC,U+FB1D-FB4F}
+  @font-face{font-family:Arimo;font-weight:400;font-display:swap;src:url(fonts/arimo-latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+  @font-face{font-family:Arimo;font-weight:700;font-display:swap;src:url(fonts/arimo-latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
   :root{
     --bg:#f0f0f6; --top:#ffffff; --ink:#111; --muted:#777; --box:#7a7a7a;
     --purple:#7458c4; --soft:#ece8f8; --icon:#9a9a9a; --line:#d4d4da; --bad:#d23c3c;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;background:var(--bg);font:16px/1.4 Arial,Helvetica,sans-serif;color:var(--ink)}
+  body{margin:0;background:var(--bg);font:16px/1.4 Arimo,Arial,Helvetica,sans-serif;color:var(--ink)}
   button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 
   .topbar{position:sticky;top:0;z-index:5;background:var(--top);display:flex;align-items:center;gap:10px;
@@ -105,6 +110,39 @@
   .box .kind{display:block;color:var(--muted);font-size:13px;margin-top:2px}
   .box small.ltr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .side.many{gap:0} .side.many .ic{width:30px}
+  /* כרטיס מבחן: שם ומייל, ומתחתיו שורת כפתורים עם מילים */
+  .test{border:3px solid var(--box);border-radius:9px;background:var(--bg);margin-bottom:10px;overflow:hidden}
+  .test-head{display:flex;align-items:flex-start;gap:8px;padding:11px 12px 8px}
+  .test-title{flex:1;min-width:0;font-size:18px;font-weight:700}
+  .test-title small{display:block;font-weight:400;color:var(--muted);font-size:13px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .test-del{width:34px;height:34px;display:grid;place-items:center;flex:none;margin:-4px -4px 0 0}
+  .test-del svg{width:20px;height:20px;fill:var(--icon)}
+  .test-acts{display:flex;border-top:1.5px solid var(--line)}
+  .ta{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 4px;font-size:15px;font-weight:700;color:#444}
+  .ta + .ta{border-inline-start:1.5px solid var(--line)}
+  .ta svg{width:17px;height:17px;fill:currentColor}
+  .ta.main{color:var(--purple)}
+  @media (min-width:1000px){.grid .test{margin-bottom:0}}
+  /* כרטיסים: תחום, תת־תחום, סרטון ושאלותיו, פריט בסידור, הגשה */
+  .card{display:block;width:100%;text-align:right;border:3px solid var(--box);border-radius:9px;background:var(--bg);margin-bottom:10px;overflow:hidden;cursor:pointer}
+  .card.on{border-color:var(--purple)}
+  .card.focus{border-color:var(--purple);box-shadow:0 0 0 3px var(--soft)}
+  .card.dragging{border-color:var(--purple);box-shadow:0 6px 18px rgba(0,0,0,.15)}
+  .ch-row{display:flex;align-items:center;gap:10px;padding:12px;cursor:pointer}
+  .ch-row .t{flex:1;min-width:0;font-size:18px;font-weight:700}
+  .ch-row .t small{display:block;font-weight:400;color:var(--muted);font-size:13px;margin-top:2px}
+  .ch-row.sm .t{font-size:16px;font-weight:600}
+  .chev{color:var(--icon);font-size:26px;line-height:1;flex:none}
+  .cnt{background:var(--purple);color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:1px 8px;flex:none}
+  .qrow{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1.5px solid var(--line);font-size:16px;cursor:pointer}
+  .qrow .t{flex:1;min-width:0}
+  .qrow .t small{display:block;color:var(--muted);font-size:12px;margin-top:1px}
+  .qrow.focus,.ch-row.focus{background:var(--soft)}
+  .vthumb{width:54px;height:38px;border-radius:6px;background:#3a3a44;color:#fff;display:grid;place-items:center;flex:none;font-size:14px}
+  .card .preview{padding:0 12px 12px}
+  .card .ic{flex:none}
+  .score{font-size:22px;font-weight:800}
+  @media (min-width:1000px){.grid .card{margin-bottom:0}}
   /* תוצאות */
   .res-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
   .res-filters .field{flex:1 1 220px;width:auto;padding:8px 10px;font-size:16px}
@@ -146,8 +184,8 @@
 </div>
 <main><nav class="tabs hidden" id="tabs"></nav><div class="panel" id="panel"></div></main>
 
-<script src="settings.js?v=44"></script>
-<script src="demo.js?v=44"></script>
+<script src="settings.js?v=45"></script>
+<script src="demo.js?v=45"></script>
 <script>
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
@@ -231,6 +269,17 @@ const videosIn = (cid, sid) => Object.entries(catalog.videos || {}).filter(([, v
 const questionsOf = vid => Object.entries(catalog.questions || {}).filter(([, q]) => q.video === vid).sort(byOrder);
 const catName = cid => (catalog.cats[cid] || {}).name || '';
 const subName = (cid, sid) => (((catalog.cats[cid] || {}).subs || {})[sid] || {}).name || '';
+function pickedIn(cid, sid) {
+  if (!draft) return 0;
+  return draft.items.filter(k => {
+    const id = k.slice(2), vid = k[0] === 'v' ? id : (catalog.questions[id] || {}).video, v = catalog.videos[vid];
+    return v && v.cat === cid && (!sid || v.sub === sid);
+  }).length;
+}
+const navCard = (act, attr, name, meta, n, editAct) =>
+  '<div class="card' + (n ? ' on' : '') + '" data-act="' + act + '"' + attr + ' role="button" tabindex="0"><div class="ch-row"><div class="t">' + esc(name) +
+  '<small>' + meta + '</small></div>' + (n ? '<span class="cnt">' + n + ' נבחרו</span>' : '') +
+  (draft ? '' : icon('pen', editAct, attr + ' aria-label="שינוי שם"')) + '<span class="chev">‹</span></div></div>';
 function countIn(cid, sid) {
   const vs = Object.entries(catalog.videos || {}).filter(([, v]) => v.cat === cid && (!sid || v.sub === sid)).map(([k]) => k);
   const qs = Object.values(catalog.questions || {}).filter(q => vs.includes(q.video)).length;
@@ -271,13 +320,31 @@ function renderTabs() {
   $('tabs').innerHTML = [['tests', 'מבחנים', 'toTests'], ['results', 'תוצאות', 'results'], ['lib', 'מאגר סרטונים', 'settings']]
     .map(([k, label, act]) => '<button class="' + (k === t ? 'on' : '') + '" data-act="' + act + '">' + label + '</button>').join('');
 }
+// "חזרה" למעלה, ובבניית מבחן גם "לכל המבחנים" ליציאה מהבנייה
+const backbar = sub => topbar(sub, 'חזרה', 'back', draft ? 'לכל המבחנים' : '', draft ? 'toTests' : '');
+// כל מסך נרשם בהיסטוריה של הדפדפן, כך שגם כפתור החזרה של הטלפון חוזר מסך אחד אחורה
+let fromHistory = false;
 function go(v) {
   view = v;
   renderTabs();
   ({ login: renderLogin, tests: renderTests, cats: renderCats, subs: renderSubs, items: renderItems, order: renderOrder,
      media: renderMediaForm, question: renderQuestionForm, results: renderResults, result: renderResult })[v]();
   scrollTo(0, 0);
+  if (fromHistory || v === 'login') return;
+  const st = { v, cat: curCat, sub: curSub, res: resKey };
+  try { (history.state && history.state.v === v ? history.replaceState : history.pushState).call(history, st, ''); } catch (e) {}
 }
+addEventListener('popstate', e => {
+  const st = e.state;
+  if (!st || !token) return;
+  let v = st.v;
+  if (v === 'tests' && draft && !leaveDraft()) { try { history.pushState({ v: view, cat: curCat, sub: curSub, res: resKey }, ''); } catch (e2) {} return; }
+  if (v === 'media' || v === 'question') v = 'items';           // טופס פתוח לא חוזר מההיסטוריה
+  if (v === 'order' && !draft) v = 'tests';
+  curCat = st.cat; curSub = st.sub; resKey = st.res; form = null;
+  fromHistory = true;
+  try { go(v); } finally { fromHistory = false; }
+});
 const draftSub = () => draft ? (draft.title || (draft.id ? 'מבחן' : 'מבחן חדש')) : 'הגדרות';
 function selSummary() {
   if (!draft) return '';
@@ -305,14 +372,17 @@ function renderTests() {
     (ids.length ? '' : '<p class="muted">עוד אין מבחנים.</p>') + '<div class="grid g2">' +
     ids.map(id => {
       const q = quizzes[id], mail = q.email || globalEmail;
-      return '<div class="row"><div class="side many">' +
-        icon('send', 'send', ' data-id="' + id + '"') + icon('chart', 'resultsOf', ' data-id="' + id + '"') +
-        icon('pen', 'edit', ' data-id="' + id + '"') + icon('del', 'delete', ' data-id="' + id + '"') +
-        '</div><div class="box"><div>' + esc(q.title || 'ללא שם') +
-        '<small class="ltr">' + esc(mail || 'לא הוגדר מייל לתוצאות') + '</small></div></div></div>';
+      const d = ' data-id="' + id + '"';
+      return '<div class="test"><div class="test-head"><div class="test-title">' + esc(q.title || 'ללא שם') +
+        '<small class="ltr">' + esc(mail || 'לא הוגדר מייל לתוצאות') + '</small></div>' +
+        '<button class="test-del" data-act="delete"' + d + ' aria-label="מחיקה"><svg><use href="#i-del"/></svg></button></div>' +
+        '<div class="test-acts">' +
+        '<button class="ta main" data-act="send"' + d + '><svg><use href="#i-send"/></svg>שליחה</button>' +
+        '<button class="ta" data-act="resultsOf"' + d + '><svg><use href="#i-chart"/></svg>תוצאות</button>' +
+        '<button class="ta" data-act="edit"' + d + '><svg><use href="#i-pen"/></svg>עריכה</button></div></div>';
     }).join('') + '</div>' +
     '<div class="actions"><button class="btn" data-act="newTest">הוסף מבחן</button></div>' +
-    '<div class="foot"><span class="muted">גרסה 44 · </span><button data-act="logout">יציאה</button></div>';
+    '<div class="foot"><span class="muted">גרסה 45 · </span><button data-act="logout">יציאה</button></div>';
 }
 
 // ---------- תוצאות: כל ההגשות, ופירוט של הגשה אחת ----------
@@ -341,11 +411,11 @@ function filteredResults() {
 }
 function resultRow(r) {
   const p = pctOf(r), m = minsOf(r), bad = r.mail !== 'sent';
-  return '<div class="row"><div class="side"></div><button class="box' + (wide() && r.key === resKey ? ' focus' : '') +
-    '" data-act="openResult" data-key="' + esc(r.key) + '"><div><span class="who">' + esc(r.name || 'ללא שם') + '</span><small>' +
+  return '<button class="card' + (wide() && r.key === resKey ? ' focus' : '') +
+    '" data-act="openResult" data-key="' + esc(r.key) + '"><div class="ch-row"><div class="t">' + esc(r.name || 'ללא שם') + '<small>' +
     esc(quizTitle(r)) + '<br>' + fmtWhen(r.at) + (m === null ? '' : ' · ' + m + ' דק׳') +
     (r.mail ? ' · <span class="mt' + (bad ? ' bad' : '') + '">' + (MAIL[r.mail] || 'מייל לא נשלח') + '</span>' : '') + '</small></div>' +
-    '<span class="score' + (p !== null && p < 60 ? ' low' : '') + '">' + (p === null ? '—' : p + '%') + '</span></button></div>';
+    '<span class="score' + (p !== null && p < 60 ? ' low' : '') + '">' + (p === null ? '—' : p + '%') + '</span></div></button>';
 }
 function correctText(r, a) {
   const it = ((quizzes[r.qid] || {}).items || []).find(x => x.k === 'q' && x.text === a.q && x.options);
@@ -422,46 +492,43 @@ function exportResults() {
 // בטלפון: הגשה אחת במסך משלה
 function renderResult() {
   const r = (subsList || []).find(x => x.key === resKey);
-  topbar('תוצאות', 'לכל התוצאות', 'backResults');
+  backbar('תוצאות');
   $('panel').innerHTML = '<h1><a data-act="backResults">תוצאות</a> <span class="ch">‹</span></h1>' +
     (r ? '<div class="pane">' + resultDetail(r) + '</div>' : '<p class="muted">ההגשה לא נמצאה.</p>');
 }
 
 // ---------- דף 2: קטגוריות ----------
 function renderCats() {
-  topbar(draft ? draftSub() : '', draft ? 'לכל המבחנים' : '', draft ? 'toTests' : '');
+  if (draft) backbar(draftSub()); else topbar('', '', '');
   const list = cats();
   $('panel').innerHTML = '<h1>קטגוריות <span class="ch">‹</span></h1>' + selSummary() +
     (list.length ? '' : '<p class="muted">הקטלוג ריק.</p><button class="btn ghost" data-act="seed">טעינת הקטלוג הראשוני</button>') +
-    '<div class="grid">' + list.map(([cid, c]) => '<div class="row"><div class="side">' + (draft ? '' : icon('pen', 'renameCat', ' data-cid="' + cid + '"')) +
-      '</div><button class="box" data-act="openCat" data-cid="' + cid + '"><div>' + esc(c.name) +
-      '<small>' + countIn(cid) + '</small></div></button></div>').join('') + '</div>' +
+    '<div class="grid">' + list.map(([cid, c]) => navCard('openCat', ' data-cid="' + cid + '"', c.name, countIn(cid), pickedIn(cid), 'renameCat')).join('') + '</div>' +
     '<div class="actions"><button class="btn ghost" data-act="addCat">הוסף</button>' + buildButtons() + '</div>';
 }
 
 // ---------- דף 3: תת־קטגוריות ----------
 function renderSubs() {
-  topbar(draft ? draftSub() : '', draft ? 'לכל המבחנים' : '', draft ? 'toTests' : '');
+  backbar(draft ? draftSub() : '');
   $('panel').innerHTML = '<h1><a data-act="toCats">קטגוריות</a> <span class="ch">‹</span> ' + esc(catName(curCat)) + ' <span class="ch">‹</span></h1>' +
     selSummary() +
-    '<div class="grid">' + subs(curCat).map(([sid, s]) => '<div class="row"><div class="side">' + (draft ? '' : icon('pen', 'renameSub', ' data-sid="' + sid + '"')) +
-      '</div><button class="box" data-act="openSub" data-sid="' + sid + '"><div>' + esc(s.name) +
-      '<small>' + countIn(curCat, sid) + '</small></div></button></div>').join('') + '</div>' +
+    '<div class="grid">' + subs(curCat).map(([sid, s]) => navCard('openSub', ' data-sid="' + sid + '"', s.name, countIn(curCat, sid), pickedIn(curCat, sid), 'renameSub')).join('') + '</div>' +
     '<div class="actions"><button class="btn ghost" data-act="addSub">הוסף</button>' + buildButtons() + '</div>';
 }
 
 // ---------- דף 3א: הסרטונים והשאלות של תת־קטגוריה ----------
 // לחיצה על המסגרת פותחת תצוגה מקדימה (סרטון מתנגן / תשובות); הריבוע משמאל מסמן למבחן.
-function itemRow(key, tag, text, extra, preview) {
+// שורה בכרטיס: לחיצה מציגה (סרטון מתנגן / תשובות), הריבוע משמאל מסמן למבחן, העיפרון עורך
+function itemRow(key, tag, text, extra, preview, thumb) {
   const on = draft && draft.items.includes(key);
   const side = draft ? '<button class="chk' + (on ? ' on' : '') + '" data-act="pick" data-key="' + key + '" aria-label="סימון למבחן"></button>'
                      : icon('pen', key[0] === 'v' ? 'editMedia' : 'editQ', ' data-key="' + key + '" aria-label="עריכה"');
   const open = !wide() && expanded.has(key);
   const focus = wide() && key === focusKey;
-  return '<div class="row"><div class="side">' + side + '</div>' +
-    '<div class="box item' + (on ? ' on' : '') + (focus ? ' focus' : '') + '" data-act="item" data-key="' + key + '" role="button" tabindex="0" aria-expanded="' + (open || focus) + '">' +
-    '<div>' + esc(text) + '<span class="kind">' + tag + (extra || '') + '</span></div>' +
-    (open ? '<div class="preview">' + preview + '</div>' : '') + '</div></div>';
+  return '<div class="' + (key[0] === 'v' ? 'ch-row' : 'qrow') + (focus ? ' focus' : '') + '" data-act="item" data-key="' + key +
+    '" role="button" tabindex="0" aria-expanded="' + (open || focus) + '">' + (thumb || '') +
+    '<div class="t">' + esc(text) + '<small>' + tag + (extra || '') + '</small></div>' + side + '</div>' +
+    (open ? '<div class="preview">' + preview + '</div>' : '');
 }
 function questionPreview(q) {
   return q.type === 'choice'
@@ -487,18 +554,19 @@ function paneHtml() {
     '<div class="actions">' + pick + edit + '</div>';
 }
 function renderItems() {
-  topbar(draft ? draftSub() : '', draft ? 'לכל המבחנים' : '', draft ? 'toTests' : '');
+  backbar(draft ? draftSub() : '');
   const vids = videosIn(curCat, curSub);
   if (focusKey && !itemOf(focusKey)) focusKey = null;
   const list =
     (vids.length ? '' : '<p class="muted">אין עדיין סרטונים בתת־קטגוריה הזו.</p>') +
     (vids.length ? '<p class="muted">לחיצה על פריט מציגה אותו' + (draft ? ' · הריבוע משמאל מסמן אותו למבחן' : '') + '</p>' : '') +
-    vids.map(([vid, v]) => '<div class="group">' + esc(v.title) + '</div>' +
+    vids.map(([vid, v]) => '<div class="card' + (draft && draft.items.includes('v:' + vid) ? ' on' : '') + '">' +
       itemRow('v:' + vid, isImg(v) ? 'תמונה' : 'סרטון', v.title, v.duration ? ' · ' + fmtDur(v.duration) + ' דקות' : '',
               isImg(v) ? '<img alt="" data-src="' + esc(v.url) + '">'
-                       : '<video controls playsinline preload="metadata" data-src="' + esc(v.url) + '"></video>') +
+                       : '<video controls playsinline preload="metadata" data-src="' + esc(v.url) + '"></video>',
+              '<span class="vthumb">' + (isImg(v) ? '🖼' : '▶') + '</span>') +
       questionsOf(vid).map(([qid, q]) =>
-        itemRow('q:' + qid, q.type === 'choice' ? 'אמריקאית' : 'פתוחה', q.text, '', questionPreview(q))).join('')).join('') +
+        itemRow('q:' + qid, q.type === 'choice' ? 'אמריקאית' : 'פתוחה', q.text, '', questionPreview(q))).join('') + '</div>').join('') +
     '<div class="actions"><button class="btn ghost" data-act="newMedia">הוסף סרטון או תמונה</button>' +
     (vids.length ? '<button class="btn ghost" data-act="newQ">הוסף שאלה</button>' : '') +
     (draft && vids.length ? '<button class="btn ghost" data-act="pickAll">סמן את כל מה שבתת־קטגוריה</button>' : '') +
@@ -521,7 +589,7 @@ function hydrateMedia() {
 const crumbs = last => '<h1><a data-act="toCats">קטגוריות</a> <span class="ch">‹</span> <a data-act="toSubs">' + esc(catName(curCat)) +
   '</a> <span class="ch">‹</span> <a data-act="backItems">' + esc(subName(curCat, curSub)) + '</a> <span class="ch">‹</span> ' + last + '</h1>';
 function renderMediaForm() {
-  topbar(draft ? draftSub() : '', draft ? 'לכל המבחנים' : '', draft ? 'toTests' : '');
+  backbar(draft ? draftSub() : '');
   const editing = !!form.id;
   $('panel').innerHTML = crumbs(editing ? 'עריכה' : 'סרטון או תמונה') + '<div class="narrow">' +
     '<label class="f">שם (מה העובד יראה)</label><input class="field" id="mTitle" value="' + esc(form.title) + '" placeholder="למשל: סדק בשליכט ליד חלון">' +
@@ -642,7 +710,7 @@ async function delMedia() {
 
 // ---------- הוספה ועריכה: שאלה ----------
 function renderQuestionForm() {
-  topbar(draft ? draftSub() : '', draft ? 'לכל המבחנים' : '', draft ? 'toTests' : '');
+  backbar(draft ? draftSub() : '');
   const vids = videosIn(curCat, curSub), editing = !!form.id;
   $('panel').innerHTML = crumbs(editing ? 'עריכת שאלה' : 'שאלה חדשה') + '<div class="narrow">' +
     '<label class="f">שייכת ל</label><select class="field" id="qVideo">' +
@@ -699,16 +767,15 @@ async function delQ() {
 
 // ---------- סידור המבחן ושמירה ----------
 function renderOrder() {
-  topbar(draftSub(), 'לכל המבחנים', 'toTests');
+  backbar(draftSub());
   const nameField = '<label class="f">שם המבחן</label><input class="field" id="dTitle" value="' + esc(draft.title) + '" placeholder="למשל: מבחן ריצוף — עובדים חדשים">';
   const listHtml = '<div class="group">הסדר שהעובד יראה</div><div id="orderList">' +
     draft.items.map(key => {
       const it = itemOf(key);
       if (!it) return '';
-      return '<div class="row" data-key="' + key + '"><div class="side"><span class="drag" data-drag>☰</span></div>' +
-        '<div class="box"><div>' + esc(it.k === 'v' ? it.title : it.text) + '<span class="kind">' +
+      return '<div class="card" data-key="' + key + '"><div class="ch-row sm"><div class="t">' + esc(it.k === 'v' ? it.title : it.text) + '<small>' +
         (it.k === 'v' ? (it.kind === 'image' ? 'תמונה' : 'סרטון') : it.type === 'choice' ? 'אמריקאית' : 'פתוחה') + ' · ' +
-        esc(it.cat + ' ‹ ' + it.sub) + '</span></div></div></div>';
+        esc(it.cat + ' ‹ ' + it.sub) + '</small></div><span class="drag" data-drag>☰</span></div></div>';
     }).join('') + '</div>' +
     '<p class="muted">גוררים בסימן ☰ כדי לשנות סדר.</p>';
   const formHtml = nameField +
@@ -749,7 +816,7 @@ function startDrag(e, row) {
 }
 $('panel').addEventListener('pointerdown', e => {
   const h = e.target.closest('[data-drag]');
-  if (h) startDrag(e, h.closest('.row'));
+  if (h) startDrag(e, h.closest('[data-key]'));
 });
 
 // סימון פריט. סדר ברירת מחדל: סרטון לפני השאלות שלו, שאלה אחרי הסרטון שלה.
@@ -855,6 +922,7 @@ document.addEventListener('click', async e => {
     case 'send': send(d.id); break;
     case 'results': subsList = null; resKey = null; go('results'); break;
     case 'backResults': go('results'); break;
+    case 'back': history.state && history.length > 1 ? history.back() : go(draft ? 'cats' : 'tests'); break;
     case 'exportResults': exportResults(); break;
     case 'resultsOf': subsList = null; resKey = null; resQuiz = d.id; resQ = ''; go('results'); break;
     case 'openResult':
@@ -927,7 +995,7 @@ document.addEventListener('click', async e => {
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && view === 'login') document.querySelector('[data-act="login"]').click();
-  else if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.box.item')) { e.preventDefault(); e.target.click(); }
+  else if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[role="button"][data-act]')) { e.preventDefault(); e.target.click(); }
 });
 addEventListener('beforeunload', e => { if (draft && draft.items.length) { e.preventDefault(); e.returnValue = ''; } });
 
