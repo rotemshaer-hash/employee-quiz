@@ -98,14 +98,20 @@
     .pane{position:sticky;top:84px}
     .narrow{max-width:680px}
   }
+  /* לשוניות עליונות, כמו במאגר הליקויים של datanets */
+  .tabs{display:flex;margin:0 12px;border-inline:1px solid transparent}
+  .tabs button{flex:1;padding:14px 4px;font-size:16px;text-align:center;color:var(--ink);white-space:nowrap}
+  .tabs button.on{background:#cbcbd1}
+  .box .kind{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+  .box small.ltr{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .side.many{gap:0} .side.many .ic{width:30px}
   /* תוצאות */
   .res-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
   .res-filters .field{flex:1 1 220px;width:auto;padding:8px 10px;font-size:16px}
   .score{font-size:22px;font-weight:700;color:var(--purple);flex:none;min-width:58px;text-align:center}
   .score.low{color:var(--bad)}
   .who{font-weight:700}
-  .mt{font-size:12px;border-radius:5px;padding:0 6px;flex:none;border:1.5px solid var(--box);color:var(--muted)}
-  .mt.bad{border-color:var(--bad);color:var(--bad)}
+  .mt{color:var(--muted)} .mt.bad{color:var(--bad);font-weight:700}
   .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px;margin:0 0 14px}
   .kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:700}
   .catrow{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:15px}
@@ -138,10 +144,10 @@
   <button class="link hidden" id="tbLink2"></button>
   <button class="link" id="tbLink"></button>
 </div>
-<main><div class="panel" id="panel"></div></main>
+<main><nav class="tabs hidden" id="tabs"></nav><div class="panel" id="panel"></div></main>
 
-<script src="settings.js?v=43"></script>
-<script src="demo.js?v=43"></script>
+<script src="settings.js?v=44"></script>
+<script src="demo.js?v=44"></script>
 <script>
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
@@ -257,8 +263,17 @@ function topbar(sub, linkText, linkAct, link2Text, link2Act) {
   $('tbLink2').classList.toggle('hidden', !link2Text);
   $('tbLink2').dataset.act = link2Act || '';
 }
+const TAB_OF = { tests: 'tests', results: 'results', result: 'results', cats: 'lib', subs: 'lib', items: 'lib', media: 'lib', question: 'lib' };
+function renderTabs() {
+  const t = draft ? null : TAB_OF[view];
+  $('tabs').classList.toggle('hidden', !t);
+  if (!t) return;
+  $('tabs').innerHTML = [['tests', 'מבחנים', 'toTests'], ['results', 'תוצאות', 'results'], ['lib', 'מאגר סרטונים', 'settings']]
+    .map(([k, label, act]) => '<button class="' + (k === t ? 'on' : '') + '" data-act="' + act + '">' + label + '</button>').join('');
+}
 function go(v) {
   view = v;
+  renderTabs();
   ({ login: renderLogin, tests: renderTests, cats: renderCats, subs: renderSubs, items: renderItems, order: renderOrder,
      media: renderMediaForm, question: renderQuestionForm, results: renderResults, result: renderResult })[v]();
   scrollTo(0, 0);
@@ -284,20 +299,20 @@ function renderLogin() {
 
 // ---------- דף 1: מבחנים ----------
 function renderTests() {
-  topbar('', 'הגדרות', 'settings', 'תוצאות', 'results');
+  topbar('', '', '');
   const ids = Object.keys(quizzes).sort((a, b) => (quizzes[b].updated || 0) - (quizzes[a].updated || 0));
   $('panel').innerHTML = '<h1>מבחנים</h1>' +
     (ids.length ? '' : '<p class="muted">עוד אין מבחנים.</p>') + '<div class="grid g2">' +
     ids.map(id => {
       const q = quizzes[id], mail = q.email || globalEmail;
-      return '<div class="row"><div class="side">' +
+      return '<div class="row"><div class="side many">' +
         icon('send', 'send', ' data-id="' + id + '"') + icon('chart', 'resultsOf', ' data-id="' + id + '"') +
         icon('pen', 'edit', ' data-id="' + id + '"') + icon('del', 'delete', ' data-id="' + id + '"') +
         '</div><div class="box"><div>' + esc(q.title || 'ללא שם') +
         '<small class="ltr">' + esc(mail || 'לא הוגדר מייל לתוצאות') + '</small></div></div></div>';
     }).join('') + '</div>' +
     '<div class="actions"><button class="btn" data-act="newTest">הוסף מבחן</button></div>' +
-    '<div class="foot"><span class="muted">גרסה 43 · </span><button data-act="logout">יציאה</button></div>';
+    '<div class="foot"><span class="muted">גרסה 44 · </span><button data-act="logout">יציאה</button></div>';
 }
 
 // ---------- תוצאות: כל ההגשות, ופירוט של הגשה אחת ----------
@@ -328,8 +343,8 @@ function resultRow(r) {
   const p = pctOf(r), m = minsOf(r), bad = r.mail !== 'sent';
   return '<div class="row"><div class="side"></div><button class="box' + (wide() && r.key === resKey ? ' focus' : '') +
     '" data-act="openResult" data-key="' + esc(r.key) + '"><div><span class="who">' + esc(r.name || 'ללא שם') + '</span><small>' +
-    esc(quizTitle(r)) + ' · ' + fmtWhen(r.at) + (m === null ? '' : ' · ' + m + ' דק׳') + '</small></div>' +
-    (r.mail ? '<span class="mt' + (bad ? ' bad' : '') + '">' + (MAIL[r.mail] || 'מייל לא נשלח') + '</span>' : '') +
+    esc(quizTitle(r)) + '<br>' + fmtWhen(r.at) + (m === null ? '' : ' · ' + m + ' דק׳') +
+    (r.mail ? ' · <span class="mt' + (bad ? ' bad' : '') + '">' + (MAIL[r.mail] || 'מייל לא נשלח') + '</span>' : '') + '</small></div>' +
     '<span class="score' + (p !== null && p < 60 ? ' low' : '') + '">' + (p === null ? '—' : p + '%') + '</span></button></div>';
 }
 function correctText(r, a) {
@@ -367,9 +382,9 @@ function paintResultList() {
   if (pane) { const r = list.find(x => x.key === resKey); pane.innerHTML = r ? resultDetail(r) : '<div class="pane-empty">בחר הגשה מהרשימה</div>'; }
 }
 async function renderResults() {
-  topbar('תוצאות', 'לכל המבחנים', 'toTests');
+  topbar('', '', '');
   const ids = Object.keys(quizzes).sort((a, b) => String(quizzes[a].title).localeCompare(String(quizzes[b].title), 'he'));
-  $('panel').innerHTML = '<h1><a data-act="toTests">מבחנים</a> <span class="ch">‹</span> תוצאות</h1>' +
+  $('panel').innerHTML = '<h1>תוצאות</h1>' +
     '<div class="res-filters"><input class="field" id="resQ" placeholder="חיפוש לפי שם עובד" value="' + esc(resQ) + '">' +
     '<select class="field" id="resQuiz"><option value="">כל המבחנים</option>' +
     ids.map(id => '<option value="' + id + '"' + (id === resQuiz ? ' selected' : '') + '>' + esc(quizzes[id].title || 'ללא שם') + '</option>').join('') + '</select>' +
@@ -408,17 +423,17 @@ function exportResults() {
 function renderResult() {
   const r = (subsList || []).find(x => x.key === resKey);
   topbar('תוצאות', 'לכל התוצאות', 'backResults');
-  $('panel').innerHTML = '<h1><a data-act="toTests">מבחנים</a> <span class="ch">‹</span> <a data-act="backResults">תוצאות</a></h1>' +
+  $('panel').innerHTML = '<h1><a data-act="backResults">תוצאות</a> <span class="ch">‹</span></h1>' +
     (r ? '<div class="pane">' + resultDetail(r) + '</div>' : '<p class="muted">ההגשה לא נמצאה.</p>');
 }
 
 // ---------- דף 2: קטגוריות ----------
 function renderCats() {
-  topbar(draftSub(), 'לכל המבחנים', 'toTests');
+  topbar(draft ? draftSub() : '', draft ? 'לכל המבחנים' : '', draft ? 'toTests' : '');
   const list = cats();
   $('panel').innerHTML = '<h1>קטגוריות <span class="ch">‹</span></h1>' + selSummary() +
     (list.length ? '' : '<p class="muted">הקטלוג ריק.</p><button class="btn ghost" data-act="seed">טעינת הקטלוג הראשוני</button>') +
-    '<div class="grid">' + list.map(([cid, c]) => '<div class="row"><div class="side">' + icon('pen', 'renameCat', ' data-cid="' + cid + '"') +
+    '<div class="grid">' + list.map(([cid, c]) => '<div class="row"><div class="side">' + (draft ? '' : icon('pen', 'renameCat', ' data-cid="' + cid + '"')) +
       '</div><button class="box" data-act="openCat" data-cid="' + cid + '"><div>' + esc(c.name) +
       '<small>' + countIn(cid) + '</small></div></button></div>').join('') + '</div>' +
     '<div class="actions"><button class="btn ghost" data-act="addCat">הוסף</button>' + buildButtons() + '</div>';
@@ -426,10 +441,10 @@ function renderCats() {
 
 // ---------- דף 3: תת־קטגוריות ----------
 function renderSubs() {
-  topbar(draftSub(), 'לכל המבחנים', 'toTests');
+  topbar(draft ? draftSub() : '', draft ? 'לכל המבחנים' : '', draft ? 'toTests' : '');
   $('panel').innerHTML = '<h1><a data-act="toCats">קטגוריות</a> <span class="ch">‹</span> ' + esc(catName(curCat)) + ' <span class="ch">‹</span></h1>' +
     selSummary() +
-    '<div class="grid">' + subs(curCat).map(([sid, s]) => '<div class="row"><div class="side">' + icon('pen', 'renameSub', ' data-sid="' + sid + '"') +
+    '<div class="grid">' + subs(curCat).map(([sid, s]) => '<div class="row"><div class="side">' + (draft ? '' : icon('pen', 'renameSub', ' data-sid="' + sid + '"')) +
       '</div><button class="box" data-act="openSub" data-sid="' + sid + '"><div>' + esc(s.name) +
       '<small>' + countIn(curCat, sid) + '</small></div></button></div>').join('') + '</div>' +
     '<div class="actions"><button class="btn ghost" data-act="addSub">הוסף</button>' + buildButtons() + '</div>';
@@ -445,7 +460,7 @@ function itemRow(key, tag, text, extra, preview) {
   const focus = wide() && key === focusKey;
   return '<div class="row"><div class="side">' + side + '</div>' +
     '<div class="box item' + (on ? ' on' : '') + (focus ? ' focus' : '') + '" data-act="item" data-key="' + key + '" role="button" tabindex="0" aria-expanded="' + (open || focus) + '">' +
-    '<span class="tag">' + tag + '</span><div>' + esc(text) + (extra || '') + '</div>' +
+    '<div>' + esc(text) + '<span class="kind">' + tag + (extra || '') + '</span></div>' +
     (open ? '<div class="preview">' + preview + '</div>' : '') + '</div></div>';
 }
 function questionPreview(q) {
@@ -472,14 +487,14 @@ function paneHtml() {
     '<div class="actions">' + pick + edit + '</div>';
 }
 function renderItems() {
-  topbar(draftSub(), 'לכל המבחנים', 'toTests');
+  topbar(draft ? draftSub() : '', draft ? 'לכל המבחנים' : '', draft ? 'toTests' : '');
   const vids = videosIn(curCat, curSub);
   if (focusKey && !itemOf(focusKey)) focusKey = null;
   const list =
     (vids.length ? '' : '<p class="muted">אין עדיין סרטונים בתת־קטגוריה הזו.</p>') +
     (vids.length ? '<p class="muted">לחיצה על פריט מציגה אותו' + (draft ? ' · הריבוע משמאל מסמן אותו למבחן' : '') + '</p>' : '') +
     vids.map(([vid, v]) => '<div class="group">' + esc(v.title) + '</div>' +
-      itemRow('v:' + vid, isImg(v) ? 'תמונה' : 'סרטון', v.title, v.duration ? '<small>' + fmtDur(v.duration) + ' דקות</small>' : '',
+      itemRow('v:' + vid, isImg(v) ? 'תמונה' : 'סרטון', v.title, v.duration ? ' · ' + fmtDur(v.duration) + ' דקות' : '',
               isImg(v) ? '<img alt="" data-src="' + esc(v.url) + '">'
                        : '<video controls playsinline preload="metadata" data-src="' + esc(v.url) + '"></video>') +
       questionsOf(vid).map(([qid, q]) =>
@@ -506,7 +521,7 @@ function hydrateMedia() {
 const crumbs = last => '<h1><a data-act="toCats">קטגוריות</a> <span class="ch">‹</span> <a data-act="toSubs">' + esc(catName(curCat)) +
   '</a> <span class="ch">‹</span> <a data-act="backItems">' + esc(subName(curCat, curSub)) + '</a> <span class="ch">‹</span> ' + last + '</h1>';
 function renderMediaForm() {
-  topbar(draftSub(), 'לכל המבחנים', 'toTests');
+  topbar(draft ? draftSub() : '', draft ? 'לכל המבחנים' : '', draft ? 'toTests' : '');
   const editing = !!form.id;
   $('panel').innerHTML = crumbs(editing ? 'עריכה' : 'סרטון או תמונה') + '<div class="narrow">' +
     '<label class="f">שם (מה העובד יראה)</label><input class="field" id="mTitle" value="' + esc(form.title) + '" placeholder="למשל: סדק בשליכט ליד חלון">' +
@@ -627,7 +642,7 @@ async function delMedia() {
 
 // ---------- הוספה ועריכה: שאלה ----------
 function renderQuestionForm() {
-  topbar(draftSub(), 'לכל המבחנים', 'toTests');
+  topbar(draft ? draftSub() : '', draft ? 'לכל המבחנים' : '', draft ? 'toTests' : '');
   const vids = videosIn(curCat, curSub), editing = !!form.id;
   $('panel').innerHTML = crumbs(editing ? 'עריכת שאלה' : 'שאלה חדשה') + '<div class="narrow">' +
     '<label class="f">שייכת ל</label><select class="field" id="qVideo">' +
@@ -691,8 +706,9 @@ function renderOrder() {
       const it = itemOf(key);
       if (!it) return '';
       return '<div class="row" data-key="' + key + '"><div class="side"><span class="drag" data-drag>☰</span></div>' +
-        '<div class="box"><span class="tag">' + (it.k === 'v' ? (it.kind === 'image' ? 'תמונה' : 'סרטון') : it.type === 'choice' ? 'אמריקאית' : 'פתוחה') + '</span><div>' +
-        esc(it.k === 'v' ? it.title : it.text) + '<small>' + esc(it.cat + ' ‹ ' + it.sub) + '</small></div></div></div>';
+        '<div class="box"><div>' + esc(it.k === 'v' ? it.title : it.text) + '<span class="kind">' +
+        (it.k === 'v' ? (it.kind === 'image' ? 'תמונה' : 'סרטון') : it.type === 'choice' ? 'אמריקאית' : 'פתוחה') + ' · ' +
+        esc(it.cat + ' ‹ ' + it.sub) + '</span></div></div></div>';
     }).join('') + '</div>' +
     '<p class="muted">גוררים בסימן ☰ כדי לשנות סדר.</p>';
   const formHtml = nameField +
