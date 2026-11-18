@@ -2,26 +2,26 @@
   "rules": {
     "quizzes": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il')"
     },
     "library": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il')"
     },
     "settings": {
       ".read": true,
-      ".write": "auth != null"
+      ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il')"
     },
 
     "submissions": {
-      ".read": "auth != null",
-      ".write": "auth != null",
+      ".read": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il')",
+      ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il')",
       "$quizId": {
         "$person": {
-          ".write": "auth != null || !data.exists()",
+          ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il') || !data.exists()",
           ".validate": "newData.hasChildren(['name','at'])",
           "mail": {
-            ".write": "auth != null || data.parent().exists()",
+            ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il') || data.parent().exists()",
             ".validate": "newData.isString() && newData.val().length < 10"
           }
         }
@@ -30,10 +30,10 @@
 
     "done": {
       ".read": true,
-      ".write": "auth != null",
+      ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il')",
       "$quizId": {
         "$person": {
-          ".write": "auth != null || !data.exists()",
+          ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il') || !data.exists()",
           ".validate": "newData.isNumber()"
         }
       }
@@ -42,15 +42,15 @@
     "invites": {
       ".read": true,
       "$quizId": {
-        ".write": "auth != null",
+        ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il')",
         "$code": {
-          ".write": "auth != null",
+          ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il')",
           "used": {
-            ".write": "auth != null || (data.parent().exists() && !data.parent().child('used').exists())",
+            ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il') || (data.parent().exists() && !data.parent().child('used').exists())",
             ".validate": "newData.isNumber()"
           },
           "name": {
-            ".write": "auth != null || (data.parent().exists() && !data.parent().child('used').exists())",
+            ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il') || (data.parent().exists() && !data.parent().child('used').exists())",
             ".validate": "newData.isString() && newData.val().length < 80"
           }
         }
@@ -60,13 +60,13 @@
     "bundles": {
       ".read": true,
       "$bundleId": {
-        ".write": "auth != null",
+        ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il')",
         "used": {
-          ".write": "auth != null || (data.parent().exists() && !data.parent().child('used').exists())",
+          ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il') || (data.parent().exists() && !data.parent().child('used').exists())",
           ".validate": "newData.isNumber()"
         },
         "name": {
-          ".write": "auth != null || (data.parent().exists() && !data.parent().child('used').exists())",
+          ".write": "(auth != null && auth.token.email.toLowerCase() == 'office@bedek-mivnim.co.il') || (data.parent().exists() && !data.parent().child('used').exists())",
           ".validate": "newData.isString() && newData.val().length < 80"
         }
       }

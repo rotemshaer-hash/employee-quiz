@@ -1,0 +1,38 @@
+import { initializeTestEnvironment, assertSucceeds, assertFails } from '@firebase/rules-unit-testing';
+import fs from 'fs';
+import { ref, set, get } from 'firebase/database';
+import { ref as sref, uploadBytes, getBytes, deleteObject } from 'firebase/storage';
+const env = await initializeTestEnvironment({ projectId: 'demo-quiz',
+  database: { rules: fs.readFileSync('../../database.rules.json', 'utf8'), host: '127.0.0.1', port: 9000 },
+  storage: { rules: fs.readFileSync('../../storage.rules', 'utf8'), host: '127.0.0.1', port: 9199 } });
+const office = env.authenticatedContext('office-uid', { email: 'Office@bedek-mivnim.co.il' });
+const stranger = env.authenticatedContext('evil-uid', { email: 'someone@example.com' });
+const anon = env.unauthenticatedContext();
+let ok = 0, bad = 0;
+const t = async (name, p, shouldPass) => { try { await (shouldPass ? assertSucceeds(p) : assertFails(p)); ok++; console.log('✓', name); } catch (e) { bad++; console.log('✗', name, e.message.slice(0, 120)); } };
+const cache = new Map(); const memo = (c, k, f) => { const key = c; if (!cache.has(key)) cache.set(key, {}); const o = cache.get(key); return o[k] || (o[k] = f()); };
+const db = c => memo(c, "db", () => c.database()), st = c => memo(c, "st", () => c.storage());
+await t('office writes a quiz', set(ref(db(office), 'quizzes/q1'), { title: 't' }), true);
+await t('stranger cannot write a quiz', set(ref(db(stranger), 'quizzes/q2'), { title: 't' }), false);
+await t('anonymous cannot write a quiz', set(ref(db(anon), 'quizzes/q3'), { title: 't' }), false);
+await t('anonymous reads quizzes (employee)', get(ref(db(anon), 'quizzes/q1')), true);
+await t('office writes the catalog', set(ref(db(office), 'library/catalog/cats/c01'), { name: 'x' }), true);
+await t('stranger cannot write the catalog', set(ref(db(stranger), 'library/catalog/cats/c02'), { name: 'x' }), false);
+await t('employee submits once', set(ref(db(anon), 'submissions/q1/dana'), { name: 'דנה', at: 1 }), true);
+await t('employee cannot overwrite a submission', set(ref(db(anon), 'submissions/q1/dana'), { name: 'דנה', at: 2 }), false);
+await t('stranger cannot read results', get(ref(db(stranger), 'submissions')), false);
+await t('anonymous cannot read results', get(ref(db(anon), 'submissions')), false);
+await t('office reads results', get(ref(db(office), 'submissions')), true);
+await t('office creates an invite', set(ref(db(office), 'invites/q1/c1'), { name: '' }), true);
+await t('employee locks the invite', set(ref(db(anon), 'invites/q1/c1/used'), 123), true);
+await t('employee cannot reuse the invite', set(ref(db(anon), 'invites/q1/c1/used'), 456), false);
+await t('stranger cannot create an invite', set(ref(db(stranger), 'invites/q1/c2'), { name: '' }), false);
+const vid = new Uint8Array([1, 2, 3]);
+await t('office uploads a video', uploadBytes(sref(st(office), 'videos/a.mp4'), vid, { contentType: 'video/mp4' }), true);
+await t('stranger cannot upload a video', uploadBytes(sref(st(stranger), 'videos/b.mp4'), vid, { contentType: 'video/mp4' }), false);
+await t('anonymous watches a video', getBytes(sref(st(anon), 'videos/a.mp4')), true);
+await t('stranger cannot delete a video', deleteObject(sref(st(stranger), 'videos/a.mp4')), false);
+await t('office deletes a video', deleteObject(sref(st(office), 'videos/a.mp4')), true);
+await t('office uploads an image', uploadBytes(sref(st(office), 'images/a.png'), vid, { contentType: 'image/png' }), true);
+console.log('passed', ok, 'failed', bad);
+await env.cleanup(); process.exit(bad ? 1 : 0);

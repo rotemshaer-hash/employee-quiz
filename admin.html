@@ -98,6 +98,26 @@
     .pane{position:sticky;top:84px}
     .narrow{max-width:680px}
   }
+  /* תוצאות */
+  .res-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .res-filters .field{flex:1 1 220px;width:auto;padding:8px 10px;font-size:16px}
+  .score{font-size:22px;font-weight:700;color:var(--purple);flex:none;min-width:58px;text-align:center}
+  .score.low{color:var(--bad)}
+  .who{font-weight:700}
+  .mt{font-size:12px;border-radius:5px;padding:0 6px;flex:none;border:1.5px solid var(--box);color:var(--muted)}
+  .mt.bad{border-color:var(--bad);color:var(--bad)}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:15px;margin:0 0 14px}
+  .kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:700}
+  .catrow{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:15px}
+  .catrow .nm{flex:0 0 120px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .catrow .bar{flex:1;margin:0} .catrow .p{flex:0 0 42px;text-align:left;font-weight:700}
+  .qa{border-top:1px solid var(--line);padding:8px 0;font-size:15px;display:flex;gap:8px}
+  .qa > div{min-width:0}
+  .qa .mk{flex:none;width:22px;font-weight:700}
+  .qa .mk.y{color:var(--purple)} .qa .mk.n{color:var(--bad)} .qa .mk.o{color:var(--muted)}
+  .qa .a{color:#444;margin-top:2px;overflow-wrap:anywhere} .qa .a b{font-weight:400;color:var(--muted)}
+  .vrow{font-size:14px;color:#444;margin:3px 0}
+  .topbar .link + .link{margin-inline-start:14px}
   .hidden{display:none!important}
 </style>
 </head>
@@ -106,6 +126,7 @@
   <symbol id="i-pen" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.21a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></symbol>
   <symbol id="i-del" viewBox="0 0 24 24"><path d="M6 19a2 2 0 002 2h8a2 2 0 002-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16v2H2V2h2v18zm3-3h3V9H7v8zm5 0h3V4h-3v13zm5 0h3v-6h-3v6z"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4 0-9 2-9 5v3h18v-3c0-3-5-5-9-5z"/></symbol>
 </svg>
 
@@ -114,12 +135,13 @@
   <div class="brand">מבנים</div>
   <div class="sep" id="tbSep"></div>
   <div class="sub" id="tbSub"></div>
+  <button class="link hidden" id="tbLink2"></button>
   <button class="link" id="tbLink"></button>
 </div>
 <main><div class="panel" id="panel"></div></main>
 
-<script src="settings.js?v=41"></script>
-<script src="demo.js?v=41"></script>
+<script src="settings.js?v=42"></script>
+<script src="demo.js?v=42"></script>
 <script>
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
@@ -225,17 +247,20 @@ function itemOf(key) {
 }
 
 // ---------- מבנה המסך ----------
-function topbar(sub, linkText, linkAct) {
+function topbar(sub, linkText, linkAct, link2Text, link2Act) {
   $('tbSub').textContent = sub || '';
   $('tbSep').classList.toggle('hidden', !sub);
   $('tbLink').textContent = linkText || '';
   $('tbLink').classList.toggle('hidden', !linkText);
   $('tbLink').dataset.act = linkAct || '';
+  $('tbLink2').textContent = link2Text || '';
+  $('tbLink2').classList.toggle('hidden', !link2Text);
+  $('tbLink2').dataset.act = link2Act || '';
 }
 function go(v) {
   view = v;
   ({ login: renderLogin, tests: renderTests, cats: renderCats, subs: renderSubs, items: renderItems, order: renderOrder,
-     media: renderMediaForm, question: renderQuestionForm })[v]();
+     media: renderMediaForm, question: renderQuestionForm, results: renderResults, result: renderResult })[v]();
   scrollTo(0, 0);
 }
 const draftSub = () => draft ? (draft.title || (draft.id ? 'מבחן' : 'מבחן חדש')) : 'הגדרות';
@@ -259,19 +284,132 @@ function renderLogin() {
 
 // ---------- דף 1: מבחנים ----------
 function renderTests() {
-  topbar('', 'הגדרות', 'settings');
+  topbar('', 'הגדרות', 'settings', 'תוצאות', 'results');
   const ids = Object.keys(quizzes).sort((a, b) => (quizzes[b].updated || 0) - (quizzes[a].updated || 0));
   $('panel').innerHTML = '<h1>מבחנים</h1>' +
     (ids.length ? '' : '<p class="muted">עוד אין מבחנים.</p>') + '<div class="grid g2">' +
     ids.map(id => {
       const q = quizzes[id], mail = q.email || globalEmail;
       return '<div class="row"><div class="side">' +
-        icon('send', 'send', ' data-id="' + id + '"') + icon('pen', 'edit', ' data-id="' + id + '"') + icon('del', 'delete', ' data-id="' + id + '"') +
+        icon('send', 'send', ' data-id="' + id + '"') + icon('chart', 'resultsOf', ' data-id="' + id + '"') +
+        icon('pen', 'edit', ' data-id="' + id + '"') + icon('del', 'delete', ' data-id="' + id + '"') +
         '</div><div class="box"><div>' + esc(q.title || 'ללא שם') +
         '<small class="ltr">' + esc(mail || 'לא הוגדר מייל לתוצאות') + '</small></div></div></div>';
     }).join('') + '</div>' +
     '<div class="actions"><button class="btn" data-act="newTest">הוסף מבחן</button></div>' +
-    '<div class="foot"><span class="muted">גרסה 41 · </span><button data-act="logout">יציאה</button></div>';
+    '<div class="foot"><span class="muted">גרסה 42 · </span><button data-act="logout">יציאה</button></div>';
+}
+
+// ---------- תוצאות: כל ההגשות, ופירוט של הגשה אחת ----------
+let subsList = null, subsErr = '', resQ = '', resQuiz = '', resKey = null;
+async function loadResults() {
+  subsErr = '';
+  try {
+    const all = (await (await api('GET', '/submissions')).json()) || {};
+    subsList = [];
+    for (const [qid, people] of Object.entries(all))
+      for (const [pk, r] of Object.entries(people || {}))
+        if (r && typeof r === 'object') subsList.push(Object.assign({ qid, key: qid + '/' + pk }, r));
+    subsList.sort((a, b) => (b.at || 0) - (a.at || 0));
+  } catch (e) { subsList = []; subsErr = 'לא הצלחנו לטעון את התוצאות. בדוק אינטרנט ונסה שוב.'; }
+}
+const two = n => String(n).padStart(2, '0');
+const fmtWhen = t => { if (!t) return ''; const d = new Date(t); return two(d.getDate()) + '.' + two(d.getMonth() + 1) + ' · ' + two(d.getHours()) + ':' + two(d.getMinutes()); };
+const fmtFull = t => { if (!t) return '—'; const d = new Date(t); return two(d.getDate()) + '.' + two(d.getMonth() + 1) + '.' + d.getFullYear() + ' · ' + two(d.getHours()) + ':' + two(d.getMinutes()); };
+const minsOf = r => r.at && r.startedAt ? Math.max(0, Math.round((r.at - r.startedAt) / 60000)) : null;
+const quizTitle = r => (quizzes[r.qid] || {}).title || 'מבחן שנמחק';
+const pctOf = r => typeof r.pct === 'number' ? r.pct : (r.total ? Math.round((r.right || 0) / r.total * 100) : null);
+const MAIL = { sent: 'מייל נשלח', failed: 'מייל לא נשלח', pending: 'מייל לא נשלח' };
+function filteredResults() {
+  const q = resQ.trim().toLowerCase();
+  return (subsList || []).filter(r => (!resQuiz || r.qid === resQuiz) && (!q || String(r.name || '').toLowerCase().includes(q)));
+}
+function resultRow(r) {
+  const p = pctOf(r), m = minsOf(r), bad = r.mail !== 'sent';
+  return '<div class="row"><div class="side"></div><button class="box' + (wide() && r.key === resKey ? ' focus' : '') +
+    '" data-act="openResult" data-key="' + esc(r.key) + '"><div><span class="who">' + esc(r.name || 'ללא שם') + '</span><small>' +
+    esc(quizTitle(r)) + ' · ' + fmtWhen(r.at) + (m === null ? '' : ' · ' + m + ' דק׳') + '</small></div>' +
+    (r.mail ? '<span class="mt' + (bad ? ' bad' : '') + '">' + (MAIL[r.mail] || 'מייל לא נשלח') + '</span>' : '') +
+    '<span class="score' + (p !== null && p < 60 ? ' low' : '') + '">' + (p === null ? '—' : p + '%') + '</span></button></div>';
+}
+function correctText(r, a) {
+  const it = ((quizzes[r.qid] || {}).items || []).find(x => x.k === 'q' && x.text === a.q && x.options);
+  return it ? it.options[(it.correct || 1) - 1] : '';
+}
+function resultDetail(r) {
+  const p = pctOf(r), m = minsOf(r);
+  const cats = (r.cats || []).map(c => { const cp = c.total ? Math.round(c.right / c.total * 100) : 0;
+    return '<div class="catrow"><span class="nm">' + esc(c.name || '—') + '</span><div class="bar"><i style="width:' + cp + '%"></i></div><span class="p">' + cp + '%</span></div>'; }).join('');
+  const views = (r.views || []).map(v => '<div class="vrow">🎬 ' + esc(v.title) + ' — ' +
+    (v.n > 1 ? '<b>נצפה ' + v.n + ' פעמים</b>' : v.n === 1 ? 'נצפה פעם אחת' : 'לא נצפה') + '</div>').join('');
+  const answers = (r.answers || []).map(a => {
+    const k = a.ok === 'yes' ? 'y' : a.ok === 'no' ? 'n' : 'o', right = k === 'n' ? correctText(r, a) : '';
+    return '<div class="qa"><span class="mk ' + k + '">' + ({ y: '✓', n: '✗', o: '?' })[k] + '</span><div>' + esc(a.q) +
+      (k === 'o' ? ' <span class="tag">פתוחה — לבדיקתך</span>' : '') +
+      '<div class="a"><b>ענה/תה:</b> ' + (a.a == null || a.a === '' ? '—' : esc(a.a)) + '</div>' +
+      (right ? '<div class="a"><b>התשובה הנכונה:</b> ' + esc(right) + '</div>' : '') + '</div></div>';
+  }).join('');
+  return '<h2>' + esc(r.name || 'ללא שם') + (p === null ? '' : ' · ' + p + '%') + '</h2>' +
+    '<dl class="kv"><dt>מבחן</dt><dd>' + esc(quizTitle(r)) + '</dd><dt>התחיל</dt><dd>' + fmtFull(r.startedAt || r.at) + '</dd>' +
+    '<dt>משך</dt><dd>' + (m === null ? '—' : m + ' דקות') + '</dd>' +
+    (r.total ? '<dt>אמריקאיות</dt><dd>' + (r.right || 0) + ' נכונות מתוך ' + r.total + '</dd>' : '') +
+    '<dt>מייל</dt><dd>' + (r.mail === 'sent' ? 'נשלח' : 'לא נשלח') + '</dd></dl>' +
+    (cats ? '<div class="group">ציון לפי קטגוריה</div>' + cats : '') +
+    (views ? '<div class="group">סרטונים</div>' + views : '') +
+    (answers ? '<div class="group">תשובות</div>' + answers : '');
+}
+function paintResultList() {
+  const list = filteredResults();
+  if (wide() && list.length && !list.some(r => r.key === resKey)) resKey = list[0].key;
+  $('resList').innerHTML = subsErr ? '<p class="err">' + esc(subsErr) + '</p>' :
+    list.length ? list.map(resultRow).join('') : '<p class="muted">' + ((subsList || []).length ? 'אין הגשות שמתאימות לחיפוש.' : 'עוד אין הגשות.') + '</p>';
+  const pane = $('resPane');
+  if (pane) { const r = list.find(x => x.key === resKey); pane.innerHTML = r ? resultDetail(r) : '<div class="pane-empty">בחר הגשה מהרשימה</div>'; }
+}
+async function renderResults() {
+  topbar('תוצאות', 'לכל המבחנים', 'toTests');
+  const ids = Object.keys(quizzes).sort((a, b) => String(quizzes[a].title).localeCompare(String(quizzes[b].title), 'he'));
+  $('panel').innerHTML = '<h1><a data-act="toTests">מבחנים</a> <span class="ch">‹</span> תוצאות</h1>' +
+    '<div class="res-filters"><input class="field" id="resQ" placeholder="חיפוש לפי שם עובד" value="' + esc(resQ) + '">' +
+    '<select class="field" id="resQuiz"><option value="">כל המבחנים</option>' +
+    ids.map(id => '<option value="' + id + '"' + (id === resQuiz ? ' selected' : '') + '>' + esc(quizzes[id].title || 'ללא שם') + '</option>').join('') + '</select>' +
+    '<button class="btn ghost" data-act="exportResults" style="flex:0 0 auto;width:auto;margin:0;padding:6px 18px;font-size:16px">ייצוא לאקסל</button></div>' +
+    (wide() ? '<div class="split"><div id="resList"></div><div class="pane" id="resPane"></div></div>' : '<div id="resList"></div>');
+  $('resQ').addEventListener('input', e => { resQ = e.target.value; paintResultList(); });
+  $('resQuiz').addEventListener('change', e => { resQuiz = e.target.value; paintResultList(); });
+  if (subsList === null) { $('resList').innerHTML = '<p class="muted">טוען תוצאות…</p>'; await loadResults(); if (view !== 'results') return; }
+  paintResultList();
+}
+// קובץ CSV שנפתח באקסל בעברית (BOM בתחילתו): שורה לכל הגשה, לפי הסינון שעל המסך
+function exportResults() {
+  const list = filteredResults();
+  if (!list.length) return alert('אין הגשות לייצוא.');
+  const catNames = [...new Set(list.flatMap(r => (r.cats || []).map(c => c.name)))];
+  const cell = v => { const s = v == null ? '' : String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const head = ['שם העובד', 'מבחן', 'תאריך', 'שעת התחלה', 'משך (דקות)', 'ציון %', 'נכונות', 'מתוך', 'שאלות פתוחות', 'צפייה חוזרת בסרטונים', 'מייל']
+    .concat(catNames.map(n => 'ציון ' + n + ' %'));
+  const rows = list.map(r => {
+    const d = r.at ? new Date(r.at) : null, s = r.startedAt ? new Date(r.startedAt) : null;
+    const cats = {}; (r.cats || []).forEach(c => { cats[c.name] = c.total ? Math.round(c.right / c.total * 100) : ''; });
+    return [r.name, quizTitle(r), d ? two(d.getDate()) + '.' + two(d.getMonth() + 1) + '.' + d.getFullYear() : '',
+      s ? two(s.getHours()) + ':' + two(s.getMinutes()) : '', minsOf(r), pctOf(r), r.right, r.total,
+      (r.answers || []).filter(a => a.ok === 'open').length, (r.views || []).filter(v => v.n > 1).length,
+      r.mail === 'sent' ? 'נשלח' : 'לא נשלח'].concat(catNames.map(n => cats[n] === undefined ? '' : cats[n]));
+  });
+  const csv = '﻿' + [head].concat(rows).map(r => r.map(cell).join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  const t = new Date();
+  a.download = 'results-' + t.getFullYear() + '-' + two(t.getMonth() + 1) + '-' + two(t.getDate()) + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+// בטלפון: הגשה אחת במסך משלה
+function renderResult() {
+  const r = (subsList || []).find(x => x.key === resKey);
+  topbar('תוצאות', 'לכל התוצאות', 'backResults');
+  $('panel').innerHTML = '<h1><a data-act="toTests">מבחנים</a> <span class="ch">‹</span> <a data-act="backResults">תוצאות</a></h1>' +
+    (r ? '<div class="pane">' + resultDetail(r) + '</div>' : '<p class="muted">ההגשה לא נמצאה.</p>');
 }
 
 // ---------- דף 2: קטגוריות ----------
@@ -699,6 +837,14 @@ document.addEventListener('click', async e => {
     case 'newTest': startDraft(null); go('cats'); break;
     case 'edit': startDraft(d.id); go('cats'); break;
     case 'send': send(d.id); break;
+    case 'results': subsList = null; resKey = null; go('results'); break;
+    case 'backResults': go('results'); break;
+    case 'exportResults': exportResults(); break;
+    case 'resultsOf': subsList = null; resKey = null; resQuiz = d.id; resQ = ''; go('results'); break;
+    case 'openResult':
+      resKey = d.key;
+      if (wide()) keepScroll(paintResultList); else go('result');
+      break;
     case 'delete': del(d.id); break;
     case 'toTests': if (leaveDraft()) go('tests'); break;
     case 'toCats': go('cats'); break;
@@ -769,7 +915,7 @@ document.addEventListener('keydown', e => {
 });
 addEventListener('beforeunload', e => { if (draft && draft.items.length) { e.preventDefault(); e.returnValue = ''; } });
 
-WIDE.addEventListener('change', () => { if (['tests', 'cats', 'subs', 'items', 'order'].includes(view)) keepScroll(() => go(view)); });
+WIDE.addEventListener('change', () => { if (['tests', 'cats', 'subs', 'items', 'order', 'results'].includes(view)) keepScroll(() => go(view)); });
 go('login');
 (async () => {
   if (!sessionGet('rt')) return;
