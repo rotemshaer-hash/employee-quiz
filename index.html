@@ -121,8 +121,8 @@
   </section>
 </div></main>
 
-<script src="settings.js?v=45"></script>
-<script src="demo.js?v=45"></script>
+<script src="settings.js?v=46"></script>
+<script src="demo.js?v=46"></script>
 <script>
 const $ = id => document.getElementById(id);
 const show = id => { document.querySelectorAll('.panel > section').forEach(s => s.classList.add('hidden')); $(id).classList.remove('hidden'); scrollTo(0, 0); };
@@ -446,8 +446,14 @@ function subRecord(r, name, mail) {
   };
 }
 
+// כל בקשה בהגשה מוגבלת בזמן: רשת תקועה לא משאירה את העובד על "שולח..." לנצח
+function tfetch(url, opts, ms) {
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms || 20000);
+  void t;   // הטיימר נשאר גם לקריאת התשובה עצמה; ביטול אחרי שהכול הסתיים לא עושה כלום
+  return fetch(url, Object.assign({}, opts, { signal: ctl.signal }));
+}
 async function putJSON(url, body) {
-  const res = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const res = await tfetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   if (!res.ok) throw new Error('save ' + res.status);
 }
 // שמירה: אותו מפתח בכל ניסיון, לכן לחיצה חוזרת לא מכפילה
@@ -459,7 +465,7 @@ async function saveResults(name, mail) {
 // נעילת הקישור ברגע ההגשה
 async function lockLink(name) {
   if (!(code || bundleId)) return putJSON(DB('/done/' + PKG[0].id + '/' + encodeURIComponent(nameKey(name))), Date.now());
-  const res = await fetch(lockUrl(), { method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+  const res = await tfetch(lockUrl(), { method: 'PATCH', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ used: Date.now(), name }) });
   if (!res.ok) throw new Error('lock ' + res.status);
 }
@@ -467,7 +473,7 @@ async function markMail(name, mail) {
   const key = subKeyFor(name);
   for (const q of PKG) {
     try {
-      await fetch(DB('/submissions/' + q.id + '/' + encodeURIComponent(key)), {
+      await tfetch(DB('/submissions/' + q.id + '/' + encodeURIComponent(key)), {
         method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mail }) });
     } catch (e) {}
   }
@@ -493,24 +499,31 @@ async function sendAll() {
     try { await lockLink(name); lockedOk = true; }
     catch (err) {
       let used = null;
-      if (code || bundleId) { try { used = (await (await fetch(lockUrl(), { cache: 'no-store' })).json()) || null; } catch (e) {} }
+      if (code || bundleId) { try { used = (await (await tfetch(lockUrl(), { cache: 'no-store' }, 10000)).json()) || null; } catch (e) {} }
       if (used && used.used) return usedScreen(used.name);
       return retry('ההגשה נשמרה אבל לא הושלמה. בדוק שיש אינטרנט ולחץ שוב.');
     }
     try { localStorage.setItem(DONE_KEY(name), '1'); } catch (e) {}
   }
 
-  // 3. מייל — השלב היחיד שמותר לו להיכשל
-  try {
-    const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(resultsEmail), {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) });
-    const json = await res.json().catch(() => ({}));
-    if (!res.ok || String(json.success) !== 'true') throw new Error(json.message || res.status);
-    await markMail(name, 'sent');
-  } catch (err) {
-    await markMail(name, 'failed');
-    $('doneNote').textContent = 'ההגשה נקלטה ונשמרה. שליחת המייל למנהל לא עברה — המנהל רואה את התוצאות אצלו. אתה לא צריך למלא שוב.';
-  }
+  // 3. מייל — השלב היחיד שמותר לו להיכשל. שירות המייל לפעמים איטי מאוד (דקות), ולכן לא
+  // מבטלים אותו: אחרי 15 שניות העובד רואה "ההגשה נקלטה", והמייל ממשיך להישלח ברקע.
+  // ההגשה כבר שמורה, והמנהל רואה אותה במסך התוצאות בכל מקרה.
+  const mail = (async () => {
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(resultsEmail), {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || String(json.success) !== 'true') throw new Error(json.message || res.status);
+      await markMail(name, 'sent');
+      return true;
+    } catch (err) {
+      await markMail(name, 'failed');
+      return false;
+    }
+  })();
+  const ok = await Promise.race([mail, new Promise(r => setTimeout(() => r(null), 15000))]);
+  if (ok === false) $('doneNote').textContent = 'ההגשה נקלטה ונשמרה. שליחת המייל למנהל לא עברה — המנהל רואה את התוצאות אצלו. אתה לא צריך למלא שוב.';
   show('s-done');
 }
 </script>

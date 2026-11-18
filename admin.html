@@ -51,6 +51,12 @@
   .chk{width:26px;height:26px;border:3px solid var(--box);border-radius:5px;display:grid;place-items:center;flex:none}
   .chk.on{background:var(--purple);border-color:var(--purple)}
   .chk.on::after{content:"✓";color:#fff;font-size:15px;font-weight:700}
+  .chk.part{border-color:var(--purple)}
+  .chk.part::after{content:"−";color:var(--purple);font-size:18px;font-weight:800;line-height:1}
+  .allrow{display:flex;align-items:center;gap:10px;padding:12px;font-weight:700}
+  .allrow .t{flex:1;min-width:0}
+  .allrow .t small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+  @media (max-width:999px){.topbar.two .sub,.topbar.two .sep{display:none}}
   .drag{color:var(--icon);font-size:24px;width:34px;height:40px;display:grid;place-items:center;touch-action:none;cursor:grab}
   .row.dragging .box{border-color:var(--purple);box-shadow:0 6px 18px rgba(0,0,0,.15)}
   .tag{font-size:12px;color:var(--muted);border:1.5px solid var(--box);border-radius:5px;padding:0 6px;flex:none}
@@ -184,8 +190,8 @@
 </div>
 <main><nav class="tabs hidden" id="tabs"></nav><div class="panel" id="panel"></div></main>
 
-<script src="settings.js?v=45"></script>
-<script src="demo.js?v=45"></script>
+<script src="settings.js?v=46"></script>
+<script src="demo.js?v=46"></script>
 <script>
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
@@ -276,10 +282,24 @@ function pickedIn(cid, sid) {
     return v && v.cat === cid && (!sid || v.sub === sid);
   }).length;
 }
-const navCard = (act, attr, name, meta, n, editAct) =>
+// כל הסרטונים והשאלות של תחום (ותת־תחום), סרטון לפני השאלות שלו
+function keysIn(cid, sid) {
+  const out = [];
+  subs(cid).filter(([s]) => !sid || s === sid).forEach(([s]) =>
+    videosIn(cid, s).forEach(([vid]) => { out.push('v:' + vid); questionsOf(vid).forEach(([qid]) => out.push('q:' + qid)); }));
+  return out;
+}
+const groupState = keys => { const n = keys.filter(k => draft.items.includes(k)).length; return !n ? '' : n === keys.length ? ' on' : ' part'; };
+// סימון כל התחום/תת־התחום. אם הכל כבר מסומן — מבטל את כולם
+function toggleGroup(keys) {
+  if (keys.length && keys.every(k => draft.items.includes(k))) draft.items = draft.items.filter(k => !keys.includes(k));
+  else keys.forEach(k => { if (!draft.items.includes(k)) toggleItem(k); });
+}
+const navCard = (act, attr, name, meta, n, editAct, keys, pickAct) =>
   '<div class="card' + (n ? ' on' : '') + '" data-act="' + act + '"' + attr + ' role="button" tabindex="0"><div class="ch-row"><div class="t">' + esc(name) +
   '<small>' + meta + '</small></div>' + (n ? '<span class="cnt">' + n + ' נבחרו</span>' : '') +
-  (draft ? '' : icon('pen', editAct, attr + ' aria-label="שינוי שם"')) + '<span class="chev">‹</span></div></div>';
+  (draft ? '<button class="chk' + groupState(keys) + '" data-act="' + pickAct + '"' + attr + ' aria-label="סימון הכל"></button>'
+         : icon('pen', editAct, attr + ' aria-label="שינוי שם"')) + '<span class="chev">‹</span></div></div>';
 function countIn(cid, sid) {
   const vs = Object.entries(catalog.videos || {}).filter(([, v]) => v.cat === cid && (!sid || v.sub === sid)).map(([k]) => k);
   const qs = Object.values(catalog.questions || {}).filter(q => vs.includes(q.video)).length;
@@ -311,6 +331,7 @@ function topbar(sub, linkText, linkAct, link2Text, link2Act) {
   $('tbLink2').textContent = link2Text || '';
   $('tbLink2').classList.toggle('hidden', !link2Text);
   $('tbLink2').dataset.act = link2Act || '';
+  document.querySelector('.topbar').classList.toggle('two', !!link2Text);
 }
 const TAB_OF = { tests: 'tests', results: 'results', result: 'results', cats: 'lib', subs: 'lib', items: 'lib', media: 'lib', question: 'lib' };
 function renderTabs() {
@@ -382,7 +403,7 @@ function renderTests() {
         '<button class="ta" data-act="edit"' + d + '><svg><use href="#i-pen"/></svg>עריכה</button></div></div>';
     }).join('') + '</div>' +
     '<div class="actions"><button class="btn" data-act="newTest">הוסף מבחן</button></div>' +
-    '<div class="foot"><span class="muted">גרסה 45 · </span><button data-act="logout">יציאה</button></div>';
+    '<div class="foot"><span class="muted">גרסה 46 · </span><button data-act="logout">יציאה</button></div>';
 }
 
 // ---------- תוצאות: כל ההגשות, ופירוט של הגשה אחת ----------
@@ -404,7 +425,7 @@ const fmtFull = t => { if (!t) return '—'; const d = new Date(t); return two(d
 const minsOf = r => r.at && r.startedAt ? Math.max(0, Math.round((r.at - r.startedAt) / 60000)) : null;
 const quizTitle = r => (quizzes[r.qid] || {}).title || 'מבחן שנמחק';
 const pctOf = r => typeof r.pct === 'number' ? r.pct : (r.total ? Math.round((r.right || 0) / r.total * 100) : null);
-const MAIL = { sent: 'מייל נשלח', failed: 'מייל לא נשלח', pending: 'מייל לא נשלח' };
+const MAIL = { sent: 'מייל נשלח', failed: 'מייל לא נשלח', pending: 'מייל לא אושר' };
 function filteredResults() {
   const q = resQ.trim().toLowerCase();
   return (subsList || []).filter(r => (!resQuiz || r.qid === resQuiz) && (!q || String(r.name || '').toLowerCase().includes(q)));
@@ -503,7 +524,7 @@ function renderCats() {
   const list = cats();
   $('panel').innerHTML = '<h1>קטגוריות <span class="ch">‹</span></h1>' + selSummary() +
     (list.length ? '' : '<p class="muted">הקטלוג ריק.</p><button class="btn ghost" data-act="seed">טעינת הקטלוג הראשוני</button>') +
-    '<div class="grid">' + list.map(([cid, c]) => navCard('openCat', ' data-cid="' + cid + '"', c.name, countIn(cid), pickedIn(cid), 'renameCat')).join('') + '</div>' +
+    '<div class="grid">' + list.map(([cid, c]) => navCard('openCat', ' data-cid="' + cid + '"', c.name, countIn(cid), pickedIn(cid), 'renameCat', draft ? keysIn(cid) : [], 'pickCat')).join('') + '</div>' +
     '<div class="actions"><button class="btn ghost" data-act="addCat">הוסף</button>' + buildButtons() + '</div>';
 }
 
@@ -512,7 +533,7 @@ function renderSubs() {
   backbar(draft ? draftSub() : '');
   $('panel').innerHTML = '<h1><a data-act="toCats">קטגוריות</a> <span class="ch">‹</span> ' + esc(catName(curCat)) + ' <span class="ch">‹</span></h1>' +
     selSummary() +
-    '<div class="grid">' + subs(curCat).map(([sid, s]) => navCard('openSub', ' data-sid="' + sid + '"', s.name, countIn(curCat, sid), pickedIn(curCat, sid), 'renameSub')).join('') + '</div>' +
+    '<div class="grid">' + subs(curCat).map(([sid, s]) => navCard('openSub', ' data-sid="' + sid + '"', s.name, countIn(curCat, sid), pickedIn(curCat, sid), 'renameSub', draft ? keysIn(curCat, sid) : [], 'pickSub')).join('') + '</div>' +
     '<div class="actions"><button class="btn ghost" data-act="addSub">הוסף</button>' + buildButtons() + '</div>';
 }
 
@@ -560,6 +581,8 @@ function renderItems() {
   const list =
     (vids.length ? '' : '<p class="muted">אין עדיין סרטונים בתת־קטגוריה הזו.</p>') +
     (vids.length ? '<p class="muted">לחיצה על פריט מציגה אותו' + (draft ? ' · הריבוע משמאל מסמן אותו למבחן' : '') + '</p>' : '') +
+    (draft && vids.length ? '<div class="card' + (groupState(keysIn(curCat, curSub)) === ' on' ? ' on' : '') + '"><div class="allrow"><div class="t">סמן הכל בתת־התחום<small>' +
+      countIn(curCat, curSub) + '</small></div><button class="chk' + groupState(keysIn(curCat, curSub)) + '" data-act="pickAll" aria-label="סמן הכל"></button></div></div>' : '') +
     vids.map(([vid, v]) => '<div class="card' + (draft && draft.items.includes('v:' + vid) ? ' on' : '') + '">' +
       itemRow('v:' + vid, isImg(v) ? 'תמונה' : 'סרטון', v.title, v.duration ? ' · ' + fmtDur(v.duration) + ' דקות' : '',
               isImg(v) ? '<img alt="" data-src="' + esc(v.url) + '">'
@@ -569,7 +592,6 @@ function renderItems() {
         itemRow('q:' + qid, q.type === 'choice' ? 'אמריקאית' : 'פתוחה', q.text, '', questionPreview(q))).join('') + '</div>').join('') +
     '<div class="actions"><button class="btn ghost" data-act="newMedia">הוסף סרטון או תמונה</button>' +
     (vids.length ? '<button class="btn ghost" data-act="newQ">הוסף שאלה</button>' : '') +
-    (draft && vids.length ? '<button class="btn ghost" data-act="pickAll">סמן את כל מה שבתת־קטגוריה</button>' : '') +
     buildButtons() +
     (draft ? '<button class="btn ghost" data-act="toCats">הוסף שאלות מקטגוריה אחרת</button>' : '') + '</div>';
   $('panel').innerHTML = '<h1><a data-act="toCats">קטגוריות</a> <span class="ch">‹</span> <a data-act="toSubs">' +
@@ -965,12 +987,9 @@ document.addEventListener('click', async e => {
     case 'qAddOpt': form.options.push(''); keepScroll(renderQuestionForm); break;
     case 'saveQ': saveQ(); break;
     case 'delQ': delQ(); break;
-    case 'pickAll':
-      videosIn(curCat, curSub).forEach(([vid]) => {
-        ['v:' + vid].concat(questionsOf(vid).map(([qid]) => 'q:' + qid))
-          .forEach(k => { if (!draft.items.includes(k)) toggleItem(k); });
-      });
-      renderItems(); break;
+    case 'pickAll': toggleGroup(keysIn(curCat, curSub)); keepScroll(renderItems); break;
+    case 'pickCat': toggleGroup(keysIn(d.cid)); keepScroll(renderCats); break;
+    case 'pickSub': toggleGroup(keysIn(curCat, d.sid)); keepScroll(renderSubs); break;
     case 'renameCat': {
       const n = await rename('/library/catalog/cats/' + d.cid, catName(d.cid), 'שם הקטגוריה:');
       if (n) { catalog.cats[d.cid].name = n; renderCats(); }
